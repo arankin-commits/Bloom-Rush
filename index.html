@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bloom Run</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <section id="menuScreen" class="screen active">
+      <div class="menu-shell">
+        <div class="brand">
+          <span class="eyebrow">STAGE 8 · ESCALATION</span>
+          <h1>BLOOM<span>RUN</span></h1>
+          <p class="tagline">Keep your streak alive. Clean runs build score. One hit breaks the multiplier.</p>
+          <div class="coin-bank">BANKED COINS <strong id="menuCoinBalance">0</strong> ◉</div>
+        </div>
+
+        <div class="menu-actions stage7-actions">
+          <button id="runBtn" class="main-btn">RUN</button>
+          <button id="customizeBtn" class="menu-btn">CUSTOMIZE</button>
+          <button id="shopBtn" class="menu-btn">SHOP</button>
+          <button data-page="achievements" class="menu-btn">ACHIEVEMENTS <small>WIP</small></button>
+          <button id="settingsBtn" class="menu-btn">SETTINGS</button>
+        </div>
+
+        <div class="controls-card">
+          <h2>FIELD CONTROLS</h2>
+          <div class="control-grid">
+            <div><kbd>A</kbd><span>Move left</span></div>
+            <div><kbd>D</kbd><span>Move right</span></div>
+            <div><kbd>W</kbd><span>Jump</span></div>
+            <div><kbd>S</kbd><span>Crouch / drop</span></div>
+            <div><kbd>SPACE</kbd><span>Shoot</span></div>
+            <div><kbd>CLICK</kbd><span>Shoot</span></div>
+            <div><kbd>ESC</kbd><span>Pause / menu</span></div>
+          </div>
+        </div>
+
+        <div class="menu-leaderboard-panel">
+          <div class="leaderboard-title">TOP RUNNERS</div>
+          <ol id="menuLeaderboardList"></ol>
+        </div>
+
+        <p class="menu-lore">
+          Bloom has infected the wildlife, the dead, and now you. Build your multiplier by clearing coin groups,
+          swapping gear, and cleansing Bloom. Getting hit breaks the streak.
+        </p>
+      </div>
+      <div class="menu-vines vines-left"></div>
+      <div class="menu-vines vines-right"></div>
+    </section>
+
+    <section id="customizeScreen" class="screen panel-screen">
+      <div class="panel-card wide-panel">
+        <div class="panel-heading">
+          <div><span class="eyebrow">RUNNER PROFILE</span><h1>CHARACTER CUSTOMIZATION</h1></div>
+          <button id="customizeBackBtn" class="menu-btn compact-btn">BACK</button>
+        </div>
+        <div class="customize-layout">
+          <div class="preview-shell"><canvas id="customPreview" width="280" height="300"></canvas></div>
+          <div class="custom-controls">
+            <label>GENDER
+              <select id="genderSelect">
+                <option value="masculine">Masculine</option>
+                <option value="feminine">Feminine</option>
+              </select>
+            </label>
+            <label>HAIR STYLE
+              <select id="hairSelect">
+                <option value="short">Short</option>
+                <option value="long">Long</option>
+                <option value="mohawk">Mohawk</option>
+                <option value="afro">Afro</option>
+                <option value="dreads">Dreads</option>
+                <option value="cornrows">Cornrows</option>
+                <option value="curly">Curly Long</option>
+                <option value="braid">Braid</option>
+                <option value="pigtails">Pigtails</option>
+                <option value="spiky">Spiky</option>
+                <option value="bob">Bob</option>
+                <option value="hightop">Hightop Fade</option>
+                <option value="ponytail">Ponytail</option>
+                <option value="bun">Bun</option>
+                <option value="bald">Bald</option>
+              </select>
+            </label>
+            <label>FACIAL HAIR
+              <select id="facialHairSelect">
+                <option value="none">None</option>
+                <option value="stubble">Stubble</option>
+                <option value="mustache">Mustache</option>
+                <option value="goatee">Goatee</option>
+                <option value="beard">Beard</option>
+              </select>
+            </label>
+            <label>SKIN COLOR
+              <input id="skinColorInput" type="color" value="#caa98d" />
+            </label>
+            <label>HAIR COLOR
+              <input id="hairColorInput" type="color" value="#1b1b19" />
+            </label>
+            <label>FACIAL HAIR COLOR
+              <input id="facialHairColorInput" type="color" value="#1b1b19" />
+            </label>
+            <label>SHIRT COLOR
+              <input id="shirtColorInput" type="color" value="#51655a" />
+            </label>
+            <label>PANTS COLOR
+              <input id="pantsColorInput" type="color" value="#26352f" />
+            </label>
+            <p class="panel-note">Changes save automatically and are used the next time you run.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="shopScreen" class="screen panel-screen">
+      <div class="panel-card wide-panel">
+        <div class="panel-heading">
+          <div><span class="eyebrow">SUPPLY DEPOT</span><h1>SHOP</h1><div class="coin-bank">BANKED COINS <strong id="shopCoinBalance">0</strong> ◉</div></div>
+          <button id="shopBackBtn" class="menu-btn compact-btn">BACK</button>
+        </div>
+        <div class="shop-grid">
+          <article class="shop-section"><div class="shop-icon">✦</div><h2>COSMETICS</h2><p>Character outfits, hair options, and cosmetic variants.</p><span>COMING SOON</span></article>
+          <article class="shop-section"><div class="shop-icon">▱</div><h2>VEHICLE SKINS</h2><p>Visual skins for motorcycles, cars, and trucks.</p><span>COMING SOON</span></article>
+          <article class="shop-section"><div class="shop-icon">⌁</div><h2>WEAPON SKINS</h2><p>Alternate looks for every weapon class.</p><span>COMING SOON</span></article>
+          <article class="shop-section"><div class="shop-icon">▲</div><h2>UPGRADES</h2><p>Permanent run upgrades and utility improvements.</p><span>COMING SOON</span></article>
+          <article class="shop-section"><div class="shop-icon">◆</div><h2>STARTING ITEM</h2><p>Choose items that future runs can begin with.</p><span>COMING SOON</span></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="settingsScreen" class="screen panel-screen">
+      <div class="panel-card settings-card">
+        <div class="panel-heading">
+          <div><span class="eyebrow">AUDIO</span><h1>SETTINGS</h1></div>
+          <button id="settingsBackBtn" class="menu-btn compact-btn">BACK</button>
+        </div>
+        <div class="setting-row"><div><strong>MUSIC</strong><span>Background music during runs.</span></div><label class="toggle"><input id="musicToggle" type="checkbox" checked><span></span></label></div>
+        <div class="setting-row"><div><strong>SFX</strong><span>Weapons, pickups, hits, explosions, and UI sounds.</span></div><label class="toggle"><input id="sfxToggle" type="checkbox" checked><span></span></label></div>
+      </div>
+    </section>
+
+    <section id="wipScreen" class="screen">
+      <div class="wip-card">
+        <span class="eyebrow">UNDER CONSTRUCTION</span>
+        <h1 id="wipTitle">ACHIEVEMENTS</h1>
+        <div class="wip-icon">✿</div>
+        <p>This section is still being cultivated.</p>
+        <button id="backBtn" class="menu-btn">BACK</button>
+      </div>
+    </section>
+
+    <section id="gameScreen" class="screen">
+      <canvas id="gameCanvas"></canvas>
+
+      <div id="hud">
+        <div id="wallWarningIcon" class="wall-warning-icon hidden" aria-label="Bloom wall nearby">
+          <span class="wall-warning-flower">✿</span>
+          <strong id="wallWarningDistance">300m</strong>
+        </div>
+
+        <div class="hud-left stage7-hud-left">
+          <div class="survival-strip stage7-survival-strip">
+            <div id="livesHearts" class="lives-hearts" aria-label="3 lives"></div>
+            <div id="weaponItemSlot" class="equipment-icon-slot hidden" aria-label="Special weapon"><div id="weaponIconGraphic" class="equipment-icon"></div></div>
+            <div id="vehicleItemSlot" class="vehicle-icon-wrap hidden" aria-label="Vehicle">
+              <div class="equipment-icon-slot vehicle-icon-slot"><div id="vehicleIconGraphic" class="equipment-icon"></div></div>
+              <div class="mini-gas-bar"><div id="vehicleGasFill" class="gas-fill"></div></div>
+            </div>
+          </div>
+
+          <div class="hud-box bloom-only">
+            <span class="hud-label">BLOOM</span>
+            <div class="bar bloom-bar"><div id="bloomFill" class="fill bloom-fill"></div></div>
+            <span id="bloomText">0%</span>
+          </div>
+          <div id="healthFill" class="hidden"></div>
+          <div id="healthText" class="hidden"></div>
+        </div>
+
+        <div class="hud-center multiplier-hud">
+          <div class="multiplier-topline"><span>SCORE MULTIPLIER</span><strong id="multiplierLabel">X1</strong></div>
+          <div class="multiplier-bar"><div id="multiplierFill" class="multiplier-fill"></div></div>
+          <div id="multiplierEvent" class="multiplier-event">KEEP THE STREAK ALIVE</div>
+          <div id="distance" class="hidden">0m</div>
+          <div id="biomeText" class="hidden">OVERGROWN OUTSKIRTS</div>
+        </div>
+
+        <div class="hud-right stage7-hud-right">
+          <div class="stat score-stat"><span>SCORE</span><strong id="scoreText">0</strong></div>
+          <div id="killsText" class="hidden">0</div>
+          <div id="coinText" class="hidden">0</div>
+        </div>
+      </div>
+
+      <div id="bloomWarning">YOUR AIM IS BLOOMING</div>
+      <div id="boostBanner" class="gold-rush-banner hidden">GOLD RUSH!</div>
+
+      <div id="pausePanel" class="overlay hidden">
+        <div class="overlay-card">
+          <span class="eyebrow">FIELD STATUS</span>
+          <h2>PAUSED</h2>
+          <button id="resumeBtn" class="main-btn small">RESUME</button>
+          <button id="quitBtn" class="menu-btn">QUIT TO MENU</button>
+        </div>
+        <div class="pause-run-stats" aria-label="Current run statistics">
+          <div class="pause-stat pause-coins"><span class="pause-coin-icon">◉</span><strong id="pauseCoins">0</strong></div>
+          <div class="pause-stat pause-distance"><strong id="pauseDistance">0 meters</strong></div>
+          <div class="pause-stat pause-kills"><strong id="pauseKills">0</strong></div>
+        </div>
+      </div>
+
+      <div id="resultPanel" class="overlay hidden">
+        <div class="overlay-card result-card">
+          <span class="eyebrow" id="resultEyebrow">RUN OVER</span>
+          <h2 id="resultTitle">YOU DIED</h2>
+          <div class="result-grid stage4-results">
+            <div><span>KILLS</span><strong id="resultKills">0</strong></div>
+            <div><span>DISTANCE</span><strong id="resultDistance">0m</strong></div>
+            <div><span>COINS</span><strong id="resultCoins">+0</strong></div>
+            <div><span>SCORE</span><strong id="resultScore">0</strong></div>
+            <div><span>MAX BLOOM</span><strong id="resultBloom">0%</strong></div>
+          </div>
+
+          <div class="leaderboard-entry">
+            <label for="playerName">RUNNER NAME · REMEMBERED FOR FUTURE RUNS</label>
+            <div class="leaderboard-form autosave-name"><input id="playerName" maxlength="16" autocomplete="off" placeholder="UNKNOWN" value="" /></div>
+            <div id="saveMessage" class="save-message">SAVED</div>
+          </div>
+
+          <button id="againBtn" class="main-btn small">RUN AGAIN</button>
+          <button id="resultMenuBtn" class="menu-btn">MENU</button>
+        </div>
+      </div>
+
+    </section>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
