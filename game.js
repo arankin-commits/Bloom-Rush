@@ -71,6 +71,7 @@
   const multiplierEvent = document.getElementById('multiplierEvent');
   const multiplierHud = document.querySelector('.multiplier-hud');
   const boostBanner = document.getElementById('boostBanner');
+  const actionNotice = document.getElementById('actionNotice');
   const pauseCoins = document.getElementById('pauseCoins');
   const pauseDistance = document.getElementById('pauseDistance');
   const pauseKills = document.getElementById('pauseKills');
@@ -106,36 +107,37 @@
     },
     ar: {
       label: 'AR', automatic: true, cooldown: 0.11, pellets: 1,
-      damage: 1.5, ammo: 54, spread: 2.0, bloomSpread: 0.88,
+      damage: 1.5, ammo: Infinity, spread: 2.0, bloomSpread: 0.88,
       bloomPerShot: 0.34, bulletSpeed: 1160, bulletLife: 1.3,
       color: '#9bb8a2', guard: true
     },
     shotgun: {
       label: 'SHOTGUN', automatic: false, cooldown: 0.66, pellets: 7,
-      damage: 1.5, ammo: 16, spread: 15, bloomSpread: 0.7,
+      damage: 1.5, ammo: Infinity, spread: 15, bloomSpread: 0.7,
       bloomPerShot: 1.15, bulletSpeed: 940, bulletLife: 0.62,
       color: '#d2ad74', guard: true
     },
     rpg: {
       label: 'RPG', automatic: false, cooldown: 0.95, pellets: 1,
-      damage: 10, ammo: 6, spread: 1.1, bloomSpread: 0.45,
+      damage: 10, ammo: Infinity, spread: 1.1, bloomSpread: 0.45,
       bloomPerShot: 1.25, bulletSpeed: 650, bulletLife: 2.0,
       color: '#d27054', guard: true, explosive: true, radius: 115
     },
     sniper: {
       label: 'SNIPER', automatic: false, cooldown: 0.82, pellets: 1,
-      damage: 5, ammo: 10, spread: 0.25, bloomSpread: 0.36,
+      damage: 5, ammo: Infinity, spread: 0.25, bloomSpread: 0.36,
       bloomPerShot: 0.72, bulletSpeed: 1550, bulletLife: 1.5,
       color: '#8ecad0', guard: true
     },
     smg: {
       label: 'SMG', automatic: true, cooldown: 0.075, pellets: 1,
-      damage: 1, ammo: 78, spread: 4.3, bloomSpread: 1.1,
+      damage: 1, ammo: Infinity, spread: 4.3, bloomSpread: 1.1,
       bloomPerShot: 0.28, bulletSpeed: 1040, bulletLife: 1.0,
       color: '#b6a2d6', guard: true
     }
   };
   const WEAPON_KEYS = ['ar', 'shotgun', 'rpg', 'sniper', 'smg'];
+  const WEAPON_PRIORITY = ['rpg', 'sniper', 'shotgun', 'ar', 'smg', 'pistol'];
 
   const VEHICLES = {
     motorcycle: { label: 'MOTORCYCLE', minDistance: 1000, duration: 8,  color: '#d2b05c' },
@@ -178,6 +180,7 @@
   let goldRushAudio = null;
   let wallSfxClock = 0;
   let vehicleSfxClock = 0;
+  let actionNoticeTimer = 0;
 
   let player;
   let bullets = [];
@@ -579,9 +582,10 @@
       noise(.09,.055,'bandpass',900,360,.025,1.6);
     } else if (kind === 'goldrush') {
       // Restored to the Stage 9 three-step Gold Rush cue.
-      tone(440, .12, 'square', .045, 660);
-      tone(660, .12, 'triangle', .05, 880, .08);
-      tone(880, .18, 'square', .055, 1180, .16);
+      master.gain.value = .58;
+      tone(440, .12, 'square', .024, 660);
+      tone(660, .12, 'triangle', .027, 880, .08);
+      tone(880, .18, 'square', .030, 1180, .16);
     } else if (kind === 'coin') {
       // Short metallic clinks: two hard high-frequency contacts plus a tiny ring.
       master.gain.value = .92;
@@ -1011,7 +1015,38 @@
 
   function recalcScore() {
     if (!player) return;
-    player.score = Math.floor((player.distanceScore || 0) + (player.killScore || 0));
+    player.score = Math.floor((player.distanceScore || 0) + (player.killScore || 0) + (player.bonusScore || 0));
+  }
+
+  function addBonusScore(points) {
+    if (!player || !points) return;
+    player.bonusScore = (player.bonusScore || 0) + points;
+    recalcScore();
+  }
+
+  function showActionNotice(text, points=0) {
+    if (!actionNotice) return;
+    actionNotice.innerHTML = `<strong>${text}</strong>${points ? `<span>+${points} SCORE</span>` : ''}`;
+    actionNotice.classList.remove('hidden','pop');
+    void actionNotice.offsetWidth;
+    actionNotice.classList.add('pop');
+    actionNoticeTimer = 1.65;
+  }
+
+  function hasSpecialWeapon() {
+    if (!player || !player.weaponInventory) return false;
+    return WEAPON_PRIORITY.some(type => type !== 'pistol' && player.weaponInventory[type]);
+  }
+
+  function highestPriorityWeapon() {
+    if (!player || !player.weaponInventory) return 'pistol';
+    return WEAPON_PRIORITY.find(type => type === 'pistol' || player.weaponInventory[type]) || 'pistol';
+  }
+
+  function refreshActiveWeapon() {
+    if (!player) return;
+    player.weapon = highestPriorityWeapon();
+    player.ammo = Infinity;
   }
 
   function updateDistanceScore() {
@@ -1035,11 +1070,12 @@
     }
   }
 
-  function gainMultiplier(reason) {
+  function gainMultiplier(reason, showMessage=true) {
     if (!player) return;
     const before = player.multiplier;
     player.multiplier = Math.min(12, player.multiplier + 1);
-    showMultiplierEvent(player.multiplier > before ? `${reason} · X${player.multiplier}` : `${reason} · MAX X12`);
+    if (showMessage) showMultiplierEvent(player.multiplier > before ? `${reason} · X${player.multiplier}` : `${reason} · MAX X12`);
+    else if (multiplierHud) { multiplierHud.classList.remove('hot'); void multiplierHud.offsetWidth; multiplierHud.classList.add('hot'); }
     playSfx('pickup');
   }
 
@@ -1059,7 +1095,7 @@
   function activateGoldRush() {
     if (!player) return;
     player.goldRushTime = Math.max(player.goldRushTime || 0, 3);
-    if (boostBanner) boostBanner.classList.remove('hidden');
+    if (boostBanner) boostBanner.classList.add('hidden');
     playSfx('goldrush');
   }
 
@@ -1089,10 +1125,10 @@
     player = {
       x: 82, y: 100, w: 34, h: 58,
       vx: 0, vy: 0, grounded: true, crouching: false, coyote: .08,
-      bloom: 8, kills: 0, score: 0, killScore: 0, distanceScore: 0, furthestMeter: 0, runCoins: 0,
+      bloom: 8, kills: 0, score: 0, killScore: 0, distanceScore: 0, bonusScore: 0, furthestMeter: 0, runCoins: 0,
       multiplier: 1, boostTime: 0, goldRushTime: 0,
       shotCooldown: 0, muzzle: 0, invuln: 0,
-      weapon: 'pistol', ammo: Infinity, plantZombie: false,
+      weapon: 'pistol', ammo: Infinity, weaponInventory: { pistol:true, ar:false, shotgun:false, rpg:false, sniper:false, smg:false }, plantZombie: false,
       lives: 3,
       vehicle: null, vehicleTime: 0, vehicleMaxTime: 0
     };
@@ -1139,6 +1175,8 @@
     weaponBreakTimer = 0;
     wallSfxClock = 0;
     vehicleSfxClock = 0;
+    actionNoticeTimer = 0;
+    if (actionNotice) actionNotice.classList.add('hidden');
     brokenWeaponLabel = '';
     state = 'playing';
     last = performance.now();
@@ -1449,10 +1487,14 @@
 
   function equipWeapon(type) {
     const def = WEAPONS[type];
-    if (!def) return;
+    if (!def || type === 'pistol') return false;
+    const alreadyArmed = hasSpecialWeapon();
+    if (!player.weaponInventory) player.weaponInventory = { pistol:true, ar:false, shotgun:false, rpg:false, sniper:false, smg:false };
+    // Weapons are unique inventory slots: duplicates still count as a swap event,
+    // but never create a second copy of the same gun.
+    player.weaponInventory[type] = true;
+    refreshActiveWeapon();
     playSfx('pickup');
-    player.weapon = type;
-    player.ammo = def.ammo;
     weaponFlash = 1;
     guardFlash = 1;
     for (let i = 0; i < 18; i++) {
@@ -1463,11 +1505,13 @@
         color: def.color
       });
     }
+    return alreadyArmed;
   }
 
   function revertToPistol() {
-    player.weapon = 'pistol';
-    player.ammo = Infinity;
+    if (!player) return;
+    for (const type of WEAPON_KEYS) player.weaponInventory[type] = false;
+    refreshActiveWeapon();
     player.shotCooldown = Math.max(player.shotCooldown, .24);
   }
 
@@ -1584,11 +1628,6 @@
     if (state !== 'playing' || spawnWalkActive || player.shotCooldown > 0) return;
     const def = WEAPONS[player.weapon];
     if (!def) return;
-    if (player.weapon !== 'pistol' && player.ammo <= 0) {
-      revertToPistol();
-      return;
-    }
-
     const gun = getGunMuzzle();
     const baseAngle = facing === 1 ? 0 : Math.PI;
     const bloomSpread = Math.pow(player.bloom / 100, 1.6) * 29 * def.bloomSpread;
@@ -1615,12 +1654,6 @@
     player.shotCooldown = def.cooldown;
     player.muzzle = .075;
     player.bloom = Math.min(100, player.bloom + def.bloomPerShot);
-    if (player.weapon !== 'pistol') {
-      player.ammo--;
-      if (player.ammo <= 0) setTimeout(() => {
-        if (state === 'playing' && player.weapon !== 'pistol' && player.ammo <= 0) revertToPistol();
-      }, 120);
-    }
     shake = Math.max(shake, player.weapon === 'shotgun' || player.weapon === 'rpg' ? 6 : 2.5);
 
     for (let i = 0; i < 5; i++) {
@@ -1676,7 +1709,7 @@
   }
 
   function consumeWeaponGuard(enemy, dir) {
-    const oldWeapon = player.weapon;
+    const oldWeapon = highestPriorityWeapon();
     const def = WEAPONS[oldWeapon];
     brokenWeaponLabel = def.label;
     weaponBreakTimer = .42;
@@ -1685,7 +1718,8 @@
     player.invuln = 1.0;
     player.vx = -dir * 310;
     player.vy = -280;
-    revertToPistol();
+    if (oldWeapon !== 'pistol' && player.weaponInventory) player.weaponInventory[oldWeapon] = false;
+    refreshActiveWeapon();
 
     for (let i = 0; i < 26; i++) {
       particles.push({
@@ -1697,7 +1731,7 @@
     }
 
     // Push the zombie away so the invulnerability window isn't immediately retriggered.
-    enemy.x += dir * 45;
+    if (enemy && typeof enemy.x === 'number') enemy.x += dir * 45;
   }
 
   function update(dt) {
@@ -1775,7 +1809,9 @@
     multiplierFlashTimer = Math.max(0, multiplierFlashTimer - dt);
     multiplierBreakTimer = Math.max(0, multiplierBreakTimer - dt);
     multiplierMessageTimer = Math.max(0, multiplierMessageTimer - dt);
-    if (boostBanner) boostBanner.classList.toggle('hidden', player.goldRushTime <= 0);
+    actionNoticeTimer = Math.max(0, actionNoticeTimer - dt);
+    if (actionNotice && actionNoticeTimer <= 0) actionNotice.classList.add('hidden');
+    if (boostBanner) boostBanner.classList.add('hidden');
     if (multiplierMessageTimer <= 0 && multiplierEvent) multiplierEvent.textContent = 'KEEP THE STREAK ALIVE';
 
     if (player.vehicle) {
@@ -2086,7 +2122,9 @@
       if (p.alive && rectsOverlap(player, test)) {
         p.alive = false;
         player.bloom = Math.max(0, player.bloom - 34);
-        gainMultiplier('BLOOM CLEANSED');
+        gainMultiplier('BLOOM CLEANSED', false);
+        addBonusScore(25);
+        showActionNotice('BLOOM FIXED!', 25);
         playSfx('bloom');
         for (let i = 0; i < 18; i++) {
           particles.push({
@@ -2106,13 +2144,23 @@
       const triggerX = house.x + house.w * .58;
       if (player.x + player.w / 2 >= triggerX && player.x < house.x + house.w + 90) {
         house.claimed = true;
-        const swapping = player.weapon !== 'pistol' || (house.rewardKind === 'vehicle' && !!player.vehicle);
-        if (swapping) {
-          gainMultiplier(house.rewardKind === 'vehicle' ? 'VEHICLE SWAP' : 'WEAPON SWAP');
-          grantMomentumBoost();
+        if (house.rewardKind === 'vehicle') {
+          // Vehicles remain single-slot: picking up another vehicle replaces the current one.
+          if (player.vehicle) {
+            gainMultiplier('VEHICLE SWAP');
+            grantMomentumBoost();
+          }
+          equipVehicle(house.type);
+        } else {
+          const swapping = hasSpecialWeapon();
+          equipWeapon(house.type);
+          if (swapping) {
+            gainMultiplier('WEAPON SWAP', false);
+            grantMomentumBoost();
+            addBonusScore(50);
+            showActionNotice('WEAPON SWAP!', 50);
+          }
         }
-        if (house.rewardKind === 'vehicle') equipVehicle(house.type);
-        else equipWeapon(house.type);
       }
     }
 
@@ -2131,7 +2179,9 @@
           group.collected++;
           if (!group.completed && group.collected >= group.total) {
             group.completed = true;
-            gainMultiplier('5-COIN SET');
+            gainMultiplier('5-COIN SET', false);
+            addBonusScore(100);
+            showActionNotice('GOLD RUSH!', 100);
             activateGoldRush();
           }
         }
@@ -2286,7 +2336,7 @@
 
     const specialWeaponActive = player.weapon !== 'pistol';
     if (weaponItemSlot) {
-      const showBroken = !specialWeaponActive && weaponBreakTimer > 0;
+      const showBroken = weaponBreakTimer > 0;
       weaponItemSlot.classList.toggle('hidden', !specialWeaponActive && !showBroken);
       weaponItemSlot.classList.toggle('breaking', showBroken);
       if (weaponIconGraphic) {
@@ -2323,7 +2373,7 @@
       if (wallWarningDistance) wallWarningDistance.textContent = `${wallMeters}m`;
     }
 
-    if (boostBanner) boostBanner.classList.toggle('hidden', player.goldRushTime <= 0);
+    if (boostBanner) boostBanner.classList.add('hidden');
     bloomWarning.style.opacity = player.bloom > 62
       ? String(Math.min(1, (player.bloom - 62) / 18))
       : '0';

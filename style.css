@@ -1225,3 +1225,29 @@ kbd {
   .menu-scene { display:none; }
   #menuScreen .menu-actions { grid-template-columns: 1fr 1fr; }
 }
+
+
+/* Stage 14 run-action notices */
+.stage7-hud-right { position:relative; flex-direction:column; align-items:flex-end; }
+.action-notice {
+  align-self:flex-end;
+  margin-top:3px;
+  padding:6px 11px 6px 13px;
+  background:rgba(8,25,12,.86);
+  border-left:3px solid #67e879;
+  color:#70ef82;
+  font-weight:900;
+  font-style:italic;
+  letter-spacing:.09em;
+  text-align:right;
+  transform:skewX(-10deg);
+  text-shadow:0 0 10px rgba(76,220,96,.30),0 2px 5px #000;
+  pointer-events:none;
+  min-width:132px;
+}
+.action-notice strong,.action-notice span { display:block; transform:skewX(10deg); }
+.action-notice strong { font-size:12px; }
+.action-notice span { margin-top:2px; font-size:9px; color:#b6f5bd; }
+.action-notice.pop { animation:stage14Notice .18s ease-out; }
+@keyframes stage14Notice { from { opacity:0; transform:translateX(18px) skewX(-10deg) scale(.92); } to { opacity:1; transform:translateX(0) skewX(-10deg) scale(1); } }
+.gold-rush-banner { display:none !important; }

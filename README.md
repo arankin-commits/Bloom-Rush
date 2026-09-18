@@ -74,3 +74,14 @@ Extract the ZIP and open `index.html` in a modern browser.
 - Zombies make lower breathy/moaning vocal sounds when shot.
 - Direct character damage uses a separate human pain/moan sound rather than the multiplier-break effect.
 - Multiplier breaks have their own non-vocal impact sound so blocked hits do not incorrectly trigger a human moan.
+
+
+## Stage 14
+- All guns have infinite ammunition.
+- Special weapons are stored as unique inventory slots and automatically used by priority: RPG > Sniper > Shotgun > AR > SMG > Pistol.
+- Picking up another weapon while already carrying a special weapon triggers WEAPON SWAP, +50 score, multiplier gain, and the existing swap speed boost. Duplicate weapon pickups still trigger the swap reward without creating duplicate inventory.
+- Hits consume the highest-priority stored special weapon; the next-highest weapon becomes active automatically.
+- Completing a five-coin set displays GOLD RUSH and awards +100 score.
+- Bloom cleansers display BLOOM FIXED and award +25 score.
+- Run-action notices appear below the score in slanted green text.
+- Gold Rush activation audio is quieter.
