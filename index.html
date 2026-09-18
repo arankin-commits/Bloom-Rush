@@ -25,12 +25,16 @@
           <div class="safehouse-vines vine-a"></div>
           <div class="safehouse-vines vine-b"></div>
         </div>
+        <div id="startingItemSign" class="starting-item-sign hidden" aria-label="Equipped starting item">
+          <div id="startingItemSignIcon" class="starting-item-sign-icon"></div>
+          <span id="startingItemSignLabel">STARTING ITEM</span>
+        </div>
         <div class="menu-ground"></div>
         <div class="menu-runner-silhouette"></div>
       </div>
       <div class="menu-shell">
         <div class="brand">
-          <span class="eyebrow">STAGE 12 · ROOTLINE PRESSURE</span>
+          <span class="eyebrow">STAGE 15 · FIELD LOOT</span>
           <h1>BLOOM<span>RUN</span></h1>
           <div class="coin-bank">BANKED COINS <strong id="menuCoinBalance">0</strong> ◉</div>
         </div>
@@ -140,12 +144,12 @@
           <div><span class="eyebrow">SUPPLY DEPOT</span><h1>SHOP</h1><div class="coin-bank">BANKED COINS <strong id="shopCoinBalance">0</strong> ◉</div></div>
           <button id="shopBackBtn" class="menu-btn compact-btn">BACK</button>
         </div>
-        <div class="shop-grid">
-          <article class="shop-section"><div class="shop-icon">✦</div><h2>COSMETICS</h2><p>Character outfits, hair options, and cosmetic variants.</p><span>COMING SOON</span></article>
-          <article class="shop-section"><div class="shop-icon">▱</div><h2>VEHICLE SKINS</h2><p>Visual skins for motorcycles, cars, and trucks.</p><span>COMING SOON</span></article>
-          <article class="shop-section"><div class="shop-icon">⌁</div><h2>WEAPON SKINS</h2><p>Alternate looks for every weapon class.</p><span>COMING SOON</span></article>
-          <article class="shop-section"><div class="shop-icon">▲</div><h2>UPGRADES</h2><p>Permanent run upgrades and utility improvements.</p><span>COMING SOON</span></article>
-          <article class="shop-section"><div class="shop-icon">◆</div><h2>STARTING ITEM</h2><p>Choose items that future runs can begin with.</p><span>COMING SOON</span></article>
+        <div class="shop-grid stage15-shop-grid">
+          <article class="shop-section"><div class="shop-icon">✦</div><h2>COSMETICS</h2><p>Outfit themes layer over your chosen gender, hair, skin tone, shirt, and pants colors.</p><div id="cosmeticShopItems" class="shop-item-list"></div></article>
+          <article class="shop-section"><div class="shop-icon">▱</div><h2>VEHICLE SKINS</h2><p>Equip one finish for motorcycles, cars, and trucks.</p><div id="vehicleSkinShopItems" class="shop-item-list"></div></article>
+          <article class="shop-section"><div class="shop-icon">⌁</div><h2>WEAPON SKINS</h2><p>Equip one finish across your weapon collection.</p><div id="weaponSkinShopItems" class="shop-item-list"></div></article>
+          <article class="shop-section"><div class="shop-icon">▲</div><h2>UPGRADES</h2><p>Permanent run improvements. Bloom control is intentionally a long-term unlock.</p><div id="upgradeShopItems" class="shop-item-list"></div></article>
+          <article class="shop-section starting-item-section"><div class="shop-icon">◆</div><h2>STARTING ITEM</h2><p>Equip one weapon or vehicle to begin future runs with. Your equipped choice appears on a unique sign outside the safehouse.</p><div id="startingItemShopItems" class="shop-item-list starting-item-list"></div></article>
         </div>
       </div>
     </section>

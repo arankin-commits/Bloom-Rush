@@ -181,3 +181,12 @@ Extract the ZIP and open `index.html` in a modern browser.
 - Bloom cleansers display BLOOM FIXED and award +25 score.
 - Run-action notices appear below the score in slanted green text.
 - Gold Rush activation audio is quieter.
+
+## Stage 15
+- Shooting increases Bloom once per trigger/shot event rather than per projectile. Multi-pellet shots only add Bloom once; the shotgun now fires 5 pellets.
+- Added purchasable/equippable character cosmetic themes: Gold, Festive, Camo, Blooming, Cosmic, Spooky/Halloween, Cupid, St. Patrick's Day, Soldier, Beach, Ninja, and Pirate. These layer over the player's existing customization rather than replacing gender, hair, skin tone, shirt color, or pants color.
+- Added weapon and vehicle finishes: Gold, Festive, Camo, Zebra, Ultra Realistic, Glowing, Toxic, Blooming, Water, Grass, Cosmic, Neon, and Dots.
+- The Starting Item shop now contains all weapons and vehicles. An equipped starting item is granted at the beginning of future runs and gets a unique sign outside the safehouse on the menu.
+- Added a high-cost Bloom Stabilizer permanent upgrade, which reduces passive and trigger-based Bloom accumulation by 15%.
+- Bloom cleanser pickups remain reachable but now spawn high enough to require a committed jump.
+- Added land obstacles to long solid-ground sections while keeping them away from ledges, houses, and coin groups: mud slows the runner, thorns remove a heart, and plant traps stop movement until Space is rapidly pressed 8 times.

@@ -14,6 +14,14 @@
   const settingsBtn = document.getElementById('settingsBtn');
   const settingsBackBtn = document.getElementById('settingsBackBtn');
   const shopCoinBalance = document.getElementById('shopCoinBalance');
+  const cosmeticShopItems = document.getElementById('cosmeticShopItems');
+  const vehicleSkinShopItems = document.getElementById('vehicleSkinShopItems');
+  const weaponSkinShopItems = document.getElementById('weaponSkinShopItems');
+  const upgradeShopItems = document.getElementById('upgradeShopItems');
+  const startingItemShopItems = document.getElementById('startingItemShopItems');
+  const startingItemSign = document.getElementById('startingItemSign');
+  const startingItemSignIcon = document.getElementById('startingItemSignIcon');
+  const startingItemSignLabel = document.getElementById('startingItemSignLabel');
   const customPreview = document.getElementById('customPreview');
   const genderSelect = document.getElementById('genderSelect');
   const hairSelect = document.getElementById('hairSelect');
@@ -86,6 +94,8 @@
   const PLAYER_NAME_KEY = 'bloomRunPlayerNameV1';
   const CUSTOMIZE_KEY = 'bloomRunCustomizeV1';
   const SETTINGS_KEY = 'bloomRunSettingsV1';
+  const SHOP_KEY = 'bloomRunShopV1';
+  const BLOOM_PER_TRIGGER = 0.42;
   const BIOME_LENGTH = 10000; // 1000 meters at 10 world pixels per meter.
   const BIOMES = [
     { name: 'OVERGROWN OUTSKIRTS', skyA:'#15241d', skyB:'#0d1713', skyC:'#09100d', ground:'#18221d', groundTop:'#315039', platform:'#344b3d', platformTop:'#79a05f', accent:'#6faa59', silhouette:'#384f41' },
@@ -112,9 +122,9 @@
       color: '#9bb8a2', guard: true
     },
     shotgun: {
-      label: 'SHOTGUN', automatic: false, cooldown: 0.66, pellets: 7,
+      label: 'SHOTGUN', automatic: false, cooldown: 0.66, pellets: 5,
       damage: 1.5, ammo: Infinity, spread: 15, bloomSpread: 0.7,
-      bloomPerShot: 1.15, bulletSpeed: 940, bulletLife: 0.62,
+      bloomPerShot: BLOOM_PER_TRIGGER, bulletSpeed: 940, bulletLife: 0.62,
       color: '#d2ad74', guard: true
     },
     rpg: {
@@ -143,6 +153,57 @@
     motorcycle: { label: 'MOTORCYCLE', minDistance: 1000, duration: 8,  color: '#d2b05c' },
     car:        { label: 'CAR',        minDistance: 2500, duration: 12, color: '#6fa2bf' },
     truck:      { label: 'TRUCK',      minDistance: 6000, duration: 20, color: '#9a7659' }
+  };
+
+
+  const CHARACTER_SKINS = {
+    base:{label:'DEFAULT',price:0,desc:'Uses your customization with no extra theme.',chip:'#51655a'},
+    gold:{label:'GOLD',price:550,desc:'Gold trim and metallic accents.',chip:'#d8b94f'},
+    festive:{label:'FESTIVE',price:350,desc:'Red, green, and winter detailing.',chip:'#b83f39'},
+    camo:{label:'CAMO',price:320,desc:'Layered field camouflage over your colors.',chip:'#69704a'},
+    blooming:{label:'BLOOMING',price:450,desc:'Vines and flower growth woven into the outfit.',chip:'#72b95f'},
+    cosmic:{label:'COSMIC',price:600,desc:'Dark starfield accents and tiny constellations.',chip:'#6b58a7'},
+    spooky:{label:'SPOOKY / HALLOWEEN',price:400,desc:'Orange and violet haunted detailing.',chip:'#d97630'},
+    cupid:{label:'CUPID',price:340,desc:'Pink heart accents layered over your outfit.',chip:'#e87ba4'},
+    stpatricks:{label:"ST. PATRICK'S DAY",price:340,desc:'Green clover-inspired highlights.',chip:'#4d9b54'},
+    soldier:{label:'SOLDIER',price:380,desc:'Harness straps and field-kit accents.',chip:'#66704e'},
+    beach:{label:'BEACH',price:300,desc:'Bright tropical bands and beach details.',chip:'#55b8bd'},
+    ninja:{label:'NINJA',price:500,desc:'Dark sash, mask, and stealth wraps.',chip:'#252936'},
+    pirate:{label:'PIRATE',price:460,desc:'Red sash, belt, and pirate trim.',chip:'#98473f'}
+  };
+
+  const GEAR_SKINS = {
+    base:{label:'DEFAULT',price:0,desc:'Standard equipment finish.',chip:'#5f675f'},
+    gold:{label:'GOLD',price:500,desc:'Polished gold finish.',chip:'#d7b64b'},
+    festive:{label:'FESTIVE',price:330,desc:'Red and green seasonal finish.',chip:'#b94542'},
+    camo:{label:'CAMO',price:320,desc:'Military camouflage finish.',chip:'#65704a'},
+    zebra:{label:'ZEBRA',price:360,desc:'High-contrast black and white striping.',chip:'#e6e6df'},
+    realistic:{label:'ULTRA REALISTIC',price:650,desc:'Muted steel, rubber, and worn hardware tones.',chip:'#6d7471'},
+    glowing:{label:'GLOWING',price:580,desc:'Cold luminous energy finish.',chip:'#79e8e8'},
+    toxic:{label:'TOXIC',price:430,desc:'Acid green contaminated finish.',chip:'#9bd94d'},
+    blooming:{label:'BLOOMING',price:460,desc:'Plant growth and floral accents.',chip:'#6dbb61'},
+    water:{label:'WATER',price:380,desc:'Blue flowing-water finish.',chip:'#54a7d2'},
+    grass:{label:'GRASS',price:350,desc:'Living green field finish.',chip:'#5e9c51'},
+    cosmic:{label:'COSMIC',price:600,desc:'Deep-space violet and star highlights.',chip:'#6654a0'},
+    neon:{label:'NEON',price:620,desc:'Hot neon cyan and magenta finish.',chip:'#e250d4'},
+    dots:{label:'DOTS',price:300,desc:'Contrasting polka-dot finish.',chip:'#d8cd86'}
+  };
+
+  const STARTING_ITEMS = {
+    none:{label:'NONE',price:0,kind:'none',type:null,desc:'Begin with the normal pistol and no vehicle.'},
+    pistol:{label:'PISTOL',price:0,kind:'weapon',type:'pistol',desc:'Standard starting pistol.'},
+    smg:{label:'SMG',price:650,kind:'weapon',type:'smg',desc:'Start with an SMG stored in your inventory.'},
+    ar:{label:'AR',price:800,kind:'weapon',type:'ar',desc:'Start with an assault rifle.'},
+    shotgun:{label:'SHOTGUN',price:950,kind:'weapon',type:'shotgun',desc:'Start with a five-pellet shotgun.'},
+    sniper:{label:'SNIPER',price:1200,kind:'weapon',type:'sniper',desc:'Start with the piercing sniper.'},
+    rpg:{label:'RPG',price:1500,kind:'weapon',type:'rpg',desc:'Start with the explosive RPG.'},
+    motorcycle:{label:'MOTORCYCLE',price:900,kind:'vehicle',type:'motorcycle',desc:'Begin the run with 8 seconds of motorcycle fuel.'},
+    car:{label:'CAR',price:1400,kind:'vehicle',type:'car',desc:'Begin the run with 12 seconds of car fuel.'},
+    truck:{label:'TRUCK',price:1900,kind:'vehicle',type:'truck',desc:'Begin the run with 20 seconds of truck fuel.'}
+  };
+
+  const SHOP_UPGRADES = {
+    bloomControl:{label:'BLOOM STABILIZER',price:3000,desc:'Permanent: Bloom accumulates 15% more slowly from time and trigger pulls.'}
   };
 
 
@@ -181,6 +242,7 @@
   let wallSfxClock = 0;
   let vehicleSfxClock = 0;
   let actionNoticeTimer = 0;
+  let shopStateCache = null;
 
   let player;
   let bullets = [];
@@ -199,6 +261,8 @@
   let nextCoinGroupId = 1;
   let nextBloomCleanseMeter = 700;
   let explosions = [];
+  let obstacles = [];
+  let nextObstacleId = 1;
 
   function showScreen(screen) {
     [menuScreen, wipScreen, customizeScreen, shopScreen, settingsScreen, gameScreen].forEach(s => s && s.classList.remove('active'));
@@ -227,8 +291,8 @@
   });
   customizeBtn.addEventListener('click', () => { loadCustomizeControls(); openMenuPanel(customizeScreen); drawCustomizerPreview(); });
   customizeBackBtn.addEventListener('click', () => { showScreen(menuScreen); state = 'menu'; });
-  shopBtn.addEventListener('click', () => { setCoinBalance(getCoinBalance()); openMenuPanel(shopScreen); });
-  shopBackBtn.addEventListener('click', () => { showScreen(menuScreen); state = 'menu'; });
+  shopBtn.addEventListener('click', () => { setCoinBalance(getCoinBalance()); renderShop(); openMenuPanel(shopScreen); });
+  shopBackBtn.addEventListener('click', () => { showScreen(menuScreen); state = 'menu'; updateStartingItemSign(); });
   settingsBtn.addEventListener('click', () => { loadSettingsControls(); openMenuPanel(settingsScreen); });
   settingsBackBtn.addEventListener('click', () => { showScreen(menuScreen); state = 'menu'; });
 
@@ -257,6 +321,7 @@
     pausePanel.classList.add('hidden');
     resultPanel.classList.add('hidden');
     showScreen(menuScreen);
+    updateStartingItemSign();
   }
 
   function resizeCanvas() {
@@ -312,7 +377,7 @@
       pants: pantsColorInput.value
     };
     try { localStorage.setItem(CUSTOMIZE_KEY, JSON.stringify(next)); } catch {}
-    characterStyle = next;
+    characterStyle = {...next, cosmeticSkin:getShopState().equipped.cosmetic || 'base'};
     drawCustomizerPreview();
   }
 
@@ -326,13 +391,144 @@
     facialHairColorInput.value = style.facialHairColor;
     shirtColorInput.value = style.shirt;
     pantsColorInput.value = style.pants;
-    characterStyle = style;
+    characterStyle = {...style, cosmeticSkin:getShopState().equipped.cosmetic || 'base'};
   }
 
   [genderSelect, hairSelect, facialHairSelect, skinColorInput, hairColorInput, facialHairColorInput, shirtColorInput, pantsColorInput].forEach(control => {
     control.addEventListener('input', saveCustomization);
     control.addEventListener('change', saveCustomization);
   });
+
+
+  function defaultShopState() {
+    return {
+      owned:{
+        cosmetics:['base'], weaponSkins:['base'], vehicleSkins:['base'],
+        startingItems:['none','pistol'], upgrades:[]
+      },
+      equipped:{ cosmetic:'base', weaponSkin:'base', vehicleSkin:'base', startingItem:'none' }
+    };
+  }
+
+  function getShopState() {
+    if (shopStateCache) return shopStateCache;
+    const defaults = defaultShopState();
+    try {
+      const raw = JSON.parse(localStorage.getItem(SHOP_KEY) || 'null');
+      if (!raw || typeof raw !== 'object') return (shopStateCache = defaults);
+      const merged = {
+        owned:{
+          cosmetics:Array.isArray(raw.owned?.cosmetics)?raw.owned.cosmetics:['base'],
+          weaponSkins:Array.isArray(raw.owned?.weaponSkins)?raw.owned.weaponSkins:['base'],
+          vehicleSkins:Array.isArray(raw.owned?.vehicleSkins)?raw.owned.vehicleSkins:['base'],
+          startingItems:Array.isArray(raw.owned?.startingItems)?raw.owned.startingItems:['none','pistol'],
+          upgrades:Array.isArray(raw.owned?.upgrades)?raw.owned.upgrades:[]
+        },
+        equipped:{...defaults.equipped,...(raw.equipped||{})}
+      };
+      for (const [list,key] of [['cosmetics','base'],['weaponSkins','base'],['vehicleSkins','base'],['startingItems','none'],['startingItems','pistol']]) {
+        if (!merged.owned[list].includes(key)) merged.owned[list].push(key);
+      }
+      return (shopStateCache = merged);
+    } catch { return (shopStateCache = defaults); }
+  }
+
+  function saveShopState(stateObj = getShopState()) {
+    shopStateCache = stateObj;
+    try { localStorage.setItem(SHOP_KEY, JSON.stringify(stateObj)); } catch {}
+    updateStartingItemSign();
+  }
+
+  function shopCategoryConfig(category) {
+    if (category === 'cosmetics') return {items:CHARACTER_SKINS, owned:'cosmetics', equip:'cosmetic'};
+    if (category === 'weaponSkins') return {items:GEAR_SKINS, owned:'weaponSkins', equip:'weaponSkin'};
+    if (category === 'vehicleSkins') return {items:GEAR_SKINS, owned:'vehicleSkins', equip:'vehicleSkin'};
+    if (category === 'startingItems') return {items:STARTING_ITEMS, owned:'startingItems', equip:'startingItem'};
+    if (category === 'upgrades') return {items:SHOP_UPGRADES, owned:'upgrades', equip:null};
+    return null;
+  }
+
+  function buyOrEquipShopItem(category, key) {
+    const cfg = shopCategoryConfig(category);
+    if (!cfg || !cfg.items[key]) return;
+    const stateObj = getShopState();
+    const owned = stateObj.owned[cfg.owned];
+    const item = cfg.items[key];
+    if (!owned.includes(key)) {
+      const balance = getCoinBalance();
+      if (balance < item.price) return;
+      setCoinBalance(balance - item.price);
+      owned.push(key);
+    }
+    if (cfg.equip) stateObj.equipped[cfg.equip] = key;
+    saveShopState(stateObj);
+    characterStyle = getActiveCharacterStyle();
+    renderShop();
+    drawCustomizerPreview();
+  }
+
+  function renderShopList(container, category) {
+    if (!container) return;
+    const cfg = shopCategoryConfig(category);
+    const stateObj = getShopState();
+    const balance = getCoinBalance();
+    container.innerHTML = '';
+    for (const [key,item] of Object.entries(cfg.items)) {
+      const owned = stateObj.owned[cfg.owned].includes(key);
+      const equipped = cfg.equip && stateObj.equipped[cfg.equip] === key;
+      const card = document.createElement('div');
+      card.className = `shop-item-card${owned?' owned':''}${equipped?' equipped':''}`;
+      const chip = item.chip ? `<div class="shop-color-chip" style="background:${item.chip}"></div>` : '';
+      const label = equipped ? 'EQUIPPED' : owned ? (category === 'upgrades' ? 'OWNED' : 'EQUIP') : `${item.price} ◉`;
+      card.innerHTML = `${chip}<div class="shop-item-name">${item.label}</div><div class="shop-item-desc">${item.desc||''}</div><button class="shop-buy-btn" type="button">${label}</button>`;
+      const btn = card.querySelector('button');
+      btn.disabled = !!(category === 'upgrades' && owned) || (!owned && balance < item.price);
+      btn.addEventListener('click', () => buyOrEquipShopItem(category,key));
+      container.appendChild(card);
+    }
+  }
+
+  function renderShop() {
+    setCoinBalance(getCoinBalance());
+    renderShopList(cosmeticShopItems,'cosmetics');
+    renderShopList(vehicleSkinShopItems,'vehicleSkins');
+    renderShopList(weaponSkinShopItems,'weaponSkins');
+    renderShopList(upgradeShopItems,'upgrades');
+    renderShopList(startingItemShopItems,'startingItems');
+  }
+
+  function getActiveCharacterStyle() {
+    const base = getCustomization();
+    return {...base, cosmeticSkin:getShopState().equipped.cosmetic || 'base'};
+  }
+
+  function hasUpgrade(key) { return getShopState().owned.upgrades.includes(key); }
+  function bloomGainModifier() { return hasUpgrade('bloomControl') ? 0.85 : 1; }
+
+  function updateStartingItemSign() {
+    if (!startingItemSign) return;
+    const key = getShopState().equipped.startingItem || 'none';
+    const item = STARTING_ITEMS[key] || STARTING_ITEMS.none;
+    startingItemSign.className = `starting-item-sign${item.kind === 'none' ? ' hidden' : ''}${item.type ? ` sign-${item.type}` : ''}`;
+    if (item.kind !== 'none') {
+      startingItemSignIcon.innerHTML = equipmentIconSvg(item.type, item.kind);
+      startingItemSignLabel.textContent = item.label;
+    }
+  }
+
+  function applyStartingItem() {
+    const item = STARTING_ITEMS[getShopState().equipped.startingItem || 'none'];
+    if (!item || item.kind === 'none' || item.type === 'pistol') return;
+    if (item.kind === 'weapon') {
+      player.weaponInventory[item.type] = true;
+      refreshActiveWeapon();
+    } else if (item.kind === 'vehicle') {
+      const def = VEHICLES[item.type];
+      player.vehicle = item.type;
+      player.vehicleTime = def.duration;
+      player.vehicleMaxTime = def.duration;
+    }
+  }
 
   function getSettings() {
     const defaults = { music:true, sfx:true };
@@ -732,7 +928,7 @@
   function drawCustomizerPreview() {
     if (!customPreview) return;
     const pctx = customPreview.getContext('2d');
-    const style = getCustomization();
+    const style = getActiveCharacterStyle();
     pctx.clearRect(0,0,customPreview.width,customPreview.height);
     const g = pctx.createLinearGradient(0,0,0,customPreview.height);
     g.addColorStop(0,'#17261f'); g.addColorStop(1,'#0a100e');
@@ -838,6 +1034,42 @@
     c.restore();
   }
 
+
+  function drawCharacterSkinOverlay(c, style, crouchOffset=0) {
+    const skin = style.cosmeticSkin || 'base';
+    if (skin === 'base') return;
+    c.save();
+    c.lineCap='round'; c.lineJoin='round';
+    const torsoBottom = 46 - crouchOffset;
+    const dot=(x,y,r,color)=>{c.fillStyle=color;c.beginPath();c.arc(x,y,r,0,Math.PI*2);c.fill();};
+    if (skin === 'gold') {
+      c.strokeStyle='#e0bf55';c.lineWidth=2;c.strokeRect(-13,19,26,26);c.strokeStyle='#f5df83';c.beginPath();c.moveTo(-8,39);c.lineTo(8,39);c.stroke();
+    } else if (skin === 'festive') {
+      c.fillStyle='rgba(178,48,45,.72)';c.fillRect(-13,24,26,6);c.fillStyle='rgba(65,132,70,.8)';c.fillRect(-13,35,26,6);dot(-7,21,1.5,'#eee7bb');dot(6,32,1.5,'#eee7bb');
+    } else if (skin === 'camo') {
+      c.globalAlpha=.55;[['#293729',-10,21,9,7],['#77804e',1,26,10,7],['#3e4a31',-7,35,11,8],['#7a6844',5,39,7,6]].forEach(([co,x,y,w,h])=>{c.fillStyle=co;c.fillRect(x,y,w,h);});
+    } else if (skin === 'blooming') {
+      c.strokeStyle='#78b75f';c.lineWidth=2;c.beginPath();c.moveTo(-10,44);c.quadraticCurveTo(-2,35,-7,23);c.moveTo(7,42);c.quadraticCurveTo(3,33,9,24);c.stroke();dot(-7,23,2.5,'#d6cf62');dot(9,24,2.5,'#9edc6b');
+    } else if (skin === 'cosmic') {
+      c.fillStyle='rgba(35,26,68,.48)';c.fillRect(-13,19,26,27);[['#c5f3ff',-8,24],['#d48cff',5,28],['#fff0a1',-1,36],['#77dce4',8,41]].forEach(([co,x,y])=>dot(x,y,1.3,co));
+    } else if (skin === 'spooky') {
+      c.strokeStyle='#d87935';c.lineWidth=3;c.beginPath();c.moveTo(-12,25);c.lineTo(12,25);c.moveTo(-12,40);c.lineTo(12,40);c.stroke();dot(-5,33,2,'#6e4a9d');dot(6,34,2,'#6e4a9d');
+    } else if (skin === 'cupid') {
+      c.fillStyle='rgba(225,97,143,.55)';c.fillRect(-13,19,26,27);c.fillStyle='#ffd0df';c.font='7px serif';c.fillText('♥',-8,31);c.fillText('♥',3,41);
+    } else if (skin === 'stpatricks') {
+      c.strokeStyle='#4eb25b';c.lineWidth=3;c.strokeRect(-12,20,24,24);[-5,5].forEach(x=>{dot(x,30,2.4,'#85d86c');dot(x+2,28,2.4,'#85d86c');dot(x+2,32,2.4,'#85d86c');});
+    } else if (skin === 'soldier') {
+      c.fillStyle='rgba(53,65,43,.48)';c.fillRect(-13,19,26,27);c.strokeStyle='#b09b6a';c.lineWidth=2;c.beginPath();c.moveTo(-9,20);c.lineTo(7,45);c.moveTo(9,20);c.lineTo(-7,45);c.stroke();
+    } else if (skin === 'beach') {
+      c.fillStyle='rgba(54,173,184,.45)';c.fillRect(-13,19,26,27);c.fillStyle='#f3cf62';c.fillRect(-13,29,26,5);dot(6,24,2.2,'#f19a66');
+    } else if (skin === 'ninja') {
+      c.fillStyle='rgba(12,16,24,.68)';c.fillRect(-13,19,26,27);c.fillStyle='#813c3c';c.fillRect(-14,34,28,4);c.fillStyle='rgba(13,17,23,.78)';c.fillRect(-10,10,20,7);
+    } else if (skin === 'pirate') {
+      c.fillStyle='rgba(91,50,38,.42)';c.fillRect(-13,19,26,27);c.fillStyle='#a4443e';c.fillRect(-14,31,28,5);c.fillStyle='#d8b65b';c.fillRect(-2,31,4,5);c.strokeStyle='#eee0c0';c.lineWidth=1.5;c.beginPath();c.moveTo(-8,23);c.lineTo(8,41);c.stroke();
+    }
+    c.restore();
+  }
+
   function drawAvatarFigure(c, centerX, topY, scale, style, dir=1, crouch=false) {
     c.save(); c.translate(centerX, topY); c.scale(dir*scale,scale);
     const crouchOffset = crouch ? 18 : 0; c.translate(0,crouchOffset);
@@ -846,6 +1078,7 @@
     c.fillStyle=style.shirt || '#51655a';
     if (style.gender === 'feminine') { c.beginPath(); c.moveTo(-12,18);c.lineTo(12,18);c.lineTo(15,43);c.lineTo(-15,43);c.closePath();c.fill(); }
     else c.fillRect(-14,18,28,29);
+    drawCharacterSkinOverlay(c, style, crouchOffset);
     c.fillStyle=style.skin; c.fillRect(-10,4,20,18);
     drawHairStyle(c, style);
     drawFacialHair(c, style);
@@ -861,9 +1094,12 @@
       e.preventDefault();
     }
 
-    // Semi-auto weapons only fire on a fresh press. Automatic weapons also
-    // continue firing in update() while the key remains held.
-    if (k === ' ' && state === 'playing' && !e.repeat) shoot();
+    // Plant traps require repeated fresh Space presses and suppress shooting while trapped.
+    if (k === ' ' && state === 'playing' && !e.repeat && player?.trapped) {
+      strugglePlantTrap();
+    } else if (k === ' ' && state === 'playing' && !e.repeat) {
+      shoot();
+    }
     keys.add(k);
 
     if (k === 'escape' && gameScreen.classList.contains('active')) {
@@ -1130,7 +1366,8 @@
       shotCooldown: 0, muzzle: 0, invuln: 0,
       weapon: 'pistol', ammo: Infinity, weaponInventory: { pistol:true, ar:false, shotgun:false, rpg:false, sniper:false, smg:false }, plantZombie: false,
       lives: 3,
-      vehicle: null, vehicleTime: 0, vehicleMaxTime: 0
+      vehicle: null, vehicleTime: 0, vehicleMaxTime: 0,
+      trapped:false, trapProgress:0, trapObstacleId:null
     };
 
     bullets = [];
@@ -1149,6 +1386,8 @@
     nextCoinGroupId = 1;
     nextBloomCleanseMeter = 700;
     explosions = [];
+    obstacles = [];
+    nextObstacleId = 1;
     generatedUntil = 0;
     terrainSectionIndex = 0;
     buildLevel(9500);
@@ -1159,7 +1398,8 @@
 
     gameTime = 0;
     spawnClock = 0.75;
-    characterStyle = characterStyle || getCustomization();
+    characterStyle = getActiveCharacterStyle();
+    applyStartingItem();
     startMusic();
     playSfx('ui');
     cameraX = 0;
@@ -1253,6 +1493,69 @@
     houses.push({ x, y: groundY - 104, w: 112, h: 104, type, rewardKind, claimed: false, biome: getBiomeIndexAt(x) });
   }
 
+
+  function addLandObstacles(start, width, groundY) {
+    if (terrainSectionIndex < 2 || width < 660) return;
+    const desired = Math.random() < .68 ? 1 + (width > 790 && Math.random() < .32 ? 1 : 0) : 0;
+    for (let n=0;n<desired;n++) {
+      let x = null;
+      for (let tries=0;tries<18;tries++) {
+        const candidate = start + 210 + Math.random() * Math.max(1, width - 420);
+        const nearHouse = houses.some(h => Math.abs((h.x+h.w/2)-candidate) < 145);
+        const nearCoin = coins.some(c => Math.abs(c.x-candidate) < 75);
+        const nearObstacle = obstacles.some(o => Math.abs((o.x+o.w/2)-candidate) < 125);
+        if (!nearHouse && !nearCoin && !nearObstacle) { x = candidate; break; }
+      }
+      if (x === null) continue;
+      const roll = Math.random();
+      const type = roll < .42 ? 'mud' : roll < .76 ? 'thorns' : 'plantTrap';
+      const dims = type === 'mud' ? [96,12] : type === 'thorns' ? [58,25] : [70,28];
+      obstacles.push({id:nextObstacleId++, type, x:x-dims[0]/2, y:groundY, w:dims[0], h:dims[1], active:true, hitCooldown:0});
+    }
+  }
+
+  function playerOnObstacle(ob, padding=0) {
+    if (!ob || !ob.active || !player) return false;
+    const footY = player.y + player.h;
+    return player.x + player.w > ob.x + padding && player.x < ob.x + ob.w - padding && Math.abs(footY - ob.y) < 13;
+  }
+
+  function getMudSlowMultiplier() {
+    if (!player || player.vehicle || player.boostTime > 0) return 1;
+    return obstacles.some(ob => ob.type === 'mud' && playerOnObstacle(ob,5)) ? .46 : 1;
+  }
+
+  function strugglePlantTrap() {
+    if (!player || !player.trapped) return false;
+    player.trapProgress = Math.min(8, (player.trapProgress || 0) + 1);
+    shake = Math.max(shake,2.5);
+    for (let i=0;i<4;i++) particles.push({x:player.x+player.w/2,y:player.y+player.h-8,vx:(Math.random()-.5)*90,vy:-30-Math.random()*70,life:.18+Math.random()*.12,size:2+Math.random()*2,color:'#6fa75c'});
+    if (player.trapProgress >= 8) {
+      const trap = obstacles.find(o => o.id === player.trapObstacleId);
+      if (trap) trap.active = false;
+      player.trapped = false; player.trapProgress = 0; player.trapObstacleId = null; player.invuln = Math.max(player.invuln,.25);
+    }
+    return true;
+  }
+
+  function handleLandObstacles() {
+    if (!player || player.vehicle || player.boostTime > 0) return;
+    for (const ob of obstacles) {
+      if (!ob.active) continue;
+      ob.hitCooldown = Math.max(0,(ob.hitCooldown||0));
+      if (!playerOnObstacle(ob,2)) continue;
+      if (ob.type === 'thorns' && ob.hitCooldown <= 0 && player.invuln <= 0) {
+        ob.hitCooldown = 1.35;
+        breakMultiplier();
+        const dir = Math.sign(player.vx) || 1;
+        if (!loseLife(ob,dir)) return;
+      } else if (ob.type === 'plantTrap' && !player.trapped) {
+        player.trapped = true; player.trapProgress = 0; player.trapObstacleId = ob.id; player.vx = 0;
+        showMultiplierEvent('TRAPPED · SPAM SPACE');
+      }
+    }
+  }
+
   function addNormalSection(groundY) {
     const start = generatedUntil;
     const groundLength = terrainSectionIndex === 0 ? 980 : 560 + Math.random() * 330;
@@ -1271,6 +1574,9 @@
         addHouse(houseX, groundY, 'vehicle');
       }
     }
+
+    // Long solid stretches can contain field hazards, always kept well away from edges.
+    addLandObstacles(start, groundLength, groundY);
 
     const holeWidth = terrainSectionIndex === 0 ? 0 : 105 + Math.random() * 42;
     if (holeWidth > 0) holes.push({ x: start + groundLength, w: holeWidth, y: groundY, parkour: false, biome: getBiomeIndexAt(start + groundLength) });
@@ -1323,9 +1629,10 @@
   function scheduleBloomCleansers() {
     while (220 + nextBloomCleanseMeter * 10 < generatedUntil - 80) {
       const targetX = 220 + nextBloomCleanseMeter * 10;
-      const safeX = findSafeGroundX(targetX, 42);
-      const groundY = getGroundYAt(safeX, 42);
-      if (groundY !== null) pickups.push(makeBloomPickup(safeX - 12, groundY - 72, true));
+      const safeX = findSafeGroundX(targetX, 115);
+      const groundY = getGroundYAt(safeX, 115);
+      // Stage 15: cleanser stays reachable, but sits near the upper end of a normal jump.
+      if (groundY !== null) pickups.push(makeBloomPickup(safeX - 12, groundY - 145 - Math.random() * 10, true));
       nextBloomCleanseMeter += 700;
     }
   }
@@ -1653,7 +1960,8 @@
     playSfx('gun', player.weapon);
     player.shotCooldown = def.cooldown;
     player.muzzle = .075;
-    player.bloom = Math.min(100, player.bloom + def.bloomPerShot);
+    // Stage 15: Bloom increases once per trigger/shot event, never per pellet.
+    player.bloom = Math.min(100, player.bloom + BLOOM_PER_TRIGGER * bloomGainModifier());
     shake = Math.max(shake, player.weapon === 'shotgun' || player.weapon === 'rpg' ? 6 : 2.5);
 
     for (let i = 0; i < 5; i++) {
@@ -1826,7 +2134,7 @@
       vehicleSfxClock = 0;
     }
 
-    const bloomRate = 1.0 + Math.min(.9, gameTime * .009);
+    const bloomRate = (1.0 + Math.min(.9, gameTime * .009)) * bloomGainModifier();
     player.bloom = Math.min(100, player.bloom + bloomRate * dt);
     maxBloom = Math.max(maxBloom, player.bloom);
 
@@ -1845,9 +2153,12 @@
 
     player.crouching = down && player.grounded && !spawnWalkActive;
     const movementBase = RUN_SPEED * (player.vehicle ? 2 : ((player.boostTime > 0 || player.goldRushTime > 0) ? 1.5 : 1));
-    const targetSpeed = player.crouching ? movementBase * .38 : movementBase;
+    const terrainSlow = getMudSlowMultiplier();
+    const targetSpeed = player.trapped ? 0 : (player.crouching ? movementBase * .38 : movementBase) * terrainSlow;
 
-    if (spawnWalkActive) {
+    if (player.trapped) {
+      player.vx = 0;
+    } else if (spawnWalkActive) {
       facing = 1;
       player.vx = 145;
       if (player.x >= 220) spawnWalkActive = false;
@@ -1862,7 +2173,7 @@
       if (Math.abs(player.vx) < 2) player.vx = 0;
     }
 
-    if (!spawnWalkActive && jump && (player.grounded || player.coyote > 0) && !player.crouching) {
+    if (!player.trapped && !spawnWalkActive && jump && (player.grounded || player.coyote > 0) && !player.crouching) {
       player.vy = -JUMP_SPEED;
       player.grounded = false;
       player.coyote = 0;
@@ -1870,7 +2181,7 @@
     if (down && !player.grounded) player.vy += GRAVITY * .75 * dt;
 
     const def = WEAPONS[player.weapon];
-    if (def.automatic && (keys.has(' ') || mouseFireHeld)) shoot();
+    if (!player.trapped && def.automatic && (keys.has(' ') || mouseFireHeld)) shoot();
 
     player.vy += GRAVITY * dt;
     player.x += player.vx * dt;
@@ -1891,6 +2202,10 @@
         break;
       }
     }
+
+    for (const ob of obstacles) ob.hitCooldown = Math.max(0,(ob.hitCooldown||0)-dt);
+    handleLandObstacles();
+    if (state !== 'playing') return;
 
     const floorLine = innerHeight - 100;
     if (player.y + player.h > floorLine + 62) {
@@ -2296,9 +2611,31 @@
     setTimeout(() => playerNameInput.focus(), 0);
   }
 
+
+  function gearSkinPalette(skin, kind='weapon') {
+    const palettes = {
+      base:['#5f675f', kind==='vehicle'?'#8ec9da':'#e1d89c'], gold:['#b7922f','#f4dd72'], festive:['#8e302e','#65a962'], camo:['#596342','#9a9764'], zebra:['#e9e9e2','#171a18'], realistic:['#555d5c','#9aa29f'], glowing:['#56c9d1','#b5ffff'], toxic:['#658f38','#c4f35f'], blooming:['#467746','#e0cf67'], water:['#3d7fa6','#8ed8ee'], grass:['#4f7d43','#9bca72'], cosmic:['#3e356d','#b39aff'], neon:['#a52e99','#58f5ed'], dots:['#7a7151','#eadb8c']
+    };
+    const p = palettes[skin] || palettes.base;
+    return {fill:p[0], stroke:p[1], accent:p[1]};
+  }
+
+  function activeGearSkin(kind='weapon') {
+    const stateObj=getShopState();
+    return kind==='vehicle' ? (stateObj.equipped.vehicleSkin||'base') : (stateObj.equipped.weaponSkin||'base');
+  }
+
+  function prepareGearSkinContext(c, skin) {
+    c.shadowBlur=0; c.shadowColor='transparent';
+    if (skin==='glowing') { c.shadowColor='#8dffff'; c.shadowBlur=10; }
+    else if (skin==='neon') { c.shadowColor='#ff58ef'; c.shadowBlur=9; }
+    else if (skin==='toxic') { c.shadowColor='#a8ed55'; c.shadowBlur=5; }
+  }
+
   function equipmentIconSvg(type, kind='weapon') {
-    const stroke = kind === 'vehicle' ? '#8ec9da' : '#e1d89c';
-    const fill = kind === 'vehicle' ? '#557f8c' : '#5f675f';
+    const iconPalette = gearSkinPalette(activeGearSkin(kind), kind);
+    const stroke = iconPalette.stroke;
+    const fill = iconPalette.fill;
     if (kind === 'vehicle') {
       if (type === 'motorcycle') return `<svg viewBox="0 0 64 40" aria-hidden="true"><circle cx="14" cy="30" r="8" fill="none" stroke="${stroke}" stroke-width="4"/><circle cx="50" cy="30" r="8" fill="none" stroke="${stroke}" stroke-width="4"/><path d="M14 30 L25 17 L42 18 L50 30 M25 17 L34 30 L17 30 M39 18 L45 11" fill="none" stroke="${stroke}" stroke-width="4" stroke-linecap="round"/></svg>`;
       if (type === 'car') return `<svg viewBox="0 0 64 40" aria-hidden="true"><path d="M8 25 L14 15 H44 L54 25 V32 H8 Z" fill="${fill}" stroke="${stroke}" stroke-width="3"/><path d="M20 15 L26 8 H40 L45 15" fill="none" stroke="${stroke}" stroke-width="3"/><circle cx="19" cy="32" r="6" fill="#101614" stroke="${stroke}" stroke-width="2"/><circle cx="46" cy="32" r="6" fill="#101614" stroke="${stroke}" stroke-width="2"/></svg>`;
@@ -2398,11 +2735,13 @@
     drawBloomWall();
     drawPickups();
     drawCoins();
+    drawObstacles();
     drawHouses();
     drawEnemies();
     drawEnemyProjectiles();
     drawPlayer();
     drawVehicleTimeMeter();
+    drawTrapEscapeMeter();
     drawBullets();
     drawParticles();
     drawExplosions();
@@ -2628,7 +2967,7 @@
     const crouchOffset = player.crouching ? 18 : 0;
     ctx.translate(0, crouchOffset);
 
-    const style = characterStyle || getCustomization();
+    const style = characterStyle || getActiveCharacterStyle();
     ctx.strokeStyle = style.pants || '#26352f';
     ctx.lineWidth = 8;
     ctx.beginPath();
@@ -2642,6 +2981,7 @@
     } else {
       ctx.fillRect(-14, 18, 28, 29);
     }
+    drawCharacterSkinOverlay(ctx, style, crouchOffset);
     ctx.fillStyle = style.skin;
     ctx.fillRect(-10, 4, 20, 18);
     drawHairStyle(ctx, style);
@@ -2692,9 +3032,11 @@
 
   function drawVehicleUnderPlayer() {
     if (!player.vehicle) return;
-    const type=player.vehicle, def=VEHICLES[type];
-    ctx.save();
-    ctx.fillStyle=def.color; ctx.strokeStyle='#111916'; ctx.lineWidth=4;
+    const type=player.vehicle;
+    const skin=activeGearSkin('vehicle');
+    const pal=gearSkinPalette(skin,'vehicle');
+    ctx.save(); prepareGearSkinContext(ctx,skin);
+    ctx.fillStyle=pal.fill; ctx.strokeStyle=pal.stroke; ctx.lineWidth=4;
     if(type==='motorcycle'){
       ctx.beginPath();ctx.arc(-15,52,9,0,Math.PI*2);ctx.arc(18,52,9,0,Math.PI*2);ctx.stroke();
       ctx.fillRect(-13,42,29,6);ctx.fillRect(0,35,16,7);
@@ -2705,58 +3047,58 @@
       ctx.fillRect(-38,30,78,23);ctx.fillRect(-31,18,34,14);ctx.fillRect(4,22,29,8);
       ctx.beginPath();ctx.arc(-25,55,9,0,Math.PI*2);ctx.arc(26,55,9,0,Math.PI*2);ctx.fillStyle='#101614';ctx.fill();
     }
+    // Simple finish-specific detailing keeps every vehicle skin visually distinct.
+    ctx.shadowBlur=0;
+    if(skin==='zebra'){ctx.strokeStyle='#111';ctx.lineWidth=3;[-18,-4,10,24].forEach(x=>{ctx.beginPath();ctx.moveTo(x,31);ctx.lineTo(x+10,49);ctx.stroke();});}
+    else if(skin==='festive'){ctx.fillStyle='#d6d47a';ctx.fillRect(-27,38,55,4);ctx.fillStyle='#a43a38';ctx.fillRect(-12,27,7,23);}
+    else if(skin==='camo'){ctx.fillStyle='rgba(35,45,31,.7)';[-19,2,19].forEach((x,i)=>ctx.fillRect(x,31+i*4,12,7));}
+    else if(skin==='blooming'||skin==='grass'){ctx.strokeStyle='#8fcf68';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-25,45);ctx.quadraticCurveTo(0,29,27,44);ctx.stroke();}
+    else if(skin==='water'){ctx.strokeStyle='#8fd8ed';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-27,43);ctx.quadraticCurveTo(-10,35,5,43);ctx.quadraticCurveTo(18,49,29,40);ctx.stroke();}
+    else if(skin==='cosmic'||skin==='dots'){ctx.fillStyle=pal.stroke;[-18,-5,8,20].forEach((x,i)=>{ctx.beginPath();ctx.arc(x,35+(i%2)*9,1.8,0,Math.PI*2);ctx.fill();});}
     ctx.restore();
   }
 
   function drawHeldWeapon() {
     const type = player.weapon;
-    const def = WEAPONS[type];
-    ctx.save();
+    const skin = activeGearSkin('weapon');
+    const pal = gearSkinPalette(skin,'weapon');
+    ctx.save(); prepareGearSkinContext(ctx,skin);
     if (player.goldRushTime > 0) {
       ctx.shadowColor = '#ffd84f';
       ctx.shadowBlur = 16 + Math.sin(gameTime * 20) * 4;
       ctx.fillStyle = '#f6d75d';
     } else {
-      ctx.fillStyle = weaponFlash > 0 ? '#e9f1df' : '#202725';
+      ctx.fillStyle = weaponFlash > 0 ? '#e9f1df' : pal.fill;
     }
+    ctx.strokeStyle=pal.stroke;
 
     if (type === 'pistol') {
-      ctx.fillRect(16, 20, 20, 7);
-      ctx.fillRect(21, 27, 7, 8);
+      ctx.fillRect(16, 20, 20, 7); ctx.fillRect(21, 27, 7, 8);
     } else if (type === 'ar') {
-      ctx.fillRect(16, 19, 42, 8);
-      ctx.fillRect(26, 27, 7, 11);
-      ctx.fillRect(47, 16, 8, 4);
+      ctx.fillRect(16, 19, 42, 8); ctx.fillRect(26, 27, 7, 11); ctx.fillRect(47, 16, 8, 4);
     } else if (type === 'shotgun') {
-      ctx.fillRect(16, 20, 47, 7);
-      ctx.fillStyle = '#72533d';
-      ctx.fillRect(23, 27, 18, 6);
+      ctx.fillRect(16, 20, 47, 7); ctx.fillStyle = skin==='realistic' ? '#76583e' : pal.stroke; ctx.fillRect(23, 27, 18, 6);
     } else if (type === 'rpg') {
-      ctx.fillStyle = '#4e5b49';
-      ctx.fillRect(14, 17, 50, 12);
-      ctx.fillStyle = '#82654a';
-      ctx.fillRect(27, 29, 7, 10);
+      ctx.fillRect(14, 17, 50, 12); ctx.fillStyle = pal.stroke; ctx.fillRect(27, 29, 7, 10);
     } else if (type === 'sniper') {
-      ctx.fillRect(15, 20, 55, 6);
-      ctx.fillRect(28, 26, 7, 10);
-      ctx.fillStyle = '#799aa0';
-      ctx.fillRect(27, 15, 18, 5);
+      ctx.fillRect(15, 20, 55, 6); ctx.fillRect(28, 26, 7, 10); ctx.fillStyle = pal.stroke; ctx.fillRect(27, 15, 18, 5);
     } else if (type === 'smg') {
-      ctx.fillRect(16, 19, 35, 9);
-      ctx.fillRect(25, 28, 8, 10);
-      ctx.fillRect(45, 15, 5, 5);
+      ctx.fillRect(16, 19, 35, 9); ctx.fillRect(25, 28, 8, 10); ctx.fillRect(45, 15, 5, 5);
     }
+
+    // Readable small-scale pattern accents.
+    ctx.shadowBlur=0;
+    if(skin==='zebra'){ctx.strokeStyle='#111';ctx.lineWidth=2;[23,32,41,50].forEach((x,i)=>{ctx.beginPath();ctx.moveTo(x,18);ctx.lineTo(x+5,28);ctx.stroke();});}
+    else if(skin==='festive'){ctx.fillStyle='#d2d06d';ctx.fillRect(25,19,5,9);ctx.fillStyle='#a93835';ctx.fillRect(38,19,5,9);}
+    else if(skin==='camo'){ctx.fillStyle='rgba(35,45,30,.72)';ctx.fillRect(24,19,9,7);ctx.fillRect(43,19,8,7);}
+    else if(skin==='dots'||skin==='cosmic'){ctx.fillStyle=pal.stroke;[25,34,43,52].forEach((x,i)=>{ctx.beginPath();ctx.arc(x,22+(i%2)*4,1.4,0,Math.PI*2);ctx.fill();});}
+    else if(skin==='blooming'||skin==='grass'){ctx.strokeStyle='#9bd26d';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(20,26);ctx.quadraticCurveTo(36,15,52,24);ctx.stroke();}
+    else if(skin==='water'){ctx.strokeStyle='#9fe1f2';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(20,24);ctx.quadraticCurveTo(31,18,42,24);ctx.quadraticCurveTo(49,28,57,22);ctx.stroke();}
 
     if (player.muzzle > 0) {
       const mx = { pistol: 37, ar: 59, shotgun: 64, rpg: 65, sniper: 71, smg: 52 }[type] || 40;
       ctx.fillStyle = '#f4d260';
-      ctx.beginPath();
-      ctx.moveTo(mx, 23);
-      ctx.lineTo(mx + 11, 17);
-      ctx.lineTo(mx + 7, 23);
-      ctx.lineTo(mx + 12, 29);
-      ctx.closePath();
-      ctx.fill();
+      ctx.beginPath(); ctx.moveTo(mx,23); ctx.lineTo(mx+11,17); ctx.lineTo(mx+7,23); ctx.lineTo(mx+12,29); ctx.closePath(); ctx.fill();
     }
     ctx.restore();
   }
@@ -2920,6 +3262,32 @@
     }
   }
 
+
+  function drawObstacles(){
+    const wallFront=bloomWallX+BLOOM_WALL_WIDTH;
+    for(const ob of obstacles){
+      if(!ob.active || ob.x+ob.w<=wallFront || ob.x>cameraX+innerWidth+120) continue;
+      ctx.save();
+      if(ob.type==='mud'){
+        ctx.fillStyle='rgba(65,54,42,.88)';ctx.beginPath();ctx.ellipse(ob.x+ob.w/2,ob.y-4,ob.w/2,10,0,0,Math.PI*2);ctx.fill();
+        ctx.fillStyle='rgba(123,100,69,.35)';ctx.beginPath();ctx.ellipse(ob.x+ob.w*.32,ob.y-6,ob.w*.18,4,0,0,Math.PI*2);ctx.fill();
+      }else if(ob.type==='thorns'){
+        ctx.fillStyle='#596a45';for(let i=0;i<6;i++){const x=ob.x+i*(ob.w/5);ctx.beginPath();ctx.moveTo(x,ob.y);ctx.lineTo(x+5,ob.y-ob.h);ctx.lineTo(x+11,ob.y);ctx.closePath();ctx.fill();}
+        ctx.strokeStyle='#7f9a53';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(ob.x,ob.y-4);ctx.lineTo(ob.x+ob.w,ob.y-4);ctx.stroke();
+      }else{
+        ctx.strokeStyle='#5a984f';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(ob.x,ob.y);ctx.quadraticCurveTo(ob.x+ob.w*.25,ob.y-ob.h*1.3,ob.x+ob.w*.5,ob.y-6);ctx.quadraticCurveTo(ob.x+ob.w*.75,ob.y-ob.h*1.4,ob.x+ob.w,ob.y);ctx.stroke();
+        ctx.fillStyle='#80b55c';[.18,.5,.82].forEach(t=>{ctx.beginPath();ctx.ellipse(ob.x+ob.w*t,ob.y-15-(t===.5?6:0),7,3,t*Math.PI,0,Math.PI*2);ctx.fill();});
+      }
+      ctx.restore();
+    }
+  }
+
+  function drawTrapEscapeMeter(){
+    if(!player?.trapped) return;
+    const w=62,h=7,x=player.x+player.w/2-w/2,y=player.y-31;
+    ctx.save();ctx.fillStyle='rgba(7,12,9,.9)';ctx.fillRect(x-2,y-2,w+4,h+4);ctx.strokeStyle='#7dac5e';ctx.strokeRect(x-2,y-2,w+4,h+4);ctx.fillStyle='#9ee06c';ctx.fillRect(x,y,w*Math.min(1,player.trapProgress/8),h);ctx.fillStyle='#d9e8cf';ctx.font='bold 8px Courier New';ctx.textAlign='center';ctx.fillText('SPAM SPACE',x+w/2,y-5);ctx.textAlign='start';ctx.restore();
+  }
+
   function drawHouses(){
     const wallFront=bloomWallX+BLOOM_WALL_WIDTH;
     ctx.textAlign='center';ctx.font='bold 9px Courier New';
@@ -3070,5 +3438,6 @@
 
   renderLeaderboard();
   setCoinBalance(getCoinBalance());
+  updateStartingItemSign();
   requestAnimationFrame(frame);
 })();
