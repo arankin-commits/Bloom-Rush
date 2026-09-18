@@ -226,3 +226,9 @@ Extract the ZIP and open `index.html` in a modern browser.
 - Starting-item rank rewards: SMG at SPROUT, AR at SCAVENGER, Shotgun at OUTRIDER, Sniper at SHARPSHOT, RPG at RECLAIMER, upgraded Motorcycle at ROADBORN, upgraded Car at GEARHEAD, and upgraded Truck at APEX SURVIVOR.
 - Rank-reward starting items are visibly locked in the Shop until their named field rank is reached; no numeric rank labels are shown.
 - Upgraded starting vehicles last 1.5x as long as their normal versions (Motorcycle 12s, Car 18s, Truck 30s).
+
+
+## Stage 18.1
+- Added a CHALLENGES button to the main menu.
+- The Challenges screen shows the current named field rank, star progress, and all five active challenges before starting a run.
+- Existing in-run pause challenge tracking and challenge-report behavior are unchanged.

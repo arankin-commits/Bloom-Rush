@@ -46,6 +46,7 @@
 
         <div class="menu-actions stage7-actions">
           <button id="runBtn" class="main-btn">RUN</button>
+          <button id="challengesBtn" class="menu-btn">CHALLENGES</button>
           <button id="customizeBtn" class="menu-btn">CUSTOMIZE</button>
           <button id="shopBtn" class="menu-btn">SHOP</button>
           <button data-page="achievements" class="menu-btn">ACHIEVEMENTS <small>WIP</small></button>
@@ -77,6 +78,23 @@
       </div>
       <div class="menu-vines vines-left"></div>
       <div class="menu-vines vines-right"></div>
+    </section>
+
+    <section id="challengesScreen" class="screen panel-screen">
+      <div class="panel-card challenges-menu-card">
+        <div class="panel-heading">
+          <div><span class="eyebrow">FIELD OBJECTIVES</span><h1>CHALLENGES</h1></div>
+          <button id="challengesBackBtn" class="menu-btn compact-btn">BACK</button>
+        </div>
+        <div class="challenges-menu-rank">
+          <span>CURRENT FIELD RANK</span>
+          <strong id="challengesMenuRankName">SEEDLING</strong>
+          <div id="challengesMenuRankStars" class="challenges-menu-stars">☆☆☆</div>
+        </div>
+        <div class="challenges-menu-heading">ACTIVE CHALLENGES <span>★ 1 EACH</span></div>
+        <div id="challengesMenuList" class="challenges-menu-list"></div>
+        <p class="panel-note challenges-menu-note">Complete challenges during a run and finish the run to bank their stars. Completed challenges are replaced automatically.</p>
+      </div>
     </section>
 
     <section id="customizeScreen" class="screen panel-screen">

@@ -1,12 +1,18 @@
 (() => {
   const menuScreen = document.getElementById('menuScreen');
   const wipScreen = document.getElementById('wipScreen');
+  const challengesScreen = document.getElementById('challengesScreen');
   const customizeScreen = document.getElementById('customizeScreen');
   const shopScreen = document.getElementById('shopScreen');
   const settingsScreen = document.getElementById('settingsScreen');
   const gameScreen = document.getElementById('gameScreen');
   const runBtn = document.getElementById('runBtn');
   const backBtn = document.getElementById('backBtn');
+  const challengesBtn = document.getElementById('challengesBtn');
+  const challengesBackBtn = document.getElementById('challengesBackBtn');
+  const challengesMenuRankName = document.getElementById('challengesMenuRankName');
+  const challengesMenuRankStars = document.getElementById('challengesMenuRankStars');
+  const challengesMenuList = document.getElementById('challengesMenuList');
   const customizeBtn = document.getElementById('customizeBtn');
   const customizeBackBtn = document.getElementById('customizeBackBtn');
   const shopBtn = document.getElementById('shopBtn');
@@ -317,7 +323,7 @@
   let nextObstacleId = 1;
 
   function showScreen(screen) {
-    [menuScreen, wipScreen, customizeScreen, shopScreen, settingsScreen, gameScreen].forEach(s => s && s.classList.remove('active'));
+    [menuScreen, wipScreen, challengesScreen, customizeScreen, shopScreen, settingsScreen, gameScreen].forEach(s => s && s.classList.remove('active'));
     screen.classList.add('active');
   }
 
@@ -341,6 +347,8 @@
     state = 'menu';
     renderLeaderboard();
   });
+  challengesBtn?.addEventListener('click', () => { renderMenuChallenges(); openMenuPanel(challengesScreen); });
+  challengesBackBtn?.addEventListener('click', () => { showScreen(menuScreen); state = 'menu'; updateRankUI(); });
   customizeBtn.addEventListener('click', () => { loadCustomizeControls(); openMenuPanel(customizeScreen); drawCustomizerPreview(); });
   customizeBackBtn.addEventListener('click', () => { showScreen(menuScreen); state = 'menu'; });
   shopBtn.addEventListener('click', () => { syncRankUnlocks(); setCoinBalance(getCoinBalance()); renderShop(); openMenuPanel(shopScreen); updateShopCategoryView(); });
@@ -559,6 +567,32 @@
     const progress = rankProgressFromStars(getProgressionState().completedIds.length);
     if (menuRankName) menuRankName.textContent = progress.name;
     if (menuRankStars) menuRankStars.textContent = starString(progress);
+    if (challengesMenuRankName) challengesMenuRankName.textContent = progress.name;
+    if (challengesMenuRankStars) challengesMenuRankStars.textContent = starString(progress);
+  }
+
+  function renderMenuChallenges() {
+    if (!challengesMenuList) return;
+    const stateObj = getProgressionState();
+    const progress = rankProgressFromStars(stateObj.completedIds.length);
+    if (challengesMenuRankName) challengesMenuRankName.textContent = progress.name;
+    if (challengesMenuRankStars) challengesMenuRankStars.textContent = starString(progress);
+    challengesMenuList.innerHTML = '';
+    stateObj.activeIds.forEach((id, index) => {
+      const c = CHALLENGE_BY_ID.get(id);
+      if (!c) return;
+      const row = document.createElement('div');
+      row.className = 'challenges-menu-row';
+      const target = c.kind === 'distance' ? `${c.target}m` : String(c.target);
+      row.innerHTML = `<div class="challenge-menu-number">${String(index + 1).padStart(2,'0')}</div><div class="challenge-menu-copy"><strong>${c.label}</strong><span>TARGET · ${target}</span></div><div class="challenge-menu-star">★</div>`;
+      challengesMenuList.appendChild(row);
+    });
+    if (!stateObj.activeIds.length) {
+      const done = document.createElement('div');
+      done.className = 'challenges-menu-complete';
+      done.textContent = 'ALL CHALLENGES COMPLETE';
+      challengesMenuList.appendChild(done);
+    }
   }
 
   function challengeValue(challenge) {
