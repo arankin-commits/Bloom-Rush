@@ -232,3 +232,8 @@ Extract the ZIP and open `index.html` in a modern browser.
 - Added a CHALLENGES button to the main menu.
 - The Challenges screen shows the current named field rank, star progress, and all five active challenges before starting a run.
 - Existing in-run pause challenge tracking and challenge-report behavior are unchanged.
+
+
+## Stage 18.2
+- Achievements menu now displays the active challenge system, including current rank, star progress, and the five active challenges.
+- Removed the separate Challenges menu entry.
