@@ -1296,3 +1296,72 @@ kbd {
   .starting-item-sign { display:none !important; }
 }
 @media (max-width: 620px) { .shop-item-list, .starting-item-list { grid-template-columns:1fr; } }
+
+/* STAGE 16 · HORIZONTAL SHOP CAROUSEL */
+.shop-category-nav {
+  display:grid; grid-template-columns:58px minmax(0,1fr) 58px; align-items:center; gap:12px;
+  margin:14px 0 6px; padding:10px 12px; border:1px solid #456051;
+  background:linear-gradient(180deg,#132019,#0d1512); box-shadow:inset 0 0 0 1px rgba(167,244,91,.04);
+}
+.shop-category-arrow {
+  min-height:42px; border:1px solid #63806d; background:#17231d; color:#b9f48d;
+  font:900 14px "Courier New",monospace; cursor:pointer; box-shadow:inset 0 -3px 0 rgba(0,0,0,.28);
+}
+.shop-category-arrow:hover { filter:brightness(1.18); transform:translateY(-1px); }
+.shop-category-center { text-align:center; min-width:0; }
+.shop-category-title { color:#e8ecdf; font-size:19px; font-weight:900; letter-spacing:.14em; text-shadow:0 0 16px rgba(167,244,91,.12); }
+.shop-category-dots { display:flex; justify-content:center; gap:7px; margin-top:7px; }
+.shop-category-dots i { width:7px; height:7px; border-radius:50%; border:1px solid #597064; background:#202c27; }
+.shop-category-dots i.active { background:#a7f45b; border-color:#c7ff9b; box-shadow:0 0 10px rgba(167,244,91,.55); }
+.shop-category-hint { margin-bottom:10px; color:#718178; text-align:center; font-size:8px; letter-spacing:.13em; }
+.stage16-shop-grid { display:block; }
+.shop-category-panel { display:none; min-height:0; padding:18px; border-color:#385044; }
+.shop-category-panel.active { display:block; animation:stage16PanelIn .16s ease-out; box-shadow:0 0 0 1px rgba(167,244,91,.08),0 12px 34px rgba(0,0,0,.2); }
+@keyframes stage16PanelIn { from{opacity:.35;transform:translateX(8px)} to{opacity:1;transform:none} }
+.shop-category-panel > h2 { color:#dff0d7; }
+.shop-item-list, .starting-item-list {
+  display:flex !important; grid-template-columns:none !important; gap:14px; overflow-x:auto; overflow-y:hidden;
+  padding:5px 5px 15px; margin-top:12px; scroll-snap-type:x proximity; scrollbar-width:thin; scrollbar-color:#60796a #101713;
+}
+.shop-item-list::-webkit-scrollbar { height:9px; }
+.shop-item-list::-webkit-scrollbar-track { background:#101713; }
+.shop-item-list::-webkit-scrollbar-thumb { background:#526b5d; border:2px solid #101713; }
+.shop-item-card {
+  flex:0 0 190px; min-width:190px; min-height:238px; scroll-snap-align:start;
+  align-items:stretch; justify-content:flex-start; gap:8px; padding:10px;
+  border:1px solid #2f4639; background:linear-gradient(180deg,#111b16,#0d1512);
+}
+.shop-item-card.equipped { transform:translateY(-3px); border-color:#a7f45b; box-shadow:0 0 0 1px rgba(167,244,91,.18),0 10px 22px rgba(0,0,0,.24); }
+.shop-preview { height:126px; display:grid; place-items:center; overflow:hidden; border:1px solid #2b3e34; background:radial-gradient(circle at 50% 58%,#1d2b23,#0b120f 72%); position:relative; }
+.shop-preview canvas { width:100%; height:100%; image-rendering:auto; }
+.shop-preview svg { width:82%; height:76%; overflow:visible; }
+.shop-preview-swatch { position:absolute; inset:0; opacity:.24; }
+.shop-item-name { margin-top:2px; font-size:11px; text-align:center; }
+.shop-item-price { color:#e4c55c; font-size:10px; font-weight:900; text-align:center; letter-spacing:.08em; }
+.shop-item-desc { display:none; }
+.shop-buy-btn { margin-top:auto; width:100%; }
+.shop-start-sign-preview { width:132px; min-height:88px; position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; padding:8px; border:4px solid #5f604e; background:#20261f; box-shadow:0 8px 12px rgba(0,0,0,.34); transform:rotate(-3deg); }
+.shop-start-sign-preview::before,.shop-start-sign-preview::after { content:""; position:absolute; bottom:-24px; width:7px; height:25px; background:#453b2f; border:1px solid #211b16; }
+.shop-start-sign-preview::before{left:24px}.shop-start-sign-preview::after{right:24px}
+.shop-start-sign-preview .sign-icon { width:76px; height:42px; display:grid; place-items:center; }
+.shop-start-sign-preview .sign-icon svg { width:100%; height:100%; }
+.shop-start-sign-preview .sign-word { font-size:8px; font-weight:900; color:#e9eee4; letter-spacing:.06em; text-align:center; }
+.shop-start-sign-preview.sign-smg { background:#292335;border-color:#9b89bd;transform:rotate(4deg) }
+.shop-start-sign-preview.sign-ar { background:#1d2921;border-color:#7ea17f;transform:rotate(2deg) }
+.shop-start-sign-preview.sign-shotgun { background:#30261d;border-color:#b78655;transform:rotate(-4deg) }
+.shop-start-sign-preview.sign-sniper { background:#18282b;border-color:#77aab1;transform:rotate(-1deg) }
+.shop-start-sign-preview.sign-rpg { background:#2d2421;border-color:#a85b48;transform:rotate(3deg) }
+.shop-start-sign-preview.sign-motorcycle { background:#312b1c;border-color:#d2b05c;transform:rotate(-5deg) }
+.shop-start-sign-preview.sign-car { background:#1d2830;border-color:#6fa2bf;transform:rotate(1deg) }
+.shop-start-sign-preview.sign-truck { background:#30261f;border-color:#9a7659;transform:rotate(-2deg) }
+.shop-none-preview { color:#718178; font-size:11px; letter-spacing:.14em; }
+.shop-upgrade-preview { width:110px; height:74px; border:2px solid #5f7a68; display:grid; place-items:center; color:#bff18b; font-size:30px; background:linear-gradient(135deg,#132018,#1d2b22); }
+
+/* Stage 16 obstacle presentation */
+.trap-meter-note { color:#c9f28d; }
+
+@media (max-width:700px) {
+  .shop-category-nav { grid-template-columns:44px minmax(0,1fr) 44px; }
+  .shop-category-title { font-size:14px; }
+  .shop-item-card { flex-basis:165px; min-width:165px; }
+}

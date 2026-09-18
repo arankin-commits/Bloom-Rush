@@ -190,3 +190,15 @@ Extract the ZIP and open `index.html` in a modern browser.
 - Added a high-cost Bloom Stabilizer permanent upgrade, which reduces passive and trigger-based Bloom accumulation by 15%.
 - Bloom cleanser pickups remain reachable but now spawn high enough to require a committed jump.
 - Added land obstacles to long solid-ground sections while keeping them away from ledges, houses, and coin groups: mud slows the runner, thorns remove a heart, and plant traps stop movement until Space is rapidly pressed 8 times.
+
+
+## Stage 16
+- Rebuilt the Shop as a horizontal card carousel instead of stacked item grids.
+- Q / E (or the category arrow buttons) cycles Cosmetics, Vehicle Skins, Weapon Skins, Upgrades, and Starting Item; only the active category is visible.
+- Shop cards now show a visual preview first, followed by the item name and price.
+- Starting Item previews use the actual unique safehouse sign design, and Pistol was removed from the Starting Item shop.
+- Restored the shotgun to its pre-Stage-15 seven-pellet spread while Bloom still increases only once per trigger pull.
+- Vehicles are affected by land obstacles: mud slows them, spikes slow them and break the multiplier, and plant traps can capture riders.
+- Mud now renders visibly on top of the ground surface.
+- Plant traps center the character inside the vines, visually recede as Space is mashed, remain in the world after escape, and launch the player forward with a brief escape burst.
+- Plant traps and spikes break the score multiplier; mud does not.
