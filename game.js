@@ -345,7 +345,6 @@
     if (!settings.music) stopMusic();
     else if (state === 'playing') startMusic();
     if (!settings.sfx) stopGoldRushAudio();
-    else if (state === 'playing' && player && player.goldRushTime > 0) startGoldRushAudio(false);
   }
 
   function loadSettingsControls() {
@@ -449,6 +448,49 @@
       noise(dur*.46, volume*.20, 'lowpass', 640, 260, delay+.025, .65);
     };
 
+    const voiceMoan = (base=96, dur=.45, volume=.08, human=false, delay=0) => {
+      // A breathy vowel-like source with a falling pitch and formant resonances.
+      // This sounds more like a throat/voice than a clean oscillator tone.
+      const length = Math.max(1, Math.floor(ac.sampleRate * dur));
+      const buffer = ac.createBuffer(1, length, ac.sampleRate);
+      const data = buffer.getChannelData(0);
+      let phase = 0;
+      let breath = 0;
+      for (let i=0;i<length;i++) {
+        const t = i / ac.sampleRate;
+        const progress = i / length;
+        const freq = base * (1 - progress * (human ? .24 : .36)) * (1 + Math.sin(t*17.0)*.008);
+        phase += Math.PI * 2 * freq / ac.sampleRate;
+        const glottal = Math.sin(phase) + .34*Math.sin(phase*2.02) + .12*Math.sin(phase*3.01);
+        const white = Math.random()*2-1;
+        breath = breath*.82 + white*.18;
+        const attack = Math.min(1, progress/.06);
+        const release = Math.pow(Math.max(0, 1-progress), .72);
+        data[i] = (glottal*.53 + breath*.24) * attack * release;
+      }
+      const src = ac.createBufferSource();
+      src.buffer = buffer;
+      const t0 = now + delay;
+
+      const dry = ac.createBiquadFilter();
+      dry.type = 'lowpass';
+      dry.frequency.value = human ? 2600 : 1900;
+      const dryGain = ac.createGain();
+      dryGain.gain.value = volume*.24;
+      src.connect(dry); dry.connect(dryGain); dryGain.connect(master);
+
+      const formants = human
+        ? [[620,5.5,.50],[1080,5.0,.34],[2380,4.2,.16]]
+        : [[430,5.8,.58],[860,5.0,.33],[1740,4.0,.14]];
+      for (const [f,q,g] of formants) {
+        const bp = ac.createBiquadFilter();
+        bp.type = 'bandpass'; bp.frequency.value=f; bp.Q.value=q;
+        const bg = ac.createGain(); bg.gain.value = volume*g;
+        src.connect(bp); bp.connect(bg); bg.connect(master);
+      }
+      src.start(t0); src.stop(t0 + dur + .035);
+    };
+
     if (kind === 'gun' || kind === 'shoot') {
       const weapon = detail || (player && player.weapon) || 'pistol';
       const goldRushShot = !!(player && player.goldRushTime > 0);
@@ -493,10 +535,10 @@
         noise(.22, .052, 'highpass', 760, 3600, .01, .65);
       }
     } else if (kind === 'zombieHit') {
-      // Fleshy impact first, then an organic infected grunt with no square/saw timbre.
-      bodyThump(54,.10,.075);
-      noise(.075,.052,'lowpass',720,240,0,.65);
-      organicGroan(104,.35,.078,.028);
+      // Wet impact plus a low infected moan.
+      bodyThump(52,.10,.078);
+      noise(.075,.052,'lowpass',720,220,0,.65);
+      voiceMoan(84 + Math.random()*18,.40 + Math.random()*.12,.086,false,.022);
     } else if (kind === 'vehicle') {
       // Combustion-like engine revs: low cylinders + filtered exhaust/road noise.
       const vehicle = detail || (player && player.vehicle) || 'car';
@@ -508,10 +550,14 @@
       noise(.34,.032,'lowpass',760,260,.01,.6);
       tone(base*1.04,.32,'sine',.056,top*.93,.42);
       noise(.34,.044,'bandpass',vehicle === 'truck' ? 135 : 205, vehicle === 'motorcycle' ? 480 : 300,.42,1.35);
+    } else if (kind === 'multiplierBreak') {
+      bodyThump(58,.075,.055);
+      noise(.055,.04,'bandpass',980,520,0,1.2);
     } else if (kind === 'hit') {
+      // Human pain/moan layer for the runner taking a zombie hit.
       bodyThump(45,.13,.09);
-      noise(.07,.048,'lowpass',640,220,0,.6);
-      organicGroan(92,.31,.09,.015);
+      noise(.07,.042,'lowpass',620,210,0,.6);
+      voiceMoan(112 + Math.random()*12,.34 + Math.random()*.10,.095,true,.012);
     } else if (kind === 'wall') {
       // Stage 12: deeper roots/dirt, with volume driven by actual wall distance.
       const intensity = typeof detail === 'number' ? Math.max(0, Math.min(1, detail)) : .5;
@@ -532,9 +578,10 @@
       noise(.24,.11,'bandpass',190,92,.018,1.15);
       noise(.09,.055,'bandpass',900,360,.025,1.6);
     } else if (kind === 'goldrush') {
-      // One-shot fallback only; the actual Gold Rush uses the continuous loop below.
-      noise(.22,.055,'bandpass',420,2200,0,.7);
-      tone(52,.20,'sine',.035,78);
+      // Restored to the Stage 9 three-step Gold Rush cue.
+      tone(440, .12, 'square', .045, 660);
+      tone(660, .12, 'triangle', .05, 880, .08);
+      tone(880, .18, 'square', .055, 1180, .16);
     } else if (kind === 'coin') {
       // Short metallic clinks: two hard high-frequency contacts plus a tiny ring.
       master.gain.value = .92;
@@ -554,6 +601,13 @@
       tone(92,.22,'triangle',.035,165);
     } else if (kind === 'pickup') {
       tone(320,.10,'triangle',.04,470);
+    } else if (kind === 'death') {
+      // Distinct final body impact followed by a longer fading human moan.
+      master.gain.value = 1.0;
+      bodyThump(32,.34,.14);
+      noise(.22,.065,'lowpass',520,95,.01,.55);
+      voiceMoan(101,.82,.12,true,.035);
+      tone(29,.55,'sine',.065,20,.02);
     } else {
       tone(250,.045,'triangle',.03,190);
     }
@@ -562,78 +616,17 @@
   }
 
   function startGoldRushAudio(retrigger=true) {
-    if (!getSettings().sfx || !player || player.goldRushTime <= 0) return;
-    const ac = ensureAudio();
-    if (!ac) return;
-    const now = ac.currentTime;
-
-    if (!goldRushAudio) {
-      const master = ac.createGain();
-      master.gain.value = .0001;
-      master.connect(ac.destination);
-
-      // A looping, airy wind bed: broad rushing air plus a subtle magical overtone.
-      const seconds = 2.2;
-      const buffer = ac.createBuffer(1, Math.floor(ac.sampleRate * seconds), ac.sampleRate);
-      const data = buffer.getChannelData(0);
-      let low = 0, mid = 0;
-      for (let i=0;i<data.length;i++) {
-        const white = Math.random()*2-1;
-        low = low*.94 + white*.06;
-        mid = mid*.72 + white*.28;
-        data[i] = white*.34 + mid*.31 + low*.58;
-      }
-      const src = ac.createBufferSource();
-      src.buffer = buffer;
-      src.loop = true;
-
-      const hp = ac.createBiquadFilter();
-      hp.type = 'highpass'; hp.frequency.value = 260;
-      const lp = ac.createBiquadFilter();
-      lp.type = 'lowpass'; lp.frequency.value = 4600;
-      const band = ac.createBiquadFilter();
-      band.type = 'peaking'; band.frequency.value = 980; band.Q.value = .62; band.gain.value = 5.5;
-      src.connect(hp); hp.connect(lp); lp.connect(band); band.connect(master);
-
-      const rumble = ac.createOscillator();
-      const rumbleGain = ac.createGain();
-      rumble.type = 'sine'; rumble.frequency.value = 52;
-      rumbleGain.gain.value = .012;
-      rumble.connect(rumbleGain); rumbleGain.connect(master);
-
-      // Very soft fifths give the wind a fantastical lift without turning it into a jingle.
-      const shimmerA = ac.createOscillator();
-      const shimmerB = ac.createOscillator();
-      const shimmerGain = ac.createGain();
-      shimmerA.type = 'sine'; shimmerB.type = 'sine';
-      shimmerA.frequency.value = 392; shimmerB.frequency.value = 587.33;
-      shimmerGain.gain.value = .0065;
-      shimmerA.connect(shimmerGain); shimmerB.connect(shimmerGain); shimmerGain.connect(master);
-
-      src.start(); rumble.start(); shimmerA.start(); shimmerB.start();
-      goldRushAudio = { master, src, rumble, rumbleGain, shimmerA, shimmerB, shimmerGain };
-    }
-
-    const g = goldRushAudio.master.gain;
-    g.cancelScheduledValues(now);
-    const current = Math.max(.0001, g.value || .0001);
-    g.setValueAtTime(current, now);
-    if (retrigger) {
-      // Fortepiano: strong initial blast, then immediate drop to a softer sustained wind.
-      g.linearRampToValueAtTime(.14, now + .035);
-      g.exponentialRampToValueAtTime(.038, now + .52);
-    } else {
-      g.linearRampToValueAtTime(.038, now + .12);
-    }
+    // Stage 13 restores the Stage 9 one-shot cue instead of a continuous Gold Rush bed.
+    if (retrigger) playSfx('goldrush');
   }
 
   function stopGoldRushAudio() {
     if (!goldRushAudio) return;
-    try { goldRushAudio.src.stop(); } catch {}
-    try { goldRushAudio.rumble.stop(); } catch {}
+    try { goldRushAudio.src && goldRushAudio.src.stop(); } catch {}
+    try { goldRushAudio.rumble && goldRushAudio.rumble.stop(); } catch {}
     try { goldRushAudio.shimmerA && goldRushAudio.shimmerA.stop(); } catch {}
     try { goldRushAudio.shimmerB && goldRushAudio.shimmerB.stop(); } catch {}
-    try { goldRushAudio.master.disconnect(); } catch {}
+    try { goldRushAudio.master && goldRushAudio.master.disconnect(); } catch {}
     goldRushAudio = null;
   }
 
@@ -641,9 +634,16 @@
     if (!getSettings().music || musicNodes) return;
     const ac = ensureAudio();
     if (!ac) return;
+    if (ac.state === 'suspended') {
+      ac.resume().then(() => {
+        if (getSettings().music && !musicNodes) startMusic();
+      }).catch(()=>{});
+      return;
+    }
 
     const master = ac.createGain();
-    master.gain.value = .050;
+    // Louder gritty music bed so it remains audible under combat SFX.
+    master.gain.value = .105;
     const drive = ac.createWaveShaper();
     const curve = new Float32Array(512);
     for (let i=0;i<curve.length;i++) {
@@ -690,12 +690,12 @@
       const pos = step % 16;
       // Kick-like impacts on 1/3 plus extra hectic accents.
       if (pos === 0 || pos === 8 || pos === 11) {
-        musicTone(78,.115,'sine',.18,38);
+        musicTone(78,.115,'sine',.21,38);
         musicNoise(.07,.055,'lowpass',360,.55);
       }
       // Snare / debris hit.
       if (pos === 4 || pos === 12) {
-        musicNoise(.12,.115,'bandpass',1350,1.1);
+        musicNoise(.12,.14,'bandpass',1350,1.1);
         musicTone(165,.055,'triangle',.032,92);
       }
       // Fast dirty hats / grit.
@@ -703,7 +703,7 @@
 
       if (pos % 4 === 0 || pos === 6 || pos === 14) {
         const b = bass[pos];
-        musicTone(b,.15,'triangle',.11,b*.72);
+        musicTone(b,.15,'triangle',.14,b*.72);
         musicNoise(.08,.018,'bandpass',260,.8);
       }
       // Sparse abrasive scrape accents, deliberately non-melodic.
@@ -1047,7 +1047,7 @@
     if (!player || player.multiplier <= 1) return;
     player.multiplier = 1;
     showMultiplierEvent('MULTIPLIER BROKEN · X1', true);
-    playSfx('hit');
+    playSfx('multiplierBreak');
   }
 
   function grantMomentumBoost() {
@@ -1060,7 +1060,7 @@
     if (!player) return;
     player.goldRushTime = Math.max(player.goldRushTime || 0, 3);
     if (boostBanner) boostBanner.classList.remove('hidden');
-    startGoldRushAudio(true);
+    playSfx('goldrush');
   }
 
   function getBloomWallSpeed() {
@@ -1706,14 +1706,17 @@
 
     if (player.x + innerWidth * 3 > generatedUntil) buildLevel(player.x + innerWidth * 5);
 
-    // Stage 12 wall speed changes at 500m and 1000m. Its root rush grows louder as it closes in.
+    // Stage 13: wall audio stays silent while it is well behind the camera.
+    // It begins only shortly before the wall front reaches the left edge of the viewport.
     bloomWallX += getBloomWallSpeed() * dt;
     wallSfxClock = Math.max(0, wallSfxClock - dt);
-    const wallMetersForSfx = getWallDistanceMeters();
-    if (wallMetersForSfx <= 300 && wallSfxClock <= 0) {
-      const wallIntensity = Math.max(0, Math.min(1, 1 - wallMetersForSfx / 300));
-      playSfx('wall', wallIntensity);
-      wallSfxClock = .42 + (1 - wallIntensity) * .75;
+    const wallFrontForSfx = bloomWallX + BLOOM_WALL_WIDTH;
+    const pixelsBeforeScreen = cameraX - wallFrontForSfx;
+    const wallAboutToEnter = pixelsBeforeScreen <= 220;
+    if (wallAboutToEnter && wallSfxClock <= 0) {
+      const wallIntensity = Math.max(0, Math.min(1, 1 - Math.max(0, pixelsBeforeScreen) / 220));
+      playSfx('wall', .28 + wallIntensity * .72);
+      wallSfxClock = .34 + (1 - wallIntensity) * .36;
     }
 
     if (pitDeathPhase > 0) {
@@ -2216,6 +2219,7 @@
   function finishGame(reason = 'zombies') {
     stopMusic();
     stopGoldRushAudio();
+    playSfx('death', reason);
     state = 'ended';
     mouseFireHeld = false;
     resultPanel.classList.remove('hidden');

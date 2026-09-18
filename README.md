@@ -1,4 +1,4 @@
-# BLOOM RUN — Stage 11
+# BLOOM RUN — Stage 13
 
 Browser-based side-scrolling survival platformer built with HTML, CSS, and vanilla JavaScript.
 
@@ -64,3 +64,13 @@ Extract the ZIP and open `index.html` in a modern browser.
 - Coin pickups use sharper metallic clinks.
 - Gold Rush audio is a more fantastical continuous wind/booster bed.
 - The in-run starting safehouse now visually matches the menu safehouse much more closely.
+
+
+## Stage 13
+- Bloom-wall movement rules stay the same as Stage 12, but wall audio is silent while the wall is far behind the camera. Root-rush audio begins only shortly before the wall reaches the left edge of the viewport and grows stronger once it is visible.
+- Added a distinct death sound for wall, pit, and zombie deaths.
+- Gold Rush restores the exact Stage 9 three-step rising cue instead of the continuous Stage 11/12 wind bed.
+- The procedural soundtrack is significantly louder and now explicitly resumes the Web Audio context when necessary so music is audible when Music is enabled.
+- Zombies make lower breathy/moaning vocal sounds when shot.
+- Direct character damage uses a separate human pain/moan sound rather than the multiplier-break effect.
+- Multiplier breaks have their own non-vocal impact sound so blocked hits do not incorrectly trigger a human moan.
