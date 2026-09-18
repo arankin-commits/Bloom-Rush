@@ -13,6 +13,102 @@ Extract the ZIP and open `index.html` in a modern browser.
 - Space or left mouse: shoot
 - Esc: pause
 
+## Stage 1
+- power ups are spawning in the sky in places that are not reachable 
+- remove the 60 second timer 
+- make it so the zombies can jump over holes 
+- there are platforms that are not reachable by the player 
+- there is a wall of plants that continuously moves during the time the game is going - prevents the player from backtracking and adds agency to moving forward - if touched the player is turned into a plant zombie and the game ends 
+ 
+## Stage 2
+- make the wall continouos if I'm next to the wall at the far right I shouldn't be able to see the map behind it should cover it up 
+- periodically have parkour sections and that's the only spot you can find the bloom power up - power ups can also be air born as long as if the player jumps they can reach it 
+- double the speed of the plant wall 
+- add a leaderboard section area on the game screen 
+- change the starting gun to a non automatic pistol 
+- you can gain other weapons(like the AR you use in the previous iteration, shotgun, rpg, sniper, smg, etc) 
+- you get one shot if you are hit by a zombie - any weapon excluding the pistol weapon blocks one shot 
+ 
+## Stage 3
+- When you fall into the hole then the character should hit the bottom of the screen and disappear and then the game ends 
+- have meters counter on the top of the middle of the screen 
+- double the speed of the wall 
+- the parkour area should have one bloom power up and the parkour section should be harder and more focused on parkour 
+- sniper should pierce enemies 
+ 
+## Stage 4
+- At every 1000 meters the environment changes(the platforms, ground and background) 
+- pistol one shots basic zombies 
+- make the special weapons three times as rare 
+- after reaching 500 meters more enemy types will spawn like tankier zombies, fast zombies, flying creatures (can't fly too high, can be at different heights, must be reachable by the players bullet), flying creatures that can shoot, etc. 
+- add coins that you can collect while running some in the air some on the ground some on platforms etc, all of them should be reachable - coins do not disappear after losing and you can use them in the shop (not yet implemented) 
+- add house like structures - you can't enter them but when you walk past you get the weapon that's inside it - that's how you get weapons now instead of from killing enemies 
+- enemies killed and distance traveled should both be calculated into the score 
+ 
+## Stage 5
+- Question: does the wall speed up or is stuck at the same speed the entire game? 
+- You don't need to save for the score to show up on the leaderboard if no name is chosen it just says unknown 
+- pistol 1 dmg, sniper 5 dmg pierces, rpg 10 dmg aoe, AR 1.5 dmg, smg 1 dmg, shot gun 1.5 dmg per pellet 
+- you might find vehicles (2x faster than normal movement) in houses (motorcycle (protects 1 hit) after 1000 meters, car (shields 2 hits) after 2500 meters, truck (shields 5 hits) after 6000 meters, once hits are used the vehicle breaks and knocks back enemies that are close 
+- low level enemies: flyer 1 hp, walker 1 hp, fast walker 1 hp, tanky walker 3 hp 
+- medium level enemies: shooting flyer 3hp, jumping walker(periodically jumps) 3hp, bloater walker(explodes on death) 8hp 
+- large level enemies: fast flyer 2hp, shielded walker (has a shield that blocks 3 shots) 3hp, rush zombie (large and charges at the player after a charge up - can't jump while rushing) 
+ 
+- before 500 meters you only encounter low level walkers after all low level enemies 
+- after 2000 meters you can encounter medium level enemies 
+- after 5000 meters you can encounter large level enemies 
+  
+ 
+## Stage 6
+- I want the player to be able to jump if only one foot is on solid ground 
+- you should only encounter regular walkers bellow 1000 meters - after you can encounter the rest of the low level enemies (flyers, fast walker, tanky walker) 
+- slow the speed of the wall by half - at 1000 meters the wall speed up by 1.3x of original speed and then at 2000 it should be 1.6x of original speed, and at 3000 it should be at 2x of original speed 
+- An icon in the top left begins to shake if the wall within 100 meters of the player, and it will show up if within 300 meters of the player, if over 300 meters away it won't  show up at all 
+- if a name is typed that is the name that will show up instead of unknown when a name is not chosen 
+- Instead of spawning in out of the sky - you walk out of a house 
+- the player has 3 lives at the start if the game(they show up as hearts - when the player has a weapon/vehicle the item is shown to the right of the hearts, when the weapon breaks the icon breaks and disappears and when a vehicle runs out of gas it the icon disappears 
+- vehicles are no longer hit based - motorcycle (lasts 8 seconds) after 1000 meters, car (lasts 12 seconds) after 2500 meters, truck (lasts 20 seconds) - vehicles run through all monsters - a gas meter will show how long you can use the vehicle - does not replace the weapon the player has 
+ 
+## Stage 7
+- if a name is typed that is the name that will show up instead of unknown when a name is not chosen 
+- I want the icon next to the hearts to just be an icon that looks like the weapon or vehicle - no words 
+- explosive zombies - look malformed with glowing red/yellow/green orb like things on them - clearly looks like they explode - also when they do explode have some kinda explosion on screen 
+- add a character customization screen to the menu(can change gender, hair, skin color, and color of clothes) 
+- In the shop add a Cosmetics section, a vehicle skin and weapons skin section, an upgrade section, and a start with x item section 
+- In the settings section have a way to turn of music and sfx (separate options) 
+- Hide meters ran, coins, and kills during the game 
+- add a score multiplier (looks like a bar fills up to max X12 - when multiplier breaks it drops back to the bottom)- in the top middle of the screen 
+- Multiplier - gains(collecting all coins in a coin spawn (each spawn should have 5 coins), swapping weapons(reaching a weapon/vehicle house with a weapon already equipped), and collecting bloom) - what breaks it is getting hit even if a weapon blocks it 
+- collecting all coins in a coin spawn or swapping weapons provides a 3 seconds speed boost in which you can run through enemies and take no damage 
+ 
+## Stage 8
+- make coin spawns twice as rare 
+- bug: the enter name bar still shows unknown - even though I've previously entered a name 
+- in customization: 
+  - have clothes color split between pants and shirt section 
+  - add new hair styles: afro, dreads, cornrows, curly, braid, pigtails, spiky, bob, hightop fade, ponytail, bun 
+  - add facial hair 
+  - add facial hair and hair color section 
+  - also for the hair make it look like your looking at it from a side profile since that is how the player sees the character 
+- the current parkour zones don't show up until past 5000 meters and they no longer contain the bloom cleanse 
+- every 700 meters a bloom cleanse will spawn 
+- when explosion zombies get near the player they will start blinking for 1 and a half seconds and then explode 
+- when you click escape you can see your coins in the bottom left(coin icon and number) and the meters ran in the bottom middle(number followed by meters - in white) and kills in the bottom right( in red) 
+- in shop: start with x item changed to starting item 
+  
+ 
+## Stage 8
+- in customization: 
+  - curly is curly long hair 
+  - more realistic/detialed hair 
+- when explosion zombie goes off kills zombies near as well 
+- there should be a meter above the player that shows them how long a they'll have vehicle 
+- if a shooting enemy is off screen it can't shoot 
+- remove "slow the speed of the wall by half - at 1000 meters the wall speed up by 1.3x of original speed and then at 2000 it should be 1.6x of original speed, and at 3000 it should be at 2x of original speed" and just set the wall to 2x speed 
+- when you click escape it should be total coins not just coins from the run 
+- remove the small tutorial from the bottom when in a run 
+- remove this coin formation
+
 ## Stage 9 changes
 - Completing all five coins in a coin group triggers a 3-second **Gold Rush**.
 - Gold Rush keeps the 1.5x movement-speed boost, doubles gun damage, and gives the held gun a gold glow.
