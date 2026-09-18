@@ -52,3 +52,15 @@ Extract the ZIP and open `index.html` in a modern browser.
 - The soundtrack is replaced with a grittier, more hectic procedural score built around heavy percussion, dirty bass pulses, debris hits, and abrasive noise rather than arcade leads.
 - Vehicle audio uses lower combustion-style cylinder/exhaust layers and filtered road noise for a less digital engine sound.
 - Existing Music and SFX toggles still independently control their respective audio.
+
+
+## Stage 12
+- Bloom wall still begins 100m behind the runner, but now moves at 20% player speed before 500m, matches player speed from 500-999m, and becomes 20% faster at 1000m+.
+- Added a heavy wall-collision impact sound.
+- Wall root audio is deeper, louder overall, and scales up as the wall gets closer.
+- Shooting-enemy projectiles are nonlethal: they can interrupt the run and cost a heart/weapon guard, but never reduce the runner below one life.
+- Bloater explosions destroy any active vehicle if the vehicle hits the Bloater or is caught in the blast.
+- Gold Rush weapon reports are reinforced to sound stronger.
+- Coin pickups use sharper metallic clinks.
+- Gold Rush audio is a more fantastical continuous wind/booster bed.
+- The in-run starting safehouse now visually matches the menu safehouse much more closely.

@@ -93,8 +93,8 @@
     { name: 'PALE BLOOM FIELDS', skyA:'#292b20', skyB:'#191a14', skyC:'#0d0e0b', ground:'#27291e', groundTop:'#7e8b4a', platform:'#414531', platformTop:'#a5b763', accent:'#c3cf6b', silhouette:'#62684b' }
   ];
 
-  // Legacy reference speed; Stage 11 wall speed is derived from RUN_SPEED in getBloomWallSpeed().
-  const BLOOM_WALL_BASE_SPEED = RUN_SPEED * 1.2;
+  // Stage 12 wall pressure is distance-gated relative to normal player speed.
+  const BLOOM_WALL_BASE_SPEED = RUN_SPEED * 0.2;
   const BLOOM_WALL_WIDTH = 220;
 
   const WEAPONS = {
@@ -451,6 +451,8 @@
 
     if (kind === 'gun' || kind === 'shoot') {
       const weapon = detail || (player && player.weapon) || 'pistol';
+      const goldRushShot = !!(player && player.goldRushTime > 0);
+      if (goldRushShot) master.gain.value = 1.0;
       // Weapon reports are built from a pressure thump, mechanical crack, and short air tail.
       if (weapon === 'pistol') {
         bodyThump(76,.095,.085);
@@ -483,6 +485,13 @@
         noise(.28,.072,'bandpass',520,1100,.018,.7);
         noise(.45,.036,'highpass',620,1900,.045,.6);
       }
+      // Gold Rush reinforces every weapon report with an extra pressure wave and rushing air,
+      // so doubled-damage shots sound physically stronger without becoming a separate arcade beep.
+      if (goldRushShot) {
+        bodyThump(46, .14, .105, .002);
+        noise(.16, .075, 'bandpass', 1350, 3000, .004, .85);
+        noise(.22, .052, 'highpass', 760, 3600, .01, .65);
+      }
     } else if (kind === 'zombieHit') {
       // Fleshy impact first, then an organic infected grunt with no square/saw timbre.
       bodyThump(54,.10,.075);
@@ -504,22 +513,36 @@
       noise(.07,.048,'lowpass',640,220,0,.6);
       organicGroan(92,.31,.09,.015);
     } else if (kind === 'wall') {
-      // Deep root mass: subterranean rumble, woody friction and dirt, with very little treble.
-      tone(29,.72,'sine',.075,24);
-      tone(43,.62,'triangle',.045,31,.03);
-      noise(.78,.085,'lowpass',420,105,0,.7);
-      noise(.64,.055,'bandpass',150,245,.02,1.25);
-      noise(.11,.032,'bandpass',540,330,.16,1.6);
-      noise(.09,.028,'bandpass',470,290,.43,1.5);
+      // Stage 12: deeper roots/dirt, with volume driven by actual wall distance.
+      const intensity = typeof detail === 'number' ? Math.max(0, Math.min(1, detail)) : .5;
+      const v = .72 + intensity * 1.05;
+      master.gain.value = Math.min(1.15, .72 + intensity * .32);
+      tone(22,.84,'sine',.085*v,18);
+      tone(34,.74,'triangle',.054*v,24,.025);
+      noise(.90,.10*v,'lowpass',330,72,0,.65);
+      noise(.72,.066*v,'bandpass',105,205,.018,1.35);
+      noise(.16,.034*v,'bandpass',420,255,.14,1.5);
+      noise(.12,.032*v,'bandpass',370,220,.46,1.45);
+    } else if (kind === 'wallImpact') {
+      // Dense root/wood collision when the Bloom wall actually catches the runner.
+      master.gain.value = 1.05;
+      bodyThump(24,.42,.19);
+      tone(31,.48,'sine',.12,18,.005);
+      noise(.50,.17,'lowpass',520,62,0,.55);
+      noise(.24,.11,'bandpass',190,92,.018,1.15);
+      noise(.09,.055,'bandpass',900,360,.025,1.6);
     } else if (kind === 'goldrush') {
       // One-shot fallback only; the actual Gold Rush uses the continuous loop below.
       noise(.22,.055,'bandpass',420,2200,0,.7);
       tone(52,.20,'sine',.035,78);
     } else if (kind === 'coin') {
-      tone(520,.09,'sine',.052,345);
-      tone(285,.075,'triangle',.026,430,.02);
-      tone(430,.105,'sine',.05,720,.085);
-      tone(780,.07,'triangle',.026,1060,.16);
+      // Short metallic clinks: two hard high-frequency contacts plus a tiny ring.
+      master.gain.value = .92;
+      tone(1420,.045,'sine',.052,1180);
+      tone(1960,.035,'triangle',.028,1640,.006);
+      noise(.028,.025,'highpass',2500,5100,.002,.9);
+      tone(1680,.085,'sine',.030,1260,.032);
+      tone(2280,.052,'sine',.018,1840,.038);
     } else if (kind === 'bloom') {
       tone(410,.13,'sine',.04,620);
     } else if (kind === 'explode') {
@@ -549,36 +572,46 @@
       master.gain.value = .0001;
       master.connect(ac.destination);
 
-      // A looping, broadband wind/booster bed with no obvious repeating pitch.
-      const seconds = 1.8;
+      // A looping, airy wind bed: broad rushing air plus a subtle magical overtone.
+      const seconds = 2.2;
       const buffer = ac.createBuffer(1, Math.floor(ac.sampleRate * seconds), ac.sampleRate);
       const data = buffer.getChannelData(0);
-      let low = 0;
+      let low = 0, mid = 0;
       for (let i=0;i<data.length;i++) {
         const white = Math.random()*2-1;
-        low = low*.91 + white*.09;
-        data[i] = white*.45 + low*.75;
+        low = low*.94 + white*.06;
+        mid = mid*.72 + white*.28;
+        data[i] = white*.34 + mid*.31 + low*.58;
       }
       const src = ac.createBufferSource();
       src.buffer = buffer;
       src.loop = true;
 
       const hp = ac.createBiquadFilter();
-      hp.type = 'highpass'; hp.frequency.value = 180;
+      hp.type = 'highpass'; hp.frequency.value = 260;
       const lp = ac.createBiquadFilter();
-      lp.type = 'lowpass'; lp.frequency.value = 2600;
+      lp.type = 'lowpass'; lp.frequency.value = 4600;
       const band = ac.createBiquadFilter();
-      band.type = 'peaking'; band.frequency.value = 620; band.Q.value = .7; band.gain.value = 6;
+      band.type = 'peaking'; band.frequency.value = 980; band.Q.value = .62; band.gain.value = 5.5;
       src.connect(hp); hp.connect(lp); lp.connect(band); band.connect(master);
 
       const rumble = ac.createOscillator();
       const rumbleGain = ac.createGain();
-      rumble.type = 'sine'; rumble.frequency.value = 46;
-      rumbleGain.gain.value = .018;
+      rumble.type = 'sine'; rumble.frequency.value = 52;
+      rumbleGain.gain.value = .012;
       rumble.connect(rumbleGain); rumbleGain.connect(master);
 
-      src.start(); rumble.start();
-      goldRushAudio = { master, src, rumble, rumbleGain };
+      // Very soft fifths give the wind a fantastical lift without turning it into a jingle.
+      const shimmerA = ac.createOscillator();
+      const shimmerB = ac.createOscillator();
+      const shimmerGain = ac.createGain();
+      shimmerA.type = 'sine'; shimmerB.type = 'sine';
+      shimmerA.frequency.value = 392; shimmerB.frequency.value = 587.33;
+      shimmerGain.gain.value = .0065;
+      shimmerA.connect(shimmerGain); shimmerB.connect(shimmerGain); shimmerGain.connect(master);
+
+      src.start(); rumble.start(); shimmerA.start(); shimmerB.start();
+      goldRushAudio = { master, src, rumble, rumbleGain, shimmerA, shimmerB, shimmerGain };
     }
 
     const g = goldRushAudio.master.gain;
@@ -598,6 +631,8 @@
     if (!goldRushAudio) return;
     try { goldRushAudio.src.stop(); } catch {}
     try { goldRushAudio.rumble.stop(); } catch {}
+    try { goldRushAudio.shimmerA && goldRushAudio.shimmerA.stop(); } catch {}
+    try { goldRushAudio.shimmerB && goldRushAudio.shimmerB.stop(); } catch {}
     try { goldRushAudio.master.disconnect(); } catch {}
     goldRushAudio = null;
   }
@@ -1029,7 +1064,10 @@
   }
 
   function getBloomWallSpeed() {
-    // Stage 11: constant pressure at 20% faster than the player's normal run speed.
+    // Stage 12: the wall begins slow, matches the runner at 500m, then becomes faster at 1000m.
+    const meters = player ? getDistanceMeters() : 0;
+    if (meters < 500) return RUN_SPEED * 0.2;
+    if (meters < 1000) return RUN_SPEED;
     return RUN_SPEED * 1.2;
   }
 
@@ -1089,7 +1127,7 @@
     startMusic();
     playSfx('ui');
     cameraX = 0;
-    // Stage 11: the wall's front begins exactly 100 meters (1000 world px) behind the player.
+    // Stage 12 keeps the wall front 100 meters (1000 world px) behind the player at the start.
     bloomWallX = player.x - 1000 - BLOOM_WALL_WIDTH;
     shake = 0;
     maxBloom = player.bloom;
@@ -1464,6 +1502,29 @@
     player.vehicleMaxTime = 0;
   }
 
+  function explodeVehicle() {
+    if (!player.vehicle) return false;
+    const type = player.vehicle;
+    const def = VEHICLES[type];
+    const cx = player.x + player.w/2;
+    const cy = player.y + player.h/2;
+    player.vehicle = null;
+    player.vehicleTime = 0;
+    player.vehicleMaxTime = 0;
+    player.invuln = Math.max(player.invuln, .85);
+    player.vy = Math.min(player.vy, -250);
+    player.vx *= .45;
+    shake = Math.max(shake, 17);
+    explosions.push({x:cx,y:cy,life:.52,maxLife:.52,radius:105});
+    playSfx('explode');
+    for (let i=0;i<48;i++) {
+      const a=Math.random()*Math.PI*2, speed=90+Math.random()*360;
+      particles.push({x:cx,y:cy,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed-45,
+        life:.28+Math.random()*.62,size:3+Math.random()*7,color:i%3===0?'#f6c34d':(i%3===1?'#d65e39':def.color)});
+    }
+    return true;
+  }
+
   function loseLife(source, dir) {
     playSfx('hit');
     player.lives = Math.max(0, player.lives - 1);
@@ -1492,6 +1553,31 @@
       return true;
     }
     return loseLife(source, dir);
+  }
+
+  function takeNonlethalProjectileHit(shot, dir) {
+    // Stage 12: ranged infected shots can hurt/interrupt a run, but can never be the killing blow.
+    // They break the multiplier, can consume a weapon guard, and otherwise remove at most one
+    // heart while always leaving the runner with at least one life.
+    if (player.boostTime > 0) return true;
+    breakMultiplier();
+    if (player.weapon !== 'pistol' && WEAPONS[player.weapon].guard) {
+      consumeWeaponGuard(shot, dir);
+      return true;
+    }
+    playSfx('hit');
+    if (player.lives > 1) player.lives -= 1;
+    guardFlash = 1;
+    shake = Math.max(shake, 8);
+    player.invuln = .85;
+    player.vx = -dir * 185;
+    player.vy = -155;
+    for (let i=0;i<14;i++) particles.push({
+      x:player.x+player.w/2,y:player.y+player.h/2,
+      vx:(Math.random()-.5)*210,vy:-20+(Math.random()-.5)*170,
+      life:.22+Math.random()*.28,size:2+Math.random()*3,color:'#d8c86a'
+    });
+    return true;
   }
 
   function shoot() {
@@ -1620,13 +1706,14 @@
 
     if (player.x + innerWidth * 3 > generatedUntil) buildLevel(player.x + innerWidth * 5);
 
-    // Stage 11: constant wall speed at 120% of normal player running speed.
+    // Stage 12 wall speed changes at 500m and 1000m. Its root rush grows louder as it closes in.
     bloomWallX += getBloomWallSpeed() * dt;
     wallSfxClock = Math.max(0, wallSfxClock - dt);
     const wallMetersForSfx = getWallDistanceMeters();
     if (wallMetersForSfx <= 300 && wallSfxClock <= 0) {
-      playSfx('wall');
-      wallSfxClock = wallMetersForSfx <= 100 ? .55 : 1.45;
+      const wallIntensity = Math.max(0, Math.min(1, 1 - wallMetersForSfx / 300));
+      playSfx('wall', wallIntensity);
+      wallSfxClock = .42 + (1 - wallIntensity) * .75;
     }
 
     if (pitDeathPhase > 0) {
@@ -1775,7 +1862,7 @@
     }
 
     if (player.x <= bloomWallX + BLOOM_WALL_WIDTH - 16) {
-      playSfx('wall');
+      playSfx('wallImpact');
       player.plantZombie = true;
       finishGame('wall');
       return;
@@ -1952,10 +2039,10 @@
         // an ordinary contact hit, is the danger during this telegraph.
         if (enemy.type === 'bloater' && enemy.fuseTimer !== null) continue;
         if (player.vehicle || player.boostTime > 0) {
-          // Vehicles and momentum boosts ram straight through infected.
+          // Vehicles ram through infected, but a Bloater detonation destroys the active vehicle.
           enemy.x += dir * 80;
           killEnemy(enemy);
-          shake = Math.max(shake, 5);
+          shake = Math.max(shake, enemy.type === 'bloater' ? 11 : 5);
           continue;
         }
         if (enemy.attack <= 0 && player.invuln <= 0) {
@@ -1966,7 +2053,7 @@
     }
     enemies = enemies.filter(e => e.health > 0);
 
-    // Hostile shots from flying ranged creatures use the same one-hit rule.
+    // Stage 12: hostile ranged shots are disruptive but explicitly nonlethal.
     for (const shot of enemyProjectiles) {
       shot.x += shot.vx * dt;
       shot.y += shot.vy * dt;
@@ -1976,7 +2063,7 @@
         shot.life = 0;
         if (player.boostTime > 0) continue;
         const dir = Math.sign(player.x - shot.x) || 1;
-        if (!absorbPlayerHit({x:shot.x}, dir)) return;
+        takeNonlethalProjectileHit({x:shot.x,y:shot.y}, dir);
       }
     }
     enemyProjectiles = enemyProjectiles.filter(s => s.life > 0 && s.x > cameraX - 500 && s.x < cameraX + innerWidth + 900 && s.y > -80 && s.y < innerHeight + 100);
@@ -2091,7 +2178,14 @@
       killEnemy(other);
     }
     const px=player.x+player.w/2, py=player.y+player.h/2;
-    if (Math.hypot(px-cx,py-cy)<radius && state==='playing' && !player.vehicle && player.boostTime <= 0) {
+    const playerInBlast = Math.hypot(px-cx,py-cy)<radius && state==='playing';
+    let vehicleAbsorbedBlast = false;
+    if (playerInBlast && player.vehicle) {
+      // Any vehicle is destroyed by a Bloater blast, whether the vehicle hit the Bloater
+      // or the zombie detonated nearby. The destroyed vehicle absorbs this explosion hit.
+      vehicleAbsorbedBlast = explodeVehicle();
+    }
+    if (playerInBlast && !vehicleAbsorbedBlast && !player.vehicle && player.boostTime <= 0) {
       absorbPlayerHit(enemy, Math.sign(px-cx)||1);
     }
     const orbColors=['#ff4b36','#ffd93f','#82f15d'];
@@ -2777,14 +2871,50 @@
     ctx.textAlign='center';ctx.font='bold 9px Courier New';
 
     if (spawnHouse && spawnHouse.x + spawnHouse.w > wallFront && spawnHouse.x < cameraX + innerWidth + 180) {
+      // Stage 12: mirror the menu safehouse -- dark green clapboard body, asymmetric roof,
+      // warm divided windows, centered heavy door, antenna and creeping vines.
       const h = spawnHouse;
-      const biome = BIOMES[h.biome || 0];
-      ctx.fillStyle=biome.ground;ctx.fillRect(h.x,h.y+30,h.w,h.h-30);
-      ctx.fillStyle=biome.platform;ctx.beginPath();ctx.moveTo(h.x-12,h.y+32);ctx.lineTo(h.x+h.w*.5,h.y);ctx.lineTo(h.x+h.w+12,h.y+32);ctx.closePath();ctx.fill();
-      ctx.fillStyle='#070b09';ctx.fillRect(h.x+58,h.y+h.h-68,46,68);
-      ctx.fillStyle=biome.platformTop;ctx.fillRect(h.x+18,h.y+48,27,22);ctx.fillRect(h.x+h.w-45,h.y+48,27,22);
-      ctx.strokeStyle=biome.accent;ctx.lineWidth=3;ctx.strokeRect(h.x+8,h.y+38,h.w-16,h.h-42);
-      ctx.fillStyle=biome.accent;ctx.fillText('SAFEHOUSE',h.x+h.w*.5,h.y+52);
+      ctx.save();
+      // Body
+      const bodyY = h.y + 32;
+      const bodyH = h.h - 32;
+      const bodyGrad = ctx.createLinearGradient(h.x,bodyY,h.x,bodyY+bodyH);
+      bodyGrad.addColorStop(0,'#334139'); bodyGrad.addColorStop(.55,'#202c27'); bodyGrad.addColorStop(1,'#17201d');
+      ctx.fillStyle=bodyGrad;ctx.fillRect(h.x+6,bodyY,h.w-12,bodyH);
+      ctx.strokeStyle='#53675b';ctx.lineWidth=3;ctx.strokeRect(h.x+6,bodyY,h.w-12,bodyH);
+      // Subtle vertical siding
+      ctx.strokeStyle='rgba(235,245,236,.045)';ctx.lineWidth=1;
+      for(let sx=h.x+18;sx<h.x+h.w-10;sx+=22){ctx.beginPath();ctx.moveTo(sx,bodyY+3);ctx.lineTo(sx,bodyY+bodyH-2);ctx.stroke();}
+      // Asymmetric menu-style roof
+      const roofGrad = ctx.createLinearGradient(h.x,h.y,h.x+h.w,h.y+38);
+      roofGrad.addColorStop(0,'#536259');roofGrad.addColorStop(.62,'#2a3530');roofGrad.addColorStop(1,'#17201d');
+      ctx.fillStyle=roofGrad;ctx.beginPath();ctx.moveTo(h.x-7,h.y+36);ctx.lineTo(h.x+30,h.y+7);ctx.lineTo(h.x+h.w*.68,h.y);ctx.lineTo(h.x+h.w+8,h.y+36);ctx.closePath();ctx.fill();
+      ctx.strokeStyle='#111815';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(h.x-5,h.y+36);ctx.lineTo(h.x+h.w+7,h.y+36);ctx.stroke();
+      // Warm windows with crossbars
+      const drawSafeWindow=(wx,wy,ww,wh)=>{
+        ctx.fillStyle='#849569';ctx.fillRect(wx,wy,ww,wh);
+        const glow=ctx.createRadialGradient(wx+ww/2,wy+wh*.75,1,wx+ww/2,wy+wh*.75,ww*.8);
+        glow.addColorStop(0,'rgba(210,224,132,.34)');glow.addColorStop(1,'rgba(210,224,132,0)');ctx.fillStyle=glow;ctx.fillRect(wx-8,wy-8,ww+16,wh+16);
+        ctx.strokeStyle='#18221e';ctx.lineWidth=4;ctx.strokeRect(wx,wy,ww,wh);
+        ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(wx+ww/2,wy);ctx.lineTo(wx+ww/2,wy+wh);ctx.moveTo(wx,wy+wh/2);ctx.lineTo(wx+ww,wy+wh/2);ctx.stroke();
+      };
+      drawSafeWindow(h.x+18,h.y+49,28,23);
+      drawSafeWindow(h.x+h.w-46,h.y+49,28,23);
+      // Door
+      const doorX=h.x+h.w*.42, doorW=h.w*.18, doorY=h.y+h.h-64;
+      const doorGrad=ctx.createLinearGradient(doorX,0,doorX+doorW,0);doorGrad.addColorStop(0,'#121a17');doorGrad.addColorStop(.55,'#26362f');doorGrad.addColorStop(1,'#131c18');
+      ctx.fillStyle=doorGrad;ctx.fillRect(doorX,doorY,doorW,64);ctx.strokeStyle='#0b110f';ctx.lineWidth=4;ctx.strokeRect(doorX,doorY,doorW,64);
+      ctx.fillStyle='#b3c472';ctx.beginPath();ctx.arc(doorX+doorW*.82,doorY+34,3,0,Math.PI*2);ctx.fill();
+      // Sign
+      ctx.fillStyle='#141d19';ctx.strokeStyle='#667669';ctx.lineWidth=2;ctx.fillRect(h.x+h.w*.31,h.y+39,h.w*.38,16);ctx.strokeRect(h.x+h.w*.31,h.y+39,h.w*.38,16);
+      ctx.fillStyle='#a9ba87';ctx.font='bold 8px Courier New';ctx.fillText('SAFEHOUSE',h.x+h.w*.5,h.y+50);
+      // Antenna and two loops
+      ctx.strokeStyle='#738779';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(h.x+h.w*.78,h.y+6);ctx.lineTo(h.x+h.w*.82,h.y-24);ctx.stroke();
+      ctx.beginPath();ctx.ellipse(h.x+h.w*.82,h.y-18,12,5,0,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.ellipse(h.x+h.w*.82,h.y-18,6,2.5,0,0,Math.PI*2);ctx.stroke();
+      // Vines
+      ctx.strokeStyle='rgba(82,137,71,.78)';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(h.x+9,h.y+h.h-4);ctx.quadraticCurveTo(h.x-4,h.y+76,h.x+18,h.y+51);ctx.quadraticCurveTo(h.x+30,h.y+40,h.x+22,h.y+30);ctx.stroke();
+      ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(h.x+h.w-4,h.y+h.h-18);ctx.quadraticCurveTo(h.x+h.w+9,h.y+80,h.x+h.w-18,h.y+57);ctx.stroke();
+      ctx.restore();
     }
     for(const h of houses){
       if(h.x+h.w<=wallFront||h.x>cameraX+innerWidth+180) continue;
