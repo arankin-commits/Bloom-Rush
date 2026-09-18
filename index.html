@@ -34,9 +34,14 @@
       </div>
       <div class="menu-shell">
         <div class="brand">
-          <span class="eyebrow">STAGE 15 · FIELD LOOT</span>
+          <span class="eyebrow">STAGE 18 · CHALLENGE LADDER</span>
           <h1>BLOOM<span>RUN</span></h1>
           <div class="coin-bank">BANKED COINS <strong id="menuCoinBalance">0</strong> ◉</div>
+          <div class="menu-rank-card" aria-label="Current field rank">
+            <span>FIELD RANK</span>
+            <strong id="menuRankName">SEEDLING</strong>
+            <div id="menuRankStars" class="menu-rank-stars">☆☆☆</div>
+          </div>
         </div>
 
         <div class="menu-actions stage7-actions">
@@ -242,6 +247,27 @@
           <div class="pause-stat pause-coins"><span class="pause-coin-icon">◉</span><strong id="pauseCoins">0</strong></div>
           <div class="pause-stat pause-distance"><strong id="pauseDistance">0 meters</strong></div>
           <div class="pause-stat pause-kills"><strong id="pauseKills">0</strong></div>
+        </div>
+        <aside class="pause-challenges" aria-label="Current challenges">
+          <span class="eyebrow">CURRENT CHALLENGES</span>
+          <div id="pauseChallengeList" class="pause-challenge-list"></div>
+        </aside>
+      </div>
+
+      <div id="challengePanel" class="overlay hidden">
+        <div class="overlay-card challenge-review-card">
+          <span class="eyebrow">CHALLENGE REPORT</span>
+          <h2>STARS EARNED</h2>
+          <div class="challenge-rank-summary">
+            <span>FIELD RANK</span>
+            <strong id="challengeRankName">SEEDLING</strong>
+            <div id="challengeRankStars" class="challenge-rank-stars">☆☆☆</div>
+          </div>
+          <div id="challengeEarnedList" class="challenge-earned-list"></div>
+          <div id="challengeRankUp" class="challenge-rank-up hidden"></div>
+          <div class="challenge-next-heading">ACTIVE CHALLENGES</div>
+          <div id="challengeNextList" class="challenge-next-list"></div>
+          <button id="challengeContinueBtn" class="main-btn small">CONTINUE</button>
         </div>
       </div>
 

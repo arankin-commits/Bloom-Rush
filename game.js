@@ -93,6 +93,16 @@
   const pauseCoins = document.getElementById('pauseCoins');
   const pauseDistance = document.getElementById('pauseDistance');
   const pauseKills = document.getElementById('pauseKills');
+  const menuRankName = document.getElementById('menuRankName');
+  const menuRankStars = document.getElementById('menuRankStars');
+  const pauseChallengeList = document.getElementById('pauseChallengeList');
+  const challengePanel = document.getElementById('challengePanel');
+  const challengeRankName = document.getElementById('challengeRankName');
+  const challengeRankStars = document.getElementById('challengeRankStars');
+  const challengeEarnedList = document.getElementById('challengeEarnedList');
+  const challengeRankUp = document.getElementById('challengeRankUp');
+  const challengeNextList = document.getElementById('challengeNextList');
+  const challengeContinueBtn = document.getElementById('challengeContinueBtn');
 
   const keys = new Set();
   const GRAVITY = 2200;
@@ -105,6 +115,20 @@
   const CUSTOMIZE_KEY = 'bloomRunCustomizeV1';
   const SETTINGS_KEY = 'bloomRunSettingsV1';
   const SHOP_KEY = 'bloomRunShopV1';
+  const PROGRESSION_KEY = 'bloomRunProgressionV1';
+  const RANK_NAMES = [
+    'SEEDLING','SPROUT','TRAILBLAZER','SCAVENGER','RUNNER','OUTRIDER','PATHFINDER','SHARPSHOT',
+    'VANGUARD','STALKER','BREAKER','RECLAIMER','WARDEN','MARAUDER','SENTINEL','ROADBORN',
+    'HARBINGER','IRONROOT','STORMRUNNER','GEARHEAD','BLOOMHUNTER','DREADWALKER','LAST LIGHT','APEX SURVIVOR'
+  ];
+  // 23 rank-ups consuming exactly 100 challenge stars: 5×3, 8×4, 7×5, 3×6.
+  const RANK_STAR_REQUIREMENTS = [3,3,3,3,3, 4,4,4,4,4,4,4,4, 5,5,5,5,5,5,5, 6,6,6];
+  const RANK_UNLOCKS = {
+    2:{item:'smg',label:'START WITH SMG'}, 4:{item:'ar',label:'START WITH AR'},
+    6:{item:'shotgun',label:'START WITH SHOTGUN'}, 8:{item:'sniper',label:'START WITH SNIPER'},
+    12:{item:'rpg',label:'START WITH RPG'}, 16:{item:'upgradedMotorcycle',label:'UPGRADED MOTORCYCLE'},
+    20:{item:'upgradedCar',label:'UPGRADED CAR'}, 24:{item:'upgradedTruck',label:'UPGRADED TRUCK'}
+  };
   const BLOOM_PER_TRIGGER = 0.42;
   const BIOME_LENGTH = 10000; // 1000 meters at 10 world pixels per meter.
   const BIOMES = [
@@ -201,14 +225,17 @@
 
   const STARTING_ITEMS = {
     none:{label:'NONE',price:0,kind:'none',type:null,desc:'Begin with the normal pistol and no vehicle.'},
-    smg:{label:'SMG',price:650,kind:'weapon',type:'smg',desc:'Start with an SMG stored in your inventory.'},
-    ar:{label:'AR',price:800,kind:'weapon',type:'ar',desc:'Start with an assault rifle.'},
-    shotgun:{label:'SHOTGUN',price:950,kind:'weapon',type:'shotgun',desc:'Start with the shotgun.'},
-    sniper:{label:'SNIPER',price:1200,kind:'weapon',type:'sniper',desc:'Start with the piercing sniper.'},
-    rpg:{label:'RPG',price:1500,kind:'weapon',type:'rpg',desc:'Start with the explosive RPG.'},
+    smg:{label:'SMG',price:0,kind:'weapon',type:'smg',unlockRank:2,desc:'Earn the SPROUT field rank to start with an SMG.'},
+    ar:{label:'AR',price:0,kind:'weapon',type:'ar',unlockRank:4,desc:'Earn the SCAVENGER field rank to start with an assault rifle.'},
+    shotgun:{label:'SHOTGUN',price:0,kind:'weapon',type:'shotgun',unlockRank:6,desc:'Earn the OUTRIDER field rank to start with the shotgun.'},
+    sniper:{label:'SNIPER',price:0,kind:'weapon',type:'sniper',unlockRank:8,desc:'Earn the SHARPSHOT field rank to start with the piercing sniper.'},
+    rpg:{label:'RPG',price:0,kind:'weapon',type:'rpg',unlockRank:12,desc:'Earn the RECLAIMER field rank to start with the RPG.'},
     motorcycle:{label:'MOTORCYCLE',price:900,kind:'vehicle',type:'motorcycle',desc:'Begin the run with 8 seconds of motorcycle fuel.'},
     car:{label:'CAR',price:1400,kind:'vehicle',type:'car',desc:'Begin the run with 12 seconds of car fuel.'},
-    truck:{label:'TRUCK',price:1900,kind:'vehicle',type:'truck',desc:'Begin the run with 20 seconds of truck fuel.'}
+    truck:{label:'TRUCK',price:1900,kind:'vehicle',type:'truck',desc:'Begin the run with 20 seconds of truck fuel.'},
+    upgradedMotorcycle:{label:'UPGRADED MOTORCYCLE',price:0,kind:'vehicle',type:'motorcycle',upgraded:true,unlockRank:16,desc:'Rank reward: 12 seconds of motorcycle fuel.'},
+    upgradedCar:{label:'UPGRADED CAR',price:0,kind:'vehicle',type:'car',upgraded:true,unlockRank:20,desc:'Rank reward: 18 seconds of car fuel.'},
+    upgradedTruck:{label:'UPGRADED TRUCK',price:0,kind:'vehicle',type:'truck',upgraded:true,unlockRank:24,desc:'Rank reward: 30 seconds of truck fuel.'}
   };
 
   const SHOP_UPGRADES = {
@@ -251,6 +278,9 @@
   let wallSfxClock = 0;
   let vehicleSfxClock = 0;
   let actionNoticeTimer = 0;
+  let progressionStateCache = null;
+  let runChallengeCompleted = new Set();
+  let pendingGameOverReason = null;
   let shopStateCache = null;
   const SHOP_CATEGORIES = [
     {key:'cosmetics',label:'COSMETICS'},
@@ -313,7 +343,7 @@
   });
   customizeBtn.addEventListener('click', () => { loadCustomizeControls(); openMenuPanel(customizeScreen); drawCustomizerPreview(); });
   customizeBackBtn.addEventListener('click', () => { showScreen(menuScreen); state = 'menu'; });
-  shopBtn.addEventListener('click', () => { setCoinBalance(getCoinBalance()); renderShop(); openMenuPanel(shopScreen); updateShopCategoryView(); });
+  shopBtn.addEventListener('click', () => { syncRankUnlocks(); setCoinBalance(getCoinBalance()); renderShop(); openMenuPanel(shopScreen); updateShopCategoryView(); });
   shopBackBtn.addEventListener('click', () => { showScreen(menuScreen); state = 'menu'; updateStartingItemSign(); });
   settingsBtn.addEventListener('click', () => { loadSettingsControls(); openMenuPanel(settingsScreen); });
   settingsBackBtn.addEventListener('click', () => { showScreen(menuScreen); state = 'menu'; });
@@ -334,14 +364,17 @@
     state = 'playing';
     last = performance.now();
   });
+  challengeContinueBtn?.addEventListener('click', () => showFinalResult(pendingGameOverReason || 'zombies'));
 
   function returnToMenu() {
     stopMusic();
     stopGoldRushAudio();
     state = 'menu';
     renderLeaderboard();
+    updateRankUI();
     pausePanel.classList.add('hidden');
     resultPanel.classList.add('hidden');
+    if (challengePanel) challengePanel.classList.add('hidden');
     showScreen(menuScreen);
     updateStartingItemSign();
   }
@@ -422,6 +455,192 @@
   });
 
 
+
+  function buildChallenges() {
+    const list = [];
+    for (let tier = 1; tier <= 20; tier++) {
+      const distance = 250 + (tier - 1) * 250;
+      const kills = 5 + (tier - 1) * 4;
+      const coinCount = 5 + (tier - 1) * 2;
+      const groups = 1 + Math.floor((tier - 1) / 3);
+      const blooms = 1 + Math.floor((tier - 1) / 4);
+      list.push({id:`distance-${tier}`,kind:'distance',target:distance,label:`Reach ${distance} meters in one run`});
+      list.push({id:`kills-${tier}`,kind:'kills',target:kills,label:`Defeat ${kills} infected in one run`});
+      list.push({id:`coins-${tier}`,kind:'coins',target:coinCount,label:`Collect ${coinCount} coins in one run`});
+      list.push({id:`groups-${tier}`,kind:'coinGroups',target:groups,label:`Complete ${groups} full coin ${groups===1?'spawn':'spawns'} in one run`});
+      list.push({id:`blooms-${tier}`,kind:'blooms',target:blooms,label:`Collect ${blooms} Bloom ${blooms===1?'cleanser':'cleansers'} in one run`});
+    }
+    return list;
+  }
+  const CHALLENGES = buildChallenges();
+  const CHALLENGE_BY_ID = new Map(CHALLENGES.map(c => [c.id,c]));
+
+  function rankIndexFromStars(stars) {
+    let spent = 0;
+    for (let i = 0; i < RANK_STAR_REQUIREMENTS.length; i++) {
+      spent += RANK_STAR_REQUIREMENTS[i];
+      if (stars < spent) return i + 1;
+    }
+    return 24;
+  }
+
+  function rankProgressFromStars(stars) {
+    const rankIndex = rankIndexFromStars(stars);
+    if (rankIndex >= 24) return {index:24,name:RANK_NAMES[23],earned:6,needed:6,maxed:true};
+    let before = 0;
+    for (let i = 0; i < rankIndex - 1; i++) before += RANK_STAR_REQUIREMENTS[i];
+    const needed = RANK_STAR_REQUIREMENTS[rankIndex - 1];
+    return {index:rankIndex,name:RANK_NAMES[rankIndex-1],earned:Math.max(0,stars-before),needed,maxed:false};
+  }
+
+  function rankStartingMultiplier() {
+    const r = rankProgressFromStars(getProgressionState().completedIds.length).index;
+    if (r >= 12) return 12;
+    if (r >= 8) return 9;
+    if (r >= 4) return 6;
+    return 3;
+  }
+
+  function defaultProgressionState() {
+    return {completedIds:[],activeIds:CHALLENGES.slice(0,5).map(c=>c.id),nextIndex:5};
+  }
+
+  function getProgressionState() {
+    if (progressionStateCache) return progressionStateCache;
+    const defaults = defaultProgressionState();
+    try {
+      const raw = JSON.parse(localStorage.getItem(PROGRESSION_KEY) || 'null');
+      if (!raw || typeof raw !== 'object') return (progressionStateCache = defaults);
+      const completedIds = Array.isArray(raw.completedIds) ? [...new Set(raw.completedIds.filter(id=>CHALLENGE_BY_ID.has(id)))] : [];
+      const activeIds = Array.isArray(raw.activeIds) ? [...new Set(raw.activeIds.filter(id=>CHALLENGE_BY_ID.has(id) && !completedIds.includes(id)))] : [];
+      let nextIndex = Math.max(0, Math.min(CHALLENGES.length, Number(raw.nextIndex)||0));
+      while (activeIds.length < 5 && nextIndex < CHALLENGES.length) {
+        const id = CHALLENGES[nextIndex++].id;
+        if (!completedIds.includes(id) && !activeIds.includes(id)) activeIds.push(id);
+      }
+      return (progressionStateCache = {completedIds,activeIds,nextIndex});
+    } catch { return (progressionStateCache = defaults); }
+  }
+
+  function saveProgressionState(stateObj=getProgressionState()) {
+    progressionStateCache = stateObj;
+    try { localStorage.setItem(PROGRESSION_KEY, JSON.stringify(stateObj)); } catch {}
+    syncRankUnlocks();
+    updateRankUI();
+  }
+
+  function isStartingItemUnlocked(key) {
+    const item = STARTING_ITEMS[key];
+    if (!item || !item.unlockRank) return true;
+    return rankProgressFromStars(getProgressionState().completedIds.length).index >= item.unlockRank;
+  }
+
+  function syncRankUnlocks() {
+    const stateObj = getShopState();
+    const rank = rankProgressFromStars(getProgressionState().completedIds.length).index;
+    let changed = false;
+    for (const [key,item] of Object.entries(STARTING_ITEMS)) {
+      if (item.unlockRank && rank >= item.unlockRank && !stateObj.owned.startingItems.includes(key)) {
+        stateObj.owned.startingItems.push(key); changed = true;
+      }
+    }
+    if (stateObj.equipped.startingItem !== 'none' && !isStartingItemUnlocked(stateObj.equipped.startingItem)) {
+      stateObj.equipped.startingItem = 'none'; changed = true;
+    }
+    if (changed) saveShopState(stateObj);
+  }
+
+  function starString(progress) {
+    if (progress.maxed) return '★★★★★★';
+    return '★'.repeat(Math.min(progress.needed,progress.earned)) + '☆'.repeat(Math.max(0,progress.needed-progress.earned));
+  }
+
+  function updateRankUI() {
+    const progress = rankProgressFromStars(getProgressionState().completedIds.length);
+    if (menuRankName) menuRankName.textContent = progress.name;
+    if (menuRankStars) menuRankStars.textContent = starString(progress);
+  }
+
+  function challengeValue(challenge) {
+    if (!player || !challenge) return 0;
+    if (challenge.kind === 'distance') return getDistanceMeters();
+    if (challenge.kind === 'kills') return player.kills || 0;
+    if (challenge.kind === 'coins') return player.runCoins || 0;
+    if (challenge.kind === 'coinGroups') return player.coinGroupsCompleted || 0;
+    if (challenge.kind === 'blooms') return player.bloomsFixed || 0;
+    return 0;
+  }
+
+  function updateRunChallengeStatus() {
+    if (!player) return;
+    const stateObj = getProgressionState();
+    for (const id of stateObj.activeIds) {
+      const c = CHALLENGE_BY_ID.get(id);
+      if (c && challengeValue(c) >= c.target) runChallengeCompleted.add(id);
+    }
+  }
+
+  function challengeProgressLabel(c) {
+    const value = Math.min(c.target, challengeValue(c));
+    if (c.kind === 'distance') return `${value}/${c.target}m`;
+    return `${value}/${c.target}`;
+  }
+
+  function renderPauseChallenges() {
+    if (!pauseChallengeList) return;
+    updateRunChallengeStatus();
+    const stateObj = getProgressionState();
+    pauseChallengeList.innerHTML = '';
+    for (const id of stateObj.activeIds) {
+      const c = CHALLENGE_BY_ID.get(id); if (!c) continue;
+      const row = document.createElement('div');
+      row.className = `pause-challenge-row${runChallengeCompleted.has(id)?' pending':''}`;
+      row.innerHTML = `<strong>${c.label}</strong><span>${challengeProgressLabel(c)}</span>`;
+      pauseChallengeList.appendChild(row);
+    }
+  }
+
+  function commitRunChallenges() {
+    updateRunChallengeStatus();
+    const stateObj = getProgressionState();
+    const completedNow = stateObj.activeIds.filter(id => runChallengeCompleted.has(id));
+    if (!completedNow.length) return null;
+    const beforeStars = stateObj.completedIds.length;
+    const beforeRank = rankIndexFromStars(beforeStars);
+    for (const id of completedNow) if (!stateObj.completedIds.includes(id)) stateObj.completedIds.push(id);
+    stateObj.activeIds = stateObj.activeIds.filter(id => !completedNow.includes(id));
+    while (stateObj.activeIds.length < 5 && stateObj.nextIndex < CHALLENGES.length) {
+      const id = CHALLENGES[stateObj.nextIndex++].id;
+      if (!stateObj.completedIds.includes(id) && !stateObj.activeIds.includes(id)) stateObj.activeIds.push(id);
+    }
+    const afterRank = rankIndexFromStars(stateObj.completedIds.length);
+    saveProgressionState(stateObj);
+    const rankUps=[];
+    for (let r=beforeRank+1;r<=afterRank;r++) rankUps.push({index:r,name:RANK_NAMES[r-1],unlock:RANK_UNLOCKS[r]||null});
+    return {completedNow:completedNow.map(id=>CHALLENGE_BY_ID.get(id)).filter(Boolean),rankUps,progress:rankProgressFromStars(stateObj.completedIds.length),active:stateObj.activeIds.map(id=>CHALLENGE_BY_ID.get(id)).filter(Boolean)};
+  }
+
+  function renderChallengeReview(outcome) {
+    if (!outcome || !challengePanel) return;
+    challengeEarnedList.innerHTML = '';
+    outcome.completedNow.forEach((c,i)=>{
+      const row=document.createElement('div'); row.className='challenge-earned-row'; row.style.animationDelay=`${i*.08}s`;
+      row.innerHTML=`<strong>${c.label}</strong><span>+★</span>`; challengeEarnedList.appendChild(row);
+    });
+    if (challengeRankName) challengeRankName.textContent = outcome.progress.name;
+    if (challengeRankStars) challengeRankStars.textContent = starString(outcome.progress);
+    if (challengeRankUp) {
+      if (outcome.rankUps.length) {
+        const latest=outcome.rankUps[outcome.rankUps.length-1];
+        const unlocks=outcome.rankUps.filter(x=>x.unlock).map(x=>x.unlock.label);
+        challengeRankUp.classList.remove('hidden');
+        challengeRankUp.innerHTML = `RANK UP · ${latest.name}${unlocks.length?`<small>UNLOCKED: ${unlocks.join(' · ')}</small>`:''}`;
+      } else { challengeRankUp.classList.add('hidden'); challengeRankUp.innerHTML=''; }
+    }
+    challengeNextList.innerHTML='';
+    outcome.active.forEach(c=>{ const row=document.createElement('div'); row.className='challenge-next-row'; row.innerHTML=`<strong>${c.label}</strong><span>0/${c.target}${c.kind==='distance'?'m':''}</span>`; challengeNextList.appendChild(row); });
+  }
+
   function defaultShopState() {
     return {
       owned:{
@@ -475,6 +694,7 @@
   function buyOrEquipShopItem(category, key) {
     const cfg = shopCategoryConfig(category);
     if (!cfg || !cfg.items[key]) return;
+    if (category === 'startingItems' && !isStartingItemUnlocked(key)) return;
     const stateObj = getShopState();
     const owned = stateObj.owned[cfg.owned];
     const item = cfg.items[key];
@@ -542,15 +762,17 @@
     container.innerHTML = '';
     for (const [key,item] of Object.entries(cfg.items)) {
       if (category === 'startingItems' && key === 'pistol') continue;
-      const owned = stateObj.owned[cfg.owned].includes(key);
-      const equipped = !!(cfg.equip && stateObj.equipped[cfg.equip] === key);
+      const rankLocked = category === 'startingItems' && !isStartingItemUnlocked(key);
+      const owned = stateObj.owned[cfg.owned].includes(key) && !rankLocked;
+      const equipped = !!(cfg.equip && stateObj.equipped[cfg.equip] === key && !rankLocked);
       const card = document.createElement('div');
-      card.className = `shop-item-card${owned?' owned':''}${equipped?' equipped':''}`;
+      card.className = `shop-item-card${owned?' owned':''}${equipped?' equipped':''}${rankLocked?' rank-locked':''}`;
       card.appendChild(createShopPreview(category,key,item));
       const name = document.createElement('div'); name.className='shop-item-name'; name.textContent=item.label; card.appendChild(name);
-      const price = document.createElement('div'); price.className='shop-item-price'; price.textContent = item.price > 0 ? `${item.price} ◉` : 'FREE'; card.appendChild(price);
-      const btn = document.createElement('button'); btn.className='shop-buy-btn'; btn.type='button'; btn.textContent=shopPriceLabel(item,owned,equipped,category);
-      btn.disabled = !!(category === 'upgrades' && owned) || (!owned && balance < item.price);
+      const price = document.createElement('div'); price.className='shop-item-price';
+      price.textContent = rankLocked ? `UNLOCK: ${RANK_NAMES[item.unlockRank-1]}` : (item.unlockRank ? 'RANK REWARD' : (item.price > 0 ? `${item.price} ◉` : 'FREE')); card.appendChild(price);
+      const btn = document.createElement('button'); btn.className='shop-buy-btn'; btn.type='button'; btn.textContent=rankLocked?'LOCKED':shopPriceLabel(item,owned,equipped,category);
+      btn.disabled = rankLocked || !!(category === 'upgrades' && owned) || (!owned && balance < item.price);
       btn.addEventListener('click', () => buyOrEquipShopItem(category,key));
       card.appendChild(btn);
       container.appendChild(card);
@@ -614,7 +836,8 @@
   function updateStartingItemSign() {
     if (!startingItemSign) return;
     const key = getShopState().equipped.startingItem || 'none';
-    const item = STARTING_ITEMS[key] || STARTING_ITEMS.none;
+    const rawItem = STARTING_ITEMS[key] || STARTING_ITEMS.none;
+    const item = isStartingItemUnlocked(key) ? rawItem : STARTING_ITEMS.none;
     startingItemSign.className = `starting-item-sign${item.kind === 'none' ? ' hidden' : ''}${item.type ? ` sign-${item.type}` : ''}`;
     if (item.kind !== 'none') {
       const signSkin = item.kind === 'vehicle' ? (getShopState().equipped.vehicleSkin || 'base') : (getShopState().equipped.weaponSkin || 'base');
@@ -624,16 +847,19 @@
   }
 
   function applyStartingItem() {
-    const item = STARTING_ITEMS[getShopState().equipped.startingItem || 'none'];
-    if (!item || item.kind === 'none' || item.type === 'pistol') return;
+    const key = getShopState().equipped.startingItem || 'none';
+    const item = STARTING_ITEMS[key];
+    if (!item || item.kind === 'none' || item.type === 'pistol' || !isStartingItemUnlocked(key)) return;
     if (item.kind === 'weapon') {
       player.weaponInventory[item.type] = true;
       refreshActiveWeapon();
     } else if (item.kind === 'vehicle') {
       const def = VEHICLES[item.type];
       player.vehicle = item.type;
-      player.vehicleTime = def.duration;
-      player.vehicleMaxTime = def.duration;
+      player.vehicleUpgraded = !!item.upgraded;
+      const duration = def.duration * (item.upgraded ? 1.5 : 1);
+      player.vehicleTime = duration;
+      player.vehicleMaxTime = duration;
     }
   }
 
@@ -1522,20 +1748,24 @@
     showScreen(gameScreen);
     pausePanel.classList.add('hidden');
     resultPanel.classList.add('hidden');
+    if (challengePanel) challengePanel.classList.add('hidden');
     keys.clear();
     mouseFireHeld = false;
     currentRunSaved = false;
     currentRunId = null;
+    runChallengeCompleted = new Set();
+    syncRankUnlocks();
 
     player = {
       x: 82, y: 100, w: 34, h: 58,
       vx: 0, vy: 0, grounded: true, crouching: false, coyote: .08,
       bloom: 8, kills: 0, score: 0, killScore: 0, distanceScore: 0, bonusScore: 0, furthestMeter: 0, runCoins: 0,
-      multiplier: 1, boostTime: 0, goldRushTime: 0,
+      multiplier: rankStartingMultiplier(), boostTime: 0, goldRushTime: 0,
       shotCooldown: 0, muzzle: 0, invuln: 0,
       weapon: 'pistol', ammo: Infinity, weaponInventory: { pistol:true, ar:false, shotgun:false, rpg:false, sniper:false, smg:false }, plantZombie: false,
       lives: 3,
-      vehicle: null, vehicleTime: 0, vehicleMaxTime: 0,
+      vehicle: null, vehicleTime: 0, vehicleMaxTime: 0, vehicleUpgraded:false,
+      coinGroupsCompleted:0, bloomsFixed:0,
       trapped:false, trapProgress:0, trapObstacleId:null, trapLaunchTime:0, trapLaunchTargetX:0, obstacleSlowTime:0
     };
 
@@ -2018,6 +2248,7 @@
     playSfx('vehicle', type);
     vehicleSfxClock = 1.05;
     player.vehicle = type;
+    player.vehicleUpgraded = false;
     player.vehicleTime = def.duration;
     player.vehicleMaxTime = def.duration;
     guardFlash = 1;
@@ -2038,6 +2269,7 @@
       life:.25+Math.random()*.35,size:2+Math.random()*5,color:def.color
     });
     player.vehicle = null;
+    player.vehicleUpgraded = false;
     player.vehicleTime = 0;
     player.vehicleMaxTime = 0;
   }
@@ -2049,6 +2281,7 @@
     const cx = player.x + player.w/2;
     const cy = player.y + player.h/2;
     player.vehicle = null;
+    player.vehicleUpgraded = false;
     player.vehicleTime = 0;
     player.vehicleMaxTime = 0;
     player.invuln = Math.max(player.invuln, .85);
@@ -2351,7 +2584,7 @@
     } else if ((player.trapLaunchTargetX || 0) > player.x) {
       // Escape launch is briefly automatic so the player cannot steer back into the trap.
       facing = 1;
-      player.vx = movementBase * 1.55;
+      player.vx = movementBase * 1.55; // Stage 16 burst speed, with Stage 17 distance-based control return.
     } else if ((player.trapLaunchTargetX || 0) > 0) {
       player.trapLaunchTargetX = 0;
       // Normal control resumes on this frame once the player is 5m beyond the trap.
@@ -2633,6 +2866,7 @@
       const test = { x: p.x, y: p.y + bob, w: p.w, h: p.h };
       if (p.alive && rectsOverlap(player, test)) {
         p.alive = false;
+        player.bloomsFixed = (player.bloomsFixed || 0) + 1;
         player.bloom = Math.max(0, player.bloom - 34);
         gainMultiplier('BLOOM CLEANSED', false);
         addBonusScore(25);
@@ -2691,6 +2925,7 @@
           group.collected++;
           if (!group.completed && group.collected >= group.total) {
             group.completed = true;
+            player.coinGroupsCompleted = (player.coinGroupsCompleted || 0) + 1;
             gainMultiplier('5-COIN SET', false);
             addBonusScore(100);
             showActionNotice('GOLD RUSH!', 100);
@@ -2778,12 +3013,9 @@
     }
   }
 
-  function finishGame(reason = 'zombies') {
-    stopMusic();
-    stopGoldRushAudio();
-    playSfx('death', reason);
+  function showFinalResult(reason = 'zombies') {
+    if (challengePanel) challengePanel.classList.add('hidden');
     state = 'ended';
-    mouseFireHeld = false;
     resultPanel.classList.remove('hidden');
     resultEyebrow.textContent = reason === 'wall' ? 'BLOOM CONSUMED YOU' : 'RUN OVER';
     resultTitle.textContent = reason === 'wall'
@@ -2791,8 +3023,6 @@
       : reason === 'pit'
         ? 'YOU FELL'
         : 'NO LIVES LEFT';
-    updateDistanceScore();
-    recalcScore();
     resultKills.textContent = player.kills;
     resultScore.textContent = Math.floor(player.score);
     resultBloom.textContent = Math.round(maxBloom) + '%';
@@ -2806,6 +3036,26 @@
     saveMessage.textContent = '';
     saveCurrentScore(true);
     setTimeout(() => playerNameInput.focus(), 0);
+  }
+
+  function finishGame(reason = 'zombies') {
+    stopMusic();
+    stopGoldRushAudio();
+    playSfx('death', reason);
+    mouseFireHeld = false;
+    updateDistanceScore();
+    recalcScore();
+    updateRunChallengeStatus();
+    pendingGameOverReason = reason;
+    const outcome = commitRunChallenges();
+    if (outcome && outcome.completedNow.length) {
+      state = 'challenge-review';
+      resultPanel.classList.add('hidden');
+      renderChallengeReview(outcome);
+      challengePanel.classList.remove('hidden');
+    } else {
+      showFinalResult(reason);
+    }
   }
 
 
@@ -2879,6 +3129,7 @@
     if (pauseCoins) pauseCoins.textContent = String(getCoinBalance());
     if (pauseDistance) pauseDistance.textContent = `${getDistanceMeters()} meters`;
     if (pauseKills) pauseKills.textContent = String(player.kills);
+    renderPauseChallenges();
   }
 
   function updateHUD() {
@@ -2923,8 +3174,9 @@
     scoreText.textContent = Math.floor(player.score);
     updatePauseStats();
 
+    updateRunChallengeStatus();
     if (multiplierLabel) multiplierLabel.textContent = `X${player.multiplier}`;
-    if (multiplierFill) multiplierFill.style.width = `${((player.multiplier - 1) / 11) * 100}%`;
+    if (multiplierFill) multiplierFill.style.width = `${Math.max(0,Math.min(100,((player.multiplier - 1) / 11) * 100))}%`;
     if (multiplierHud && multiplierMessageTimer <= 0) multiplierHud.classList.remove('hot','broken');
 
     const wallMeters = getWallDistanceMeters();
@@ -3701,6 +3953,8 @@
 
   renderLeaderboard();
   setCoinBalance(getCoinBalance());
+  syncRankUnlocks();
+  updateRankUI();
   updateStartingItemSign();
   requestAnimationFrame(frame);
 })();

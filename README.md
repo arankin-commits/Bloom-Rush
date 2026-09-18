@@ -214,3 +214,15 @@ Extract the ZIP and open `index.html` in a modern browser.
 - Added previous/next preview controls in Weapon Skins and Vehicle Skins so different weapon/vehicle models can be inspected before buying/equipping a skin.
 - Starting Item signs now explicitly render the currently equipped weapon or vehicle skin.
 - Plant-trap escape launches lock control only until the player is 5 meters beyond the trap, then normal control returns.
+
+
+## Stage 18
+- Restored the Stage 16 plant-trap escape burst while retaining Stage 17's distance-based steering lock: control returns after the runner is 5 meters clear of the trap.
+- Added 24 named field ranks. Rank displays use names and star progress only; the UI does not show rank numbers or a total rank count.
+- Rank advancement uses 100 persistent one-star challenges with five active challenges at a time. Star requirements gradually increase from 3 stars per rank to 6, and the 100th/final challenge star reaches the final field rank.
+- Challenge completions are provisional during the run and are committed only when the run ends. If one or more challenges were completed, a Challenge Report appears before the normal Run Over screen, animates earned stars, shows rank-ups/unlocks, and lists the refreshed five active challenges.
+- Pressing Escape during a run shows the current five challenges on the left side of the pause screen, including live progress and pending completions.
+- Each run now starts at a rank-based multiplier: X3 initially, X6 after SCAVENGER, X9 after SHARPSHOT, and X12 after RECLAIMER. The multiplier can still build to X12 normally, and hits still break it back to X1.
+- Starting-item rank rewards: SMG at SPROUT, AR at SCAVENGER, Shotgun at OUTRIDER, Sniper at SHARPSHOT, RPG at RECLAIMER, upgraded Motorcycle at ROADBORN, upgraded Car at GEARHEAD, and upgraded Truck at APEX SURVIVOR.
+- Rank-reward starting items are visibly locked in the Shop until their named field rank is reached; no numeric rank labels are shown.
+- Upgraded starting vehicles last 1.5x as long as their normal versions (Motorcycle 12s, Car 18s, Truck 30s).

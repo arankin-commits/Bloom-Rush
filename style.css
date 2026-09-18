@@ -1389,3 +1389,41 @@ kbd {
 .skin-model-switcher button:hover { filter:brightness(1.18); transform:translateY(-1px); }
 .skin-model-switcher span { min-width:145px; text-align:center; color:#718178; font-size:8px; letter-spacing:.14em; }
 .skin-model-switcher strong { display:block; margin-top:2px; color:#e8ecdf; font-size:12px; letter-spacing:.1em; }
+
+
+/* Stage 18 rank + challenge progression */
+.menu-rank-card {
+  margin-top:10px; width:max-content; min-width:190px; padding:8px 11px;
+  border:1px solid #40584a; background:rgba(8,14,11,.72); box-shadow:inset 0 0 20px rgba(122,179,91,.04);
+}
+.menu-rank-card span { display:block; color:#75877c; font-size:8px; letter-spacing:.16em; }
+.menu-rank-card strong { display:block; margin-top:2px; color:#dce7d4; font-size:13px; letter-spacing:.08em; }
+.menu-rank-stars,.challenge-rank-stars { margin-top:4px; color:#e9c85a; letter-spacing:.14em; font-size:16px; text-shadow:0 0 9px rgba(233,200,90,.28); }
+.pause-challenges {
+  position:absolute; left:20px; top:50%; transform:translateY(-50%); width:min(330px,30vw); z-index:12;
+  padding:15px; border:1px solid #3d5547; background:rgba(7,13,10,.9); box-shadow:0 14px 36px rgba(0,0,0,.38);
+}
+.pause-challenge-list { display:grid; gap:7px; margin-top:8px; }
+.pause-challenge-row { padding:8px 9px; border-left:3px solid #425a4b; background:#101813; color:#b9c6ba; font-size:9px; line-height:1.35; }
+.pause-challenge-row strong { display:block; color:#e0e8dc; font-size:9px; }
+.pause-challenge-row span { color:#809087; }
+.pause-challenge-row.pending { border-left-color:#e2c45d; background:#17190f; }
+.pause-challenge-row.pending strong::after { content:'  ✓'; color:#e2c45d; }
+.challenge-review-card { width:min(650px,92vw); max-height:88vh; overflow:auto; }
+.challenge-review-card h2 { margin-bottom:14px; }
+.challenge-rank-summary { padding:12px; border:1px solid #3b5545; background:#0b130f; text-align:center; margin-bottom:13px; }
+.challenge-rank-summary > span { color:#718178; font-size:8px; letter-spacing:.16em; }
+.challenge-rank-summary > strong { display:block; margin-top:3px; color:#e3eadf; font-size:19px; letter-spacing:.1em; }
+.challenge-earned-list,.challenge-next-list { display:grid; gap:7px; }
+.challenge-earned-row,.challenge-next-row { display:grid; grid-template-columns:1fr auto; gap:10px; align-items:center; padding:10px 11px; background:#101813; border:1px solid #263c30; text-align:left; }
+.challenge-earned-row { border-color:#5c6136; animation:starEarned .42s ease-out both; }
+.challenge-earned-row strong,.challenge-next-row strong { font-size:10px; color:#dce7d8; }
+.challenge-earned-row span { color:#f0cf59; font-size:18px; font-weight:900; }
+.challenge-next-row span { color:#839289; font-size:9px; }
+.challenge-rank-up { margin:13px 0; padding:14px; border:1px solid #a58a39; background:linear-gradient(90deg,#1d1a0d,#28220f,#1d1a0d); color:#f0d36a; font-weight:900; letter-spacing:.1em; text-align:center; animation:rankPulse .7s ease-out; }
+.challenge-next-heading { margin:16px 0 8px; color:#829188; font-size:8px; letter-spacing:.18em; text-align:left; }
+@keyframes starEarned { from{opacity:0;transform:translateX(-12px) scale(.98)} to{opacity:1;transform:none} }
+@keyframes rankPulse { 0%{transform:scale(.92);box-shadow:0 0 0 rgba(240,211,106,0)} 60%{transform:scale(1.03);box-shadow:0 0 22px rgba(240,211,106,.25)} 100%{transform:none} }
+.shop-item-card.rank-locked { opacity:.58; filter:saturate(.55); }
+.shop-item-card.rank-locked .shop-buy-btn { color:#c4b35d; }
+@media (max-width:900px) { .pause-challenges{left:12px;top:16%;transform:none;width:calc(100vw - 24px);max-width:none;} }
