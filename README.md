@@ -202,3 +202,15 @@ Extract the ZIP and open `index.html` in a modern browser.
 - Mud now renders visibly on top of the ground surface.
 - Plant traps center the character inside the vines, visually recede as Space is mashed, remain in the world after escape, and launch the player forward with a brief escape burst.
 - Plant traps and spikes break the score multiplier; mud does not.
+
+
+## Stage 17
+- Character cosmetic themes now replace shirt/pants colors instead of inheriting customization clothing colors; hair and skin tone remain personalized unless a mask/hood intentionally covers hair.
+- Reworked character cosmetic rendering with more recognizable themed outfits, accessories, headgear, masks, armor, wings, and detailing.
+- Festive weapon/vehicle skins now include wreath details.
+- Camo uses a fuller camouflage pattern; zebra stripes and polka dots cover the equipment more clearly.
+- Blooming equipment grows visible stems, leaves, and flowers off the weapon/vehicle.
+- Vehicle bodies use patterns across the whole body instead of leaving the center as one flat color.
+- Added previous/next preview controls in Weapon Skins and Vehicle Skins so different weapon/vehicle models can be inspected before buying/equipping a skin.
+- Starting Item signs now explicitly render the currently equipped weapon or vehicle skin.
+- Plant-trap escape launches lock control only until the player is 5 meters beyond the trap, then normal control returns.

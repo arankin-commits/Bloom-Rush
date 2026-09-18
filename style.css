@@ -1365,3 +1365,27 @@ kbd {
   .shop-category-title { font-size:14px; }
   .shop-item-card { flex-basis:165px; min-width:165px; }
 }
+
+/* Stage 17 skin preview model selector */
+.skin-model-switcher {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  margin:10px 0 14px;
+  padding:8px 10px;
+  border:1px solid #30483b;
+  background:#0b130f;
+}
+.skin-model-switcher button {
+  width:34px;
+  height:30px;
+  border:1px solid #4c6758;
+  background:#17221d;
+  color:#b8ef81;
+  font:900 18px "Courier New",monospace;
+  cursor:pointer;
+}
+.skin-model-switcher button:hover { filter:brightness(1.18); transform:translateY(-1px); }
+.skin-model-switcher span { min-width:145px; text-align:center; color:#718178; font-size:8px; letter-spacing:.14em; }
+.skin-model-switcher strong { display:block; margin-top:2px; color:#e8ecdf; font-size:12px; letter-spacing:.1em; }
