@@ -932,6 +932,9 @@ kbd {
 .custom-controls select,
 .custom-controls input[type="color"] { width:100%; min-height:44px; border:1px solid #3b5045; background:#111a16; color:var(--cream); padding:8px 10px; font:inherit; }
 .custom-controls input[type="color"] { padding:4px; }
+.toggle-option { display:flex !important; align-items:center; justify-content:space-between; gap:12px; padding:10px 12px; min-height:44px; border:1px solid #3b5045; background:#111a16; }
+.toggle-option span { color:var(--cream); font-size:11px; letter-spacing:.08em; }
+.toggle-option input[type="checkbox"] { width:20px; height:20px; accent-color:#7bc96f; }
 
 .shop-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
 .shop-section { min-height:180px; padding:18px; border:1px solid #2f4438; background:#0d1512; }

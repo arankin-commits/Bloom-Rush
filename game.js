@@ -47,6 +47,7 @@
   const facialHairColorInput = document.getElementById('facialHairColorInput');
   const shirtColorInput = document.getElementById('shirtColorInput');
   const pantsColorInput = document.getElementById('pantsColorInput');
+  const hideHeadgearToggle = document.getElementById('hideHeadgearToggle');
   const musicToggle = document.getElementById('musicToggle');
   const sfxToggle = document.getElementById('sfxToggle');
   const wipTitle = document.getElementById('wipTitle');
@@ -412,7 +413,7 @@
   function getCustomization() {
     const defaults = {
       gender:'masculine', hair:'short', facialHair:'none', skin:'#caa98d',
-      hairColor:'#1b1b19', facialHairColor:'#1b1b19', shirt:'#51655a', pants:'#26352f'
+      hairColor:'#1b1b19', facialHairColor:'#1b1b19', shirt:'#51655a', pants:'#26352f', hideHeadgear:false
     };
     try {
       const raw = JSON.parse(localStorage.getItem(CUSTOMIZE_KEY) || 'null');
@@ -434,7 +435,8 @@
       hairColor: hairColorInput.value,
       facialHairColor: facialHairColorInput.value,
       shirt: shirtColorInput.value,
-      pants: pantsColorInput.value
+      pants: pantsColorInput.value,
+      hideHeadgear: !!hideHeadgearToggle?.checked
     };
     try { localStorage.setItem(CUSTOMIZE_KEY, JSON.stringify(next)); } catch {}
     characterStyle = {...next, cosmeticSkin:getShopState().equipped.cosmetic || 'base'};
@@ -451,10 +453,11 @@
     facialHairColorInput.value = style.facialHairColor;
     shirtColorInput.value = style.shirt;
     pantsColorInput.value = style.pants;
+    if (hideHeadgearToggle) hideHeadgearToggle.checked = !!style.hideHeadgear;
     characterStyle = {...style, cosmeticSkin:getShopState().equipped.cosmetic || 'base'};
   }
 
-  [genderSelect, hairSelect, facialHairSelect, skinColorInput, hairColorInput, facialHairColorInput, shirtColorInput, pantsColorInput].forEach(control => {
+  [genderSelect, hairSelect, facialHairSelect, skinColorInput, hairColorInput, facialHairColorInput, shirtColorInput, pantsColorInput, hideHeadgearToggle].filter(Boolean).forEach(control => {
     control.addEventListener('input', saveCustomization);
     control.addEventListener('change', saveCustomization);
   });
@@ -1414,10 +1417,49 @@
   }
 
   function cosmeticHidesHair(style) {
-    return (style.cosmeticSkin || 'base') === 'ninja';
+    return !style.hideHeadgear && (style.cosmeticSkin || 'base') === 'ninja';
+  }
+
+  function hairClipMode(style) {
+    if (style.hideHeadgear) return 'none';
+    switch (style.cosmeticSkin || 'base') {
+      case 'festive':
+      case 'soldier':
+      case 'beach':
+      case 'pirate':
+      case 'stpatricks':
+        return 'hat';
+      case 'ninja':
+        return 'hood';
+      default:
+        return 'none';
+    }
+  }
+
+  function drawHairVisibleWithHeadgear(c, style) {
+    if (cosmeticHidesHair(style)) return;
+    const clipMode = hairClipMode(style);
+    if (clipMode === 'none') {
+      drawHairStyle(c, style);
+      return;
+    }
+    c.save();
+    c.beginPath();
+    if (clipMode === 'hat') {
+      c.rect(-24, 10, 20, 34);
+      c.rect(-10, 14, 10, 26);
+      c.rect(0, 16, 5, 12);
+    } else if (clipMode === 'hood') {
+      c.rect(-20, 14, 14, 28);
+      c.rect(-9, 18, 4, 14);
+    }
+    c.clip();
+    drawHairStyle(c, style);
+    c.restore();
   }
 
   function drawCosmeticHeadgear(c, style) {
+    if (style.hideHeadgear) return;
     const skin = style.cosmeticSkin || 'base';
     if (skin === 'base') return;
     c.save(); c.lineCap='round'; c.lineJoin='round';
@@ -1501,7 +1543,7 @@
     else c.fillRect(-14,18,28,29);
     drawCharacterSkinOverlay(c, style, crouchOffset);
     c.fillStyle=style.skin; c.fillRect(-10,4,20,18);
-    if (!cosmeticHidesHair(style)) drawHairStyle(c, style);
+    drawHairVisibleWithHeadgear(c, style);
     drawFacialHair(c, style);
     c.fillStyle='#d8f379'; c.fillRect(5,10,3,3);
     drawCosmeticHeadgear(c, style);
@@ -3516,7 +3558,7 @@
     drawCharacterSkinOverlay(ctx, style, crouchOffset);
     ctx.fillStyle = style.skin;
     ctx.fillRect(-10, 4, 20, 18);
-    if (!cosmeticHidesHair(style)) drawHairStyle(ctx, style);
+    drawHairVisibleWithHeadgear(ctx, style);
     drawFacialHair(ctx, style);
     ctx.fillStyle = '#d8f379';
     ctx.fillRect(5, 10, 3, 3);
