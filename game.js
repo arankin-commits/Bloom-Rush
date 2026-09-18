@@ -176,6 +176,7 @@
   let audioContext = null;
   let musicNodes = null;
   let wallSfxClock = 0;
+  let vehicleSfxClock = 0;
 
   let player;
   let bullets = [];
@@ -381,65 +382,145 @@
     src.start();
   }
 
-  function playSfx(kind='ui') {
+  function playSfx(kind='ui', detail=null) {
     if (!getSettings().sfx) return;
     const ac = ensureAudio();
     if (!ac) return;
     const now = ac.currentTime;
     const master = ac.createGain();
-    master.gain.value = .9;
+    master.gain.value = .82;
     master.connect(ac.destination);
 
-    const tone = (freq, dur, type='square', volume=.045, endFreq=null, delay=0) => {
+    const tone = (freq, dur, type='sine', volume=.045, endFreq=null, delay=0) => {
       const osc = ac.createOscillator();
       const gain = ac.createGain();
       const t = now + delay;
       osc.type = type;
-      osc.frequency.setValueAtTime(freq, t);
-      if (endFreq && endFreq > 0) osc.frequency.exponentialRampToValueAtTime(endFreq, t + dur);
+      osc.frequency.setValueAtTime(Math.max(1, freq), t);
+      if (endFreq && endFreq > 0) osc.frequency.exponentialRampToValueAtTime(Math.max(1, endFreq), t + dur);
       gain.gain.setValueAtTime(.0001, t);
-      gain.gain.exponentialRampToValueAtTime(volume, t + .006);
+      gain.gain.exponentialRampToValueAtTime(volume, t + Math.min(.008, dur * .2));
       gain.gain.exponentialRampToValueAtTime(.0001, t + dur);
-      osc.connect(gain); gain.connect(master); osc.start(t); osc.stop(t + dur + .02);
+      osc.connect(gain); gain.connect(master); osc.start(t); osc.stop(t + dur + .03);
+    };
+
+    const noise = (dur, volume=.04, filterType='highpass', startFreq=900, endFreq=null, delay=0) => {
+      const length = Math.max(1, Math.floor(ac.sampleRate * dur));
+      const buffer = ac.createBuffer(1, length, ac.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i=0;i<length;i++) {
+        const fade = Math.pow(1 - i / length, .58);
+        data[i] = (Math.random()*2-1) * fade;
+      }
+      const src = ac.createBufferSource();
+      src.buffer = buffer;
+      const filter = ac.createBiquadFilter();
+      filter.type = filterType;
+      const t = now + delay;
+      filter.frequency.setValueAtTime(Math.max(20,startFreq), t);
+      if (endFreq && endFreq > 0) filter.frequency.exponentialRampToValueAtTime(Math.max(20,endFreq), t + dur);
+      if (filterType === 'bandpass') filter.Q.value = 1.25;
+      const gain = ac.createGain();
+      gain.gain.setValueAtTime(.0001, t);
+      gain.gain.exponentialRampToValueAtTime(volume, t + Math.min(.018, dur*.18));
+      gain.gain.exponentialRampToValueAtTime(.0001, t + dur);
+      src.connect(filter); filter.connect(gain); gain.connect(master);
+      src.start(t); src.stop(t + dur + .03);
+    };
+
+    const vocalGroan = (base=118, dur=.28, volume=.065, delay=0) => {
+      tone(base, dur, 'sawtooth', volume, base*.62, delay);
+      tone(base*2.55, dur*.84, 'triangle', volume*.27, base*1.62, delay+.015);
+      tone(base*4.2, dur*.60, 'sine', volume*.12, base*2.7, delay+.03);
+      noise(dur*.48, volume*.17, 'lowpass', 950, 520, delay+.02);
     };
 
     if (kind === 'gun' || kind === 'shoot') {
-      // Short gritty arcade gun crack.
-      tone(150, .055, 'square', .07, 62);
-      playNoiseBurst(ac, master, .045, .055, 900);
+      const weapon = detail || (player && player.weapon) || 'pistol';
+      if (weapon === 'pistol') {
+        tone(165,.07,'triangle',.075,62);
+        tone(82,.09,'sine',.055,46);
+        noise(.075,.072,'highpass',1250,2600);
+      } else if (weapon === 'ar') {
+        tone(128,.065,'sawtooth',.072,52);
+        tone(255,.035,'square',.026,150);
+        noise(.065,.068,'highpass',1500,3000);
+      } else if (weapon === 'smg') {
+        tone(205,.042,'square',.055,95);
+        tone(112,.05,'triangle',.034,70);
+        noise(.045,.052,'highpass',1900,3600);
+      } else if (weapon === 'shotgun') {
+        tone(82,.18,'sine',.12,30);
+        tone(145,.11,'sawtooth',.07,52);
+        noise(.19,.11,'lowpass',1900,520);
+        noise(.085,.065,'highpass',1350,2800,.01);
+      } else if (weapon === 'sniper') {
+        tone(230,.065,'sawtooth',.095,72);
+        tone(92,.13,'sine',.06,48);
+        noise(.10,.09,'highpass',2200,4800);
+        tone(115,.18,'triangle',.023,72,.13);
+        noise(.12,.018,'bandpass',900,520,.13);
+      } else if (weapon === 'rpg') {
+        tone(96,.25,'sawtooth',.085,39);
+        tone(48,.30,'sine',.07,31);
+        noise(.28,.08,'bandpass',420,1050);
+        noise(.34,.045,'lowpass',1300,380,.03);
+      }
     } else if (kind === 'zombieHit') {
-      tone(112, .08, 'sawtooth', .055, 68);
-      tone(74, .10, 'square', .027, 48, .018);
+      // Wet, low "uuuguh"-style infected groan.
+      vocalGroan(128,.30,.07);
+      tone(78,.18,'sine',.035,61,.10);
     } else if (kind === 'vehicle') {
-      tone(82, .20, 'sawtooth', .05, 132);
-      tone(164, .16, 'square', .022, 110, .03);
+      // Two distinct engine revs: "vrooom ... vroom".
+      const vehicle = detail || (player && player.vehicle) || 'car';
+      const base = vehicle === 'motorcycle' ? 78 : vehicle === 'truck' ? 43 : 58;
+      tone(base,.30,'sawtooth',.07,base*1.85,0);
+      tone(base/2,.31,'sine',.055,base*.9,0);
+      noise(.24,.025,'lowpass',720,1100,.02);
+      tone(base*1.05,.29,'sawtooth',.062,base*1.68,.34);
+      tone(base*.52,.29,'sine',.045,base*.82,.34);
+      noise(.22,.02,'lowpass',680,980,.35);
     } else if (kind === 'hit') {
-      tone(88, .13, 'sawtooth', .07, 42);
-      playNoiseBurst(ac, master, .07, .04, 350);
+      // Human impact/grunt: short "ugh" rather than an arcade beep.
+      vocalGroan(112,.27,.078);
+      tone(61,.16,'sine',.055,43);
+      noise(.065,.025,'lowpass',650,330);
     } else if (kind === 'wall') {
-      tone(62, .22, 'square', .052, 48);
-      tone(124, .18, 'sawtooth', .025, 82, .045);
+      // Roots, stems and dirt rushing past each other.
+      tone(46,.52,'sawtooth',.035,61);
+      noise(.56,.052,'bandpass',280,1150);
+      noise(.24,.028,'lowpass',900,380,.06);
+      noise(.055,.035,'highpass',1100,2500,.10);
+      noise(.045,.028,'highpass',900,2200,.24);
+      noise(.06,.031,'highpass',1200,2700,.39);
     } else if (kind === 'goldrush') {
-      tone(440, .12, 'square', .045, 660);
-      tone(660, .12, 'triangle', .05, 880, .08);
-      tone(880, .18, 'square', .055, 1180, .16);
+      // Booster/wind surge rather than a musical reward jingle.
+      noise(.72,.075,'bandpass',360,3300);
+      noise(.52,.043,'highpass',800,5200,.05);
+      tone(58,.62,'sawtooth',.048,126);
+      tone(116,.52,'triangle',.025,245,.08);
     } else if (kind === 'coin') {
-      tone(760, .065, 'square', .035, 980);
-      tone(1020, .07, 'sine', .03, 1280, .045);
+      // Springy two-bounce pickup with a bright finish.
+      tone(520,.09,'sine',.052,345);
+      tone(285,.075,'triangle',.026,430,.02);
+      tone(430,.105,'sine',.05,720,.085);
+      tone(780,.07,'triangle',.026,1060,.16);
     } else if (kind === 'bloom') {
-      tone(410, .13, 'sine', .04, 620);
+      tone(410,.13,'sine',.04,620);
     } else if (kind === 'explode') {
-      tone(72, .30, 'sawtooth', .10, 28);
-      playNoiseBurst(ac, master, .25, .08, 120);
+      tone(72,.30,'sawtooth',.10,28);
+      noise(.30,.10,'lowpass',1800,180);
+      noise(.12,.055,'highpass',950,2600);
     } else if (kind === 'boost') {
-      tone(510, .14, 'triangle', .04, 730);
+      noise(.27,.034,'bandpass',520,1900);
+      tone(92,.22,'sawtooth',.035,165);
     } else if (kind === 'pickup') {
-      tone(320, .10, 'triangle', .04, 470);
+      tone(320,.10,'triangle',.04,470);
     } else {
-      tone(250, .045, 'square', .03, 190);
+      tone(250,.045,'square',.03,190);
     }
 
-    setTimeout(() => { try { master.disconnect(); } catch {} }, 500);
+    setTimeout(() => { try { master.disconnect(); } catch {} }, 1500);
   }
 
   function startMusic() {
@@ -918,6 +999,7 @@
     pitDeathTimer = 0;
     weaponBreakTimer = 0;
     wallSfxClock = 0;
+    vehicleSfxClock = 0;
     brokenWeaponLabel = '';
     state = 'playing';
     last = performance.now();
@@ -1254,7 +1336,8 @@
   function equipVehicle(type) {
     const def = VEHICLES[type];
     if (!def) return;
-    playSfx('vehicle');
+    playSfx('vehicle', type);
+    vehicleSfxClock = 1.05;
     player.vehicle = type;
     player.vehicleTime = def.duration;
     player.vehicleMaxTime = def.duration;
@@ -1341,7 +1424,7 @@
       });
     }
 
-    playSfx('gun');
+    playSfx('gun', player.weapon);
     player.shotCooldown = def.cooldown;
     player.muzzle = .075;
     player.bloom = Math.min(100, player.bloom + def.bloomPerShot);
@@ -1505,7 +1588,14 @@
 
     if (player.vehicle) {
       player.vehicleTime = Math.max(0, player.vehicleTime - dt);
+      vehicleSfxClock = Math.max(0, vehicleSfxClock - dt);
+      if (vehicleSfxClock <= 0 && player.vehicleTime > 0) {
+        playSfx('vehicle', player.vehicle);
+        vehicleSfxClock = 1.35;
+      }
       if (player.vehicleTime <= 0) endVehicle();
+    } else {
+      vehicleSfxClock = 0;
     }
 
     const bloomRate = 1.0 + Math.min(.9, gameTime * .009);

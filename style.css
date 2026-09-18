@@ -1028,3 +1028,200 @@ kbd {
   .pause-run-stats { left:16px; right:16px; bottom:16px; }
   .pause-stat { font-size:13px; }
 }
+
+/* STAGE 10 · SAFEHOUSE MENU */
+#menuScreen {
+  justify-content: flex-end;
+  align-items: center;
+  padding: 3vh 3.2vw 3vh 48vw;
+  background:
+    radial-gradient(circle at 22% 28%, rgba(119, 163, 99, .13), transparent 24%),
+    linear-gradient(180deg, #14211c 0%, #0b1210 63%, #080d0c 100%);
+}
+
+#menuScreen .menu-shell {
+  width: min(700px, 48vw);
+  max-height: 94vh;
+  margin: 0;
+  padding: 34px 38px;
+  background: rgba(8, 14, 12, .88);
+  backdrop-filter: blur(4px);
+}
+
+#menuScreen .brand { margin-bottom: 18px; }
+#menuScreen .brand h1 { font-size: clamp(54px, 6.3vw, 96px); }
+#menuScreen .menu-actions { margin: 18px 0; grid-template-columns: 1.35fr 1fr 1fr; }
+#menuScreen .stage7-actions button:nth-child(4),
+#menuScreen .stage7-actions button:nth-child(5) { grid-column: auto; }
+#menuScreen .controls-card { padding: 14px 0 16px; }
+#menuScreen .menu-lore { margin-top: 12px; }
+
+.menu-scene {
+  position: absolute;
+  inset: 0 48vw 0 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.menu-scene::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(3,8,6,.08), rgba(3,8,6,.12) 55%, rgba(3,8,6,.76));
+}
+
+.menu-moon {
+  position: absolute;
+  width: clamp(110px, 11vw, 190px);
+  aspect-ratio: 1;
+  left: 8%;
+  top: 8%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 34%, #d8e6b6 0 14%, #9fb58a 36%, #657861 65%, rgba(58,76,61,.15) 72%);
+  box-shadow: 0 0 70px rgba(166,196,139,.2);
+  opacity: .55;
+}
+
+.menu-haze {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(18px);
+  background: rgba(85, 129, 75, .15);
+}
+.haze-one { width: 48%; height: 23%; left: -6%; bottom: 17%; }
+.haze-two { width: 44%; height: 20%; right: 2%; bottom: 27%; opacity: .55; }
+
+.menu-ground {
+  position: absolute;
+  left: -5%; right: -5%; bottom: -2%; height: 25%;
+  background:
+    repeating-linear-gradient(168deg, transparent 0 28px, rgba(87,136,72,.12) 29px 31px),
+    linear-gradient(180deg, #1c2b22 0%, #0a100d 64%);
+  border-top: 6px solid #3c5b3d;
+  transform: skewY(-1deg);
+}
+
+.safehouse {
+  position: absolute;
+  left: 9%;
+  bottom: 18%;
+  width: min(35vw, 540px);
+  height: min(31vw, 455px);
+  filter: drop-shadow(0 26px 24px rgba(0,0,0,.48));
+}
+
+.safehouse-body {
+  position: absolute;
+  left: 4%; right: 3%; bottom: 0;
+  height: 68%;
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.018) 0 3px, transparent 3px 34px),
+    linear-gradient(180deg, #334139, #202c27 52%, #17201d);
+  border: 3px solid #53675b;
+  box-shadow: inset 0 0 0 5px rgba(4,9,7,.35);
+}
+
+.safehouse-roof {
+  position: absolute;
+  left: -3%; right: -3%; top: 9%; height: 31%;
+  background: linear-gradient(155deg, #536259, #2a3530 62%, #17201d);
+  clip-path: polygon(7% 100%, 23% 15%, 67% 0, 100% 100%);
+  border-bottom: 5px solid #111815;
+}
+
+.safehouse-window {
+  position: absolute;
+  top: 25%;
+  width: 22%;
+  height: 24%;
+  border: 5px solid #18221e;
+  background:
+    linear-gradient(90deg, transparent 47%, #26362d 47% 53%, transparent 53%),
+    linear-gradient(transparent 47%, #26362d 47% 53%, transparent 53%),
+    radial-gradient(circle at 50% 80%, rgba(200,221,125,.36), transparent 40%),
+    #849569;
+  box-shadow: 0 0 26px rgba(179,203,107,.11);
+}
+.window-left { left: 13%; }
+.window-right { right: 13%; }
+
+.safehouse-door {
+  position: absolute;
+  left: 42%;
+  bottom: 0;
+  width: 18%;
+  height: 48%;
+  background: linear-gradient(90deg, #121a17, #26362f 55%, #131c18);
+  border: 4px solid #0b110f;
+  box-shadow: inset 7px 0 14px rgba(0,0,0,.45);
+}
+.safehouse-door span {
+  position: absolute; right: 12%; top: 52%; width: 7px; height: 7px; border-radius: 50%; background: #b3c472;
+}
+.safehouse-sign {
+  position: absolute;
+  left: 34%; top: 9%;
+  padding: 5px 10px;
+  border: 2px solid #667669;
+  background: #141d19;
+  color: #a9ba87;
+  font-size: clamp(7px, .7vw, 11px);
+  letter-spacing: .16em;
+  transform: rotate(-1deg);
+}
+
+.safehouse-antenna {
+  position: absolute;
+  width: 3px; height: 26%;
+  right: 22%; top: -6%;
+  background: #697b70;
+  transform: rotate(5deg);
+  transform-origin: bottom center;
+}
+.safehouse-antenna::before,
+.safehouse-antenna::after {
+  content: ""; position: absolute; left: 50%; transform: translateX(-50%); border: 2px solid #738779; border-radius: 50%;
+}
+.safehouse-antenna::before { width: 28px; height: 12px; top: 4px; }
+.safehouse-antenna::after { width: 14px; height: 6px; top: 7px; }
+
+.safehouse-vines {
+  position: absolute;
+  width: 42%; height: 40%;
+  border-left: 6px solid rgba(82,137,71,.72);
+  border-bottom: 4px solid rgba(82,137,71,.45);
+  border-radius: 0 0 0 80%;
+}
+.vine-a { left: 1%; bottom: 3%; transform: rotate(6deg); }
+.vine-b { right: -8%; bottom: 13%; transform: scaleX(-1) rotate(-8deg); opacity: .7; }
+
+.menu-runner-silhouette {
+  position: absolute;
+  width: 24px; height: 62px;
+  left: 76%; bottom: 18%;
+  background: #111814;
+  border-radius: 9px 9px 3px 3px;
+  box-shadow: -8px 56px 0 -7px #111814, 8px 56px 0 -7px #111814;
+  z-index: 3;
+}
+.menu-runner-silhouette::before {
+  content: ""; position:absolute; width:20px; height:20px; border-radius:50%; background:#111814; left:2px; top:-17px;
+}
+.menu-runner-silhouette::after {
+  content: ""; position:absolute; width:31px; height:6px; background:#111814; right:-27px; top:20px; transform:rotate(-3deg); transform-origin:left center;
+}
+
+@media (max-width: 1080px) {
+  #menuScreen { padding-left: 39vw; }
+  .menu-scene { right: 61vw; }
+  #menuScreen .menu-shell { width: min(680px, 59vw); }
+  .safehouse { left: 0; width: 42vw; }
+}
+
+@media (max-width: 760px) {
+  #menuScreen { justify-content:center; padding: 3vh 4vw; }
+  #menuScreen .menu-shell { width: 92vw; padding: 25px 22px; }
+  .menu-scene { display:none; }
+  #menuScreen .menu-actions { grid-template-columns: 1fr 1fr; }
+}

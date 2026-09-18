@@ -28,3 +28,15 @@ Extract the ZIP and open `index.html` in a modern browser.
 - Added procedural arcade SFX for guns, zombie impacts, vehicles, player hits, the Bloom wall, Gold Rush, coins, explosions, and pickups.
 - Replaced the old background drone with an original procedural gritty arcade soundtrack.
 - Music and SFX continue to respect their separate Settings toggles.
+
+## Stage 10
+- Removed the menu line: "Keep your streak alive. Clean runs build score. One hit breaks the multiplier."
+- Reworked the title screen into a split composition: the safehouse is visible on the left and the menu panel sits on the right.
+- Coin pickups now use a springy/bouncy synthesized sound.
+- Gold Rush now uses a wind/booster surge instead of a musical reward chirp.
+- Player damage uses a short vocal-like "ugh" impact sound.
+- Bloom wall proximity uses layered rushing-root, dirt, and cracking sounds.
+- Infected being shot use a separate low "uuuguh"-style synthesized groan.
+- Every gun class now has a distinct firing profile: pistol crack, AR report, tight SMG snap, shotgun blast, sniper crack/echo, and RPG launch thump/whoosh.
+- Vehicles use repeating two-part engine revs while active.
+- Existing Music and SFX settings still independently control soundtrack and effects.
