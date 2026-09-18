@@ -93,8 +93,8 @@
     { name: 'PALE BLOOM FIELDS', skyA:'#292b20', skyB:'#191a14', skyC:'#0d0e0b', ground:'#27291e', groundTop:'#7e8b4a', platform:'#414531', platformTop:'#a5b763', accent:'#c3cf6b', silhouette:'#62684b' }
   ];
 
-  // Stage 8 revision: the Bloom wall now moves at a constant 2x speed.
-  const BLOOM_WALL_BASE_SPEED = 280;
+  // Legacy reference speed; Stage 11 wall speed is derived from RUN_SPEED in getBloomWallSpeed().
+  const BLOOM_WALL_BASE_SPEED = RUN_SPEED * 1.2;
   const BLOOM_WALL_WIDTH = 220;
 
   const WEAPONS = {
@@ -175,6 +175,7 @@
   let characterStyle = null;
   let audioContext = null;
   let musicNodes = null;
+  let goldRushAudio = null;
   let wallSfxClock = 0;
   let vehicleSfxClock = 0;
 
@@ -247,6 +248,7 @@
 
   function returnToMenu() {
     stopMusic();
+    stopGoldRushAudio();
     state = 'menu';
     renderLeaderboard();
     pausePanel.classList.add('hidden');
@@ -342,6 +344,8 @@
     try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); } catch {}
     if (!settings.music) stopMusic();
     else if (state === 'playing') startMusic();
+    if (!settings.sfx) stopGoldRushAudio();
+    else if (state === 'playing' && player && player.goldRushTime > 0) startGoldRushAudio(false);
   }
 
   function loadSettingsControls() {
@@ -388,7 +392,7 @@
     if (!ac) return;
     const now = ac.currentTime;
     const master = ac.createGain();
-    master.gain.value = .82;
+    master.gain.value = .86;
     master.connect(ac.destination);
 
     const tone = (freq, dur, type='sine', volume=.045, endFreq=null, delay=0) => {
@@ -399,18 +403,22 @@
       osc.frequency.setValueAtTime(Math.max(1, freq), t);
       if (endFreq && endFreq > 0) osc.frequency.exponentialRampToValueAtTime(Math.max(1, endFreq), t + dur);
       gain.gain.setValueAtTime(.0001, t);
-      gain.gain.exponentialRampToValueAtTime(volume, t + Math.min(.008, dur * .2));
+      gain.gain.exponentialRampToValueAtTime(volume, t + Math.min(.006, dur * .16));
       gain.gain.exponentialRampToValueAtTime(.0001, t + dur);
-      osc.connect(gain); gain.connect(master); osc.start(t); osc.stop(t + dur + .03);
+      osc.connect(gain); gain.connect(master); osc.start(t); osc.stop(t + dur + .035);
     };
 
-    const noise = (dur, volume=.04, filterType='highpass', startFreq=900, endFreq=null, delay=0) => {
+    const noise = (dur, volume=.04, filterType='highpass', startFreq=900, endFreq=null, delay=0, q=1.1) => {
       const length = Math.max(1, Math.floor(ac.sampleRate * dur));
       const buffer = ac.createBuffer(1, length, ac.sampleRate);
       const data = buffer.getChannelData(0);
+      let last = 0;
       for (let i=0;i<length;i++) {
-        const fade = Math.pow(1 - i / length, .58);
-        data[i] = (Math.random()*2-1) * fade;
+        // Slightly correlated noise has more physical body than raw white noise.
+        const white = Math.random()*2-1;
+        last = last * .72 + white * .28;
+        const fade = Math.pow(1 - i / length, .42);
+        data[i] = last * fade;
       }
       const src = ac.createBufferSource();
       src.buffer = buffer;
@@ -419,88 +427,95 @@
       const t = now + delay;
       filter.frequency.setValueAtTime(Math.max(20,startFreq), t);
       if (endFreq && endFreq > 0) filter.frequency.exponentialRampToValueAtTime(Math.max(20,endFreq), t + dur);
-      if (filterType === 'bandpass') filter.Q.value = 1.25;
+      filter.Q.value = q;
       const gain = ac.createGain();
       gain.gain.setValueAtTime(.0001, t);
-      gain.gain.exponentialRampToValueAtTime(volume, t + Math.min(.018, dur*.18));
+      gain.gain.exponentialRampToValueAtTime(volume, t + Math.min(.014, dur*.12));
       gain.gain.exponentialRampToValueAtTime(.0001, t + dur);
       src.connect(filter); filter.connect(gain); gain.connect(master);
-      src.start(t); src.stop(t + dur + .03);
+      src.start(t); src.stop(t + dur + .035);
     };
 
-    const vocalGroan = (base=118, dur=.28, volume=.065, delay=0) => {
-      tone(base, dur, 'sawtooth', volume, base*.62, delay);
-      tone(base*2.55, dur*.84, 'triangle', volume*.27, base*1.62, delay+.015);
-      tone(base*4.2, dur*.60, 'sine', volume*.12, base*2.7, delay+.03);
-      noise(dur*.48, volume*.17, 'lowpass', 950, 520, delay+.02);
+    const bodyThump = (freq=58, dur=.12, volume=.07, delay=0) => {
+      tone(freq, dur, 'sine', volume, Math.max(26, freq*.46), delay);
+      noise(dur*.72, volume*.36, 'lowpass', 520, 180, delay, .7);
+    };
+
+    const organicGroan = (base=112, dur=.33, volume=.07, delay=0) => {
+      // A breathy, formant-like grunt: low voiced body plus two filtered-noise bands.
+      tone(base, dur, 'triangle', volume*.7, base*.72, delay);
+      noise(dur, volume*.48, 'bandpass', base*4.7, base*3.4, delay, 2.4);
+      noise(dur*.82, volume*.31, 'bandpass', base*8.4, base*6.1, delay+.018, 2.0);
+      noise(dur*.46, volume*.20, 'lowpass', 640, 260, delay+.025, .65);
     };
 
     if (kind === 'gun' || kind === 'shoot') {
       const weapon = detail || (player && player.weapon) || 'pistol';
+      // Weapon reports are built from a pressure thump, mechanical crack, and short air tail.
       if (weapon === 'pistol') {
-        tone(165,.07,'triangle',.075,62);
-        tone(82,.09,'sine',.055,46);
-        noise(.075,.072,'highpass',1250,2600);
+        bodyThump(76,.095,.085);
+        noise(.055,.115,'bandpass',2450,1650,0,1.8);
+        noise(.105,.045,'highpass',1150,2800,.015,.8);
+        noise(.12,.018,'bandpass',700,430,.045,1.2);
       } else if (weapon === 'ar') {
-        tone(128,.065,'sawtooth',.072,52);
-        tone(255,.035,'square',.026,150);
-        noise(.065,.068,'highpass',1500,3000);
+        bodyThump(67,.085,.09);
+        noise(.047,.118,'bandpass',2850,1850,0,2.0);
+        noise(.095,.046,'highpass',1350,3400,.008,.85);
+        tone(118,.07,'triangle',.028,72,.018);
       } else if (weapon === 'smg') {
-        tone(205,.042,'square',.055,95);
-        tone(112,.05,'triangle',.034,70);
-        noise(.045,.052,'highpass',1900,3600);
+        bodyThump(82,.060,.062);
+        noise(.038,.088,'bandpass',3300,2200,0,2.2);
+        noise(.062,.03,'highpass',1800,3900,.006,.8);
       } else if (weapon === 'shotgun') {
-        tone(82,.18,'sine',.12,30);
-        tone(145,.11,'sawtooth',.07,52);
-        noise(.19,.11,'lowpass',1900,520);
-        noise(.085,.065,'highpass',1350,2800,.01);
+        bodyThump(48,.21,.145);
+        noise(.16,.14,'lowpass',1700,260,0,.65);
+        noise(.075,.09,'bandpass',2200,1150,0,1.3);
+        noise(.24,.03,'bandpass',620,270,.04,1.1);
       } else if (weapon === 'sniper') {
-        tone(230,.065,'sawtooth',.095,72);
-        tone(92,.13,'sine',.06,48);
-        noise(.10,.09,'highpass',2200,4800);
-        tone(115,.18,'triangle',.023,72,.13);
-        noise(.12,.018,'bandpass',900,520,.13);
+        bodyThump(54,.145,.12);
+        noise(.052,.15,'bandpass',3900,2200,0,2.5);
+        noise(.13,.055,'highpass',1750,5200,.006,.9);
+        noise(.30,.026,'bandpass',820,350,.12,1.5);
+        tone(72,.28,'sine',.026,48,.12);
       } else if (weapon === 'rpg') {
-        tone(96,.25,'sawtooth',.085,39);
-        tone(48,.30,'sine',.07,31);
-        noise(.28,.08,'bandpass',420,1050);
-        noise(.34,.045,'lowpass',1300,380,.03);
+        bodyThump(42,.25,.115);
+        noise(.34,.09,'lowpass',980,170,0,.55);
+        noise(.28,.072,'bandpass',520,1100,.018,.7);
+        noise(.45,.036,'highpass',620,1900,.045,.6);
       }
     } else if (kind === 'zombieHit') {
-      // Wet, low "uuuguh"-style infected groan.
-      vocalGroan(128,.30,.07);
-      tone(78,.18,'sine',.035,61,.10);
+      // Fleshy impact first, then an organic infected grunt with no square/saw timbre.
+      bodyThump(54,.10,.075);
+      noise(.075,.052,'lowpass',720,240,0,.65);
+      organicGroan(104,.35,.078,.028);
     } else if (kind === 'vehicle') {
-      // Two distinct engine revs: "vrooom ... vroom".
+      // Combustion-like engine revs: low cylinders + filtered exhaust/road noise.
       const vehicle = detail || (player && player.vehicle) || 'car';
-      const base = vehicle === 'motorcycle' ? 78 : vehicle === 'truck' ? 43 : 58;
-      tone(base,.30,'sawtooth',.07,base*1.85,0);
-      tone(base/2,.31,'sine',.055,base*.9,0);
-      noise(.24,.025,'lowpass',720,1100,.02);
-      tone(base*1.05,.29,'sawtooth',.062,base*1.68,.34);
-      tone(base*.52,.29,'sine',.045,base*.82,.34);
-      noise(.22,.02,'lowpass',680,980,.35);
+      const base = vehicle === 'motorcycle' ? 82 : vehicle === 'truck' ? 38 : 54;
+      const top = vehicle === 'motorcycle' ? 176 : vehicle === 'truck' ? 72 : 112;
+      tone(base,.38,'sine',.065,top,0);
+      tone(base*.51,.38,'triangle',.043,top*.52,0);
+      noise(.40,.05,'bandpass',vehicle === 'truck' ? 145 : 220, vehicle === 'motorcycle' ? 520 : 320,0,1.4);
+      noise(.34,.032,'lowpass',760,260,.01,.6);
+      tone(base*1.04,.32,'sine',.056,top*.93,.42);
+      noise(.34,.044,'bandpass',vehicle === 'truck' ? 135 : 205, vehicle === 'motorcycle' ? 480 : 300,.42,1.35);
     } else if (kind === 'hit') {
-      // Human impact/grunt: short "ugh" rather than an arcade beep.
-      vocalGroan(112,.27,.078);
-      tone(61,.16,'sine',.055,43);
-      noise(.065,.025,'lowpass',650,330);
+      bodyThump(45,.13,.09);
+      noise(.07,.048,'lowpass',640,220,0,.6);
+      organicGroan(92,.31,.09,.015);
     } else if (kind === 'wall') {
-      // Roots, stems and dirt rushing past each other.
-      tone(46,.52,'sawtooth',.035,61);
-      noise(.56,.052,'bandpass',280,1150);
-      noise(.24,.028,'lowpass',900,380,.06);
-      noise(.055,.035,'highpass',1100,2500,.10);
-      noise(.045,.028,'highpass',900,2200,.24);
-      noise(.06,.031,'highpass',1200,2700,.39);
+      // Deep root mass: subterranean rumble, woody friction and dirt, with very little treble.
+      tone(29,.72,'sine',.075,24);
+      tone(43,.62,'triangle',.045,31,.03);
+      noise(.78,.085,'lowpass',420,105,0,.7);
+      noise(.64,.055,'bandpass',150,245,.02,1.25);
+      noise(.11,.032,'bandpass',540,330,.16,1.6);
+      noise(.09,.028,'bandpass',470,290,.43,1.5);
     } else if (kind === 'goldrush') {
-      // Booster/wind surge rather than a musical reward jingle.
-      noise(.72,.075,'bandpass',360,3300);
-      noise(.52,.043,'highpass',800,5200,.05);
-      tone(58,.62,'sawtooth',.048,126);
-      tone(116,.52,'triangle',.025,245,.08);
+      // One-shot fallback only; the actual Gold Rush uses the continuous loop below.
+      noise(.22,.055,'bandpass',420,2200,0,.7);
+      tone(52,.20,'sine',.035,78);
     } else if (kind === 'coin') {
-      // Springy two-bounce pickup with a bright finish.
       tone(520,.09,'sine',.052,345);
       tone(285,.075,'triangle',.026,430,.02);
       tone(430,.105,'sine',.05,720,.085);
@@ -508,19 +523,83 @@
     } else if (kind === 'bloom') {
       tone(410,.13,'sine',.04,620);
     } else if (kind === 'explode') {
-      tone(72,.30,'sawtooth',.10,28);
-      noise(.30,.10,'lowpass',1800,180);
-      noise(.12,.055,'highpass',950,2600);
+      bodyThump(38,.34,.15);
+      noise(.36,.12,'lowpass',1500,130,0,.55);
+      noise(.15,.052,'bandpass',900,430,.015,1.0);
     } else if (kind === 'boost') {
-      noise(.27,.034,'bandpass',520,1900);
-      tone(92,.22,'sawtooth',.035,165);
+      noise(.27,.034,'bandpass',520,1900,0,.8);
+      tone(92,.22,'triangle',.035,165);
     } else if (kind === 'pickup') {
       tone(320,.10,'triangle',.04,470);
     } else {
-      tone(250,.045,'square',.03,190);
+      tone(250,.045,'triangle',.03,190);
     }
 
-    setTimeout(() => { try { master.disconnect(); } catch {} }, 1500);
+    setTimeout(() => { try { master.disconnect(); } catch {} }, 1800);
+  }
+
+  function startGoldRushAudio(retrigger=true) {
+    if (!getSettings().sfx || !player || player.goldRushTime <= 0) return;
+    const ac = ensureAudio();
+    if (!ac) return;
+    const now = ac.currentTime;
+
+    if (!goldRushAudio) {
+      const master = ac.createGain();
+      master.gain.value = .0001;
+      master.connect(ac.destination);
+
+      // A looping, broadband wind/booster bed with no obvious repeating pitch.
+      const seconds = 1.8;
+      const buffer = ac.createBuffer(1, Math.floor(ac.sampleRate * seconds), ac.sampleRate);
+      const data = buffer.getChannelData(0);
+      let low = 0;
+      for (let i=0;i<data.length;i++) {
+        const white = Math.random()*2-1;
+        low = low*.91 + white*.09;
+        data[i] = white*.45 + low*.75;
+      }
+      const src = ac.createBufferSource();
+      src.buffer = buffer;
+      src.loop = true;
+
+      const hp = ac.createBiquadFilter();
+      hp.type = 'highpass'; hp.frequency.value = 180;
+      const lp = ac.createBiquadFilter();
+      lp.type = 'lowpass'; lp.frequency.value = 2600;
+      const band = ac.createBiquadFilter();
+      band.type = 'peaking'; band.frequency.value = 620; band.Q.value = .7; band.gain.value = 6;
+      src.connect(hp); hp.connect(lp); lp.connect(band); band.connect(master);
+
+      const rumble = ac.createOscillator();
+      const rumbleGain = ac.createGain();
+      rumble.type = 'sine'; rumble.frequency.value = 46;
+      rumbleGain.gain.value = .018;
+      rumble.connect(rumbleGain); rumbleGain.connect(master);
+
+      src.start(); rumble.start();
+      goldRushAudio = { master, src, rumble, rumbleGain };
+    }
+
+    const g = goldRushAudio.master.gain;
+    g.cancelScheduledValues(now);
+    const current = Math.max(.0001, g.value || .0001);
+    g.setValueAtTime(current, now);
+    if (retrigger) {
+      // Fortepiano: strong initial blast, then immediate drop to a softer sustained wind.
+      g.linearRampToValueAtTime(.14, now + .035);
+      g.exponentialRampToValueAtTime(.038, now + .52);
+    } else {
+      g.linearRampToValueAtTime(.038, now + .12);
+    }
+  }
+
+  function stopGoldRushAudio() {
+    if (!goldRushAudio) return;
+    try { goldRushAudio.src.stop(); } catch {}
+    try { goldRushAudio.rumble.stop(); } catch {}
+    try { goldRushAudio.master.disconnect(); } catch {}
+    goldRushAudio = null;
   }
 
   function startMusic() {
@@ -529,49 +608,75 @@
     if (!ac) return;
 
     const master = ac.createGain();
-    master.gain.value = .038;
-    const crush = ac.createWaveShaper();
-    const curve = new Float32Array(256);
+    master.gain.value = .050;
+    const drive = ac.createWaveShaper();
+    const curve = new Float32Array(512);
     for (let i=0;i<curve.length;i++) {
       const x = i / (curve.length - 1) * 2 - 1;
-      curve[i] = Math.tanh(x * 3.2);
+      curve[i] = Math.tanh(x * 1.9);
     }
-    crush.curve = curve;
-    crush.oversample = '2x';
-    master.connect(crush); crush.connect(ac.destination);
+    drive.curve = curve;
+    drive.oversample = '2x';
+    const lowpass = ac.createBiquadFilter();
+    lowpass.type = 'lowpass'; lowpass.frequency.value = 4300; lowpass.Q.value = .35;
+    master.connect(drive); drive.connect(lowpass); lowpass.connect(ac.destination);
 
-    const bpm = 136;
-    const stepMs = (60 / bpm / 2) * 1000; // eighth notes
-    const bass = [55,55,65.41,55,73.42,65.41,49,55,55,82.41,73.42,65.41,49,49,65.41,55];
-    const lead = [220,0,0,261.63,0,293.66,0,0,220,0,329.63,0,293.66,0,261.63,0];
+    // Grittier, more hectic score: pounding drums, dirty bass pulses and noisy metallic accents.
+    const bpm = 154;
+    const stepMs = (60 / bpm / 4) * 1000; // sixteenth notes
+    const bass = [49,49,55,49,65.41,49,46.25,55,49,58.27,49,65.41,43.65,49,55,46.25];
     let step = 0;
 
-    const scheduleTone = (freq, dur, type, vol, detune=0) => {
+    const musicTone = (freq, dur, type='triangle', vol=.05, endFreq=null, delay=0) => {
+      const t = ac.currentTime + delay;
       const osc = ac.createOscillator();
       const gain = ac.createGain();
-      const t = ac.currentTime;
-      osc.type = type; osc.frequency.value = freq; osc.detune.value = detune;
-      gain.gain.setValueAtTime(vol, t);
-      gain.gain.exponentialRampToValueAtTime(.0001, t + dur);
-      osc.connect(gain); gain.connect(master); osc.start(t); osc.stop(t + dur + .02);
+      osc.type = type; osc.frequency.setValueAtTime(freq,t);
+      if (endFreq) osc.frequency.exponentialRampToValueAtTime(Math.max(1,endFreq),t+dur);
+      gain.gain.setValueAtTime(vol,t); gain.gain.exponentialRampToValueAtTime(.0001,t+dur);
+      osc.connect(gain); gain.connect(master); osc.start(t); osc.stop(t+dur+.02);
+    };
+
+    const musicNoise = (dur, vol, filterType, freq, q=.8) => {
+      const len = Math.max(1, Math.floor(ac.sampleRate * dur));
+      const buf = ac.createBuffer(1,len,ac.sampleRate);
+      const d = buf.getChannelData(0);
+      let brown=0;
+      for (let i=0;i<len;i++) { brown = brown*.82 + (Math.random()*2-1)*.18; d[i]=brown; }
+      const src=ac.createBufferSource(); src.buffer=buf;
+      const filter=ac.createBiquadFilter(); filter.type=filterType; filter.frequency.value=freq; filter.Q.value=q;
+      const gain=ac.createGain(); const t=ac.currentTime;
+      gain.gain.setValueAtTime(vol,t); gain.gain.exponentialRampToValueAtTime(.0001,t+dur);
+      src.connect(filter); filter.connect(gain); gain.connect(master); src.start(t); src.stop(t+dur+.02);
     };
 
     const tick = () => {
       if (!musicNodes || musicNodes.master !== master || !getSettings().music) return;
-      const b = bass[step % bass.length];
-      scheduleTone(b, .20, 'sawtooth', .22, step % 4 === 0 ? -7 : 0);
-      scheduleTone(b * 2, .09, 'square', .055, 5);
-      const l = lead[step % lead.length];
-      if (l) scheduleTone(l, .095, 'square', .075, (step % 3 - 1) * 4);
-      if (step % 2 === 0) playNoiseBurst(ac, master, .035, .06, 4200);
-      if (step % 8 === 4) {
-        scheduleTone(45, .12, 'sine', .18, 0);
-        playNoiseBurst(ac, master, .06, .05, 500);
+      const pos = step % 16;
+      // Kick-like impacts on 1/3 plus extra hectic accents.
+      if (pos === 0 || pos === 8 || pos === 11) {
+        musicTone(78,.115,'sine',.18,38);
+        musicNoise(.07,.055,'lowpass',360,.55);
       }
+      // Snare / debris hit.
+      if (pos === 4 || pos === 12) {
+        musicNoise(.12,.115,'bandpass',1350,1.1);
+        musicTone(165,.055,'triangle',.032,92);
+      }
+      // Fast dirty hats / grit.
+      if (pos % 2 === 1 || pos === 6 || pos === 14) musicNoise(.035,.045,'highpass',3100,.65);
+
+      if (pos % 4 === 0 || pos === 6 || pos === 14) {
+        const b = bass[pos];
+        musicTone(b,.15,'triangle',.11,b*.72);
+        musicNoise(.08,.018,'bandpass',260,.8);
+      }
+      // Sparse abrasive scrape accents, deliberately non-melodic.
+      if (pos === 3 || pos === 10 || pos === 15) musicNoise(.09,.035,'bandpass',720 + pos*45,2.0);
       step++;
     };
 
-    musicNodes = { master, crush, timer:null };
+    musicNodes = { master, drive, lowpass, timer:null };
     tick();
     musicNodes.timer = setInterval(tick, stepMs);
   }
@@ -580,7 +685,8 @@
     if (!musicNodes) return;
     if (musicNodes.timer) clearInterval(musicNodes.timer);
     try { musicNodes.master.disconnect(); } catch {}
-    try { musicNodes.crush.disconnect(); } catch {}
+    try { musicNodes.drive.disconnect(); } catch {}
+    try { musicNodes.lowpass.disconnect(); } catch {}
     musicNodes = null;
   }
 
@@ -919,16 +1025,12 @@
     if (!player) return;
     player.goldRushTime = Math.max(player.goldRushTime || 0, 3);
     if (boostBanner) boostBanner.classList.remove('hidden');
-    playSfx('goldrush');
+    startGoldRushAudio(true);
   }
 
   function getBloomWallSpeed() {
-    const meters = getDistanceMeters();
-    let stages = 0;
-    if (meters >= 1000) stages++;
-    if (meters >= 2000) stages++;
-    if (meters >= 3000) stages++;
-    return BLOOM_WALL_BASE_SPEED * Math.pow(1.5, stages);
+    // Stage 11: constant pressure at 20% faster than the player's normal run speed.
+    return RUN_SPEED * 1.2;
   }
 
   function getWallDistanceMeters() {
@@ -987,9 +1089,8 @@
     startMusic();
     playSfx('ui');
     cameraX = 0;
-    // Begin a little over 300 meters behind the player so the proximity icon
-    // starts hidden and only appears once the wall truly closes in.
-    bloomWallX = player.x - 3420 - BLOOM_WALL_WIDTH;
+    // Stage 11: the wall's front begins exactly 100 meters (1000 world px) behind the player.
+    bloomWallX = player.x - 1000 - BLOOM_WALL_WIDTH;
     shake = 0;
     maxBloom = player.bloom;
     nextEnemyId = 1;
@@ -1519,7 +1620,7 @@
 
     if (player.x + innerWidth * 3 > generatedUntil) buildLevel(player.x + innerWidth * 5);
 
-    // Stage 9 wall pressure increases by 50% at 1000m, 2000m and 3000m.
+    // Stage 11: constant wall speed at 120% of normal player running speed.
     bloomWallX += getBloomWallSpeed() * dt;
     wallSfxClock = Math.max(0, wallSfxClock - dt);
     const wallMetersForSfx = getWallDistanceMeters();
@@ -1580,6 +1681,7 @@
     weaponBreakTimer = Math.max(0, weaponBreakTimer - dt);
     player.boostTime = Math.max(0, (player.boostTime || 0) - dt);
     player.goldRushTime = Math.max(0, (player.goldRushTime || 0) - dt);
+    if (player.goldRushTime <= 0) stopGoldRushAudio();
     multiplierFlashTimer = Math.max(0, multiplierFlashTimer - dt);
     multiplierBreakTimer = Math.max(0, multiplierBreakTimer - dt);
     multiplierMessageTimer = Math.max(0, multiplierMessageTimer - dt);
@@ -2019,6 +2121,7 @@
 
   function finishGame(reason = 'zombies') {
     stopMusic();
+    stopGoldRushAudio();
     state = 'ended';
     mouseFireHeld = false;
     resultPanel.classList.remove('hidden');

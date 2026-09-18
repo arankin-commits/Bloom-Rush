@@ -1,4 +1,4 @@
-# BLOOM RUN — Stage 9
+# BLOOM RUN — Stage 11
 
 Browser-based side-scrolling survival platformer built with HTML, CSS, and vanilla JavaScript.
 
@@ -40,3 +40,15 @@ Extract the ZIP and open `index.html` in a modern browser.
 - Every gun class now has a distinct firing profile: pistol crack, AR report, tight SMG snap, shotgun blast, sniper crack/echo, and RPG launch thump/whoosh.
 - Vehicles use repeating two-part engine revs while active.
 - Existing Music and SFX settings still independently control soundtrack and effects.
+
+
+## Stage 11
+- The Bloom wall now begins 100 meters behind the player.
+- Wall movement is constant at 120% of the player's normal run speed (408 px/s versus 340 px/s).
+- Weapon reports were rebuilt with pressure thumps, filtered noise, air tails, and unique profiles for pistol, AR, SMG, shotgun, sniper, and RPG.
+- The wall sound is deeper, emphasizing subterranean rumble, roots, wood friction, and moving dirt.
+- Gold Rush audio is continuous for the full power-up duration. It uses a fortepiano envelope: a loud initial wind/booster surge that quickly softens into a sustained rush.
+- Zombie-hit and player-hit sounds use breathy/formant-like organic grunts and fleshy impacts instead of bright digital tones.
+- The soundtrack is replaced with a grittier, more hectic procedural score built around heavy percussion, dirty bass pulses, debris hits, and abrasive noise rather than arcade leads.
+- Vehicle audio uses lower combustion-style cylinder/exhaust layers and filtered road noise for a less digital engine sound.
+- Existing Music and SFX toggles still independently control their respective audio.
