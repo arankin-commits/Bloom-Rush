@@ -198,35 +198,35 @@
 
   const CHARACTER_SKINS = {
     base:{label:'DEFAULT',price:0,desc:'Uses your customization with no extra theme.',chip:'#51655a'},
-    gold:{label:'GOLD',price:550,desc:'Black-and-gold ceremonial runner outfit with metallic armor trim.',chip:'#d8b94f'},
-    festive:{label:'FESTIVE',price:350,desc:'Winter runner coat with fur trim, holly, and festive layers.',chip:'#b83f39'},
-    camo:{label:'CAMO',price:320,desc:'Full field-camouflage fatigues and utility rig.',chip:'#69704a'},
-    blooming:{label:'BLOOMING',price:450,desc:'Vines and flower growth woven into the outfit.',chip:'#72b95f'},
-    cosmic:{label:'COSMIC',price:600,desc:'Dark starfield accents and tiny constellations.',chip:'#6b58a7'},
-    spooky:{label:'SPOOKY / HALLOWEEN',price:400,desc:'Orange and violet haunted detailing.',chip:'#d97630'},
-    cupid:{label:'CUPID',price:340,desc:'Pink heart accents layered over your outfit.',chip:'#e87ba4'},
-    stpatricks:{label:"ST. PATRICK'S DAY",price:340,desc:'Green clover-inspired highlights.',chip:'#4d9b54'},
-    soldier:{label:'SOLDIER',price:380,desc:'Harness straps and field-kit accents.',chip:'#66704e'},
-    beach:{label:'BEACH',price:300,desc:'Bright tropical bands and beach details.',chip:'#55b8bd'},
-    ninja:{label:'NINJA',price:500,desc:'Full stealth wraps, hood, face mask, sash, and arm guards.',chip:'#252936'},
-    pirate:{label:'PIRATE',price:460,desc:'Red sash, belt, and pirate trim.',chip:'#98473f'}
+    gold:{label:'GOLD',price:10000,desc:'Solid polished gold-metal outfit with a restrained metallic shine.',chip:'#d7ad3e'},
+    festive:{label:'FESTIVE',price:1000,desc:'Winter runner coat with fur trim, holly, and festive layers.',chip:'#b83f39'},
+    camo:{label:'CAMO',price:100,desc:'Full field-camouflage fatigues and utility rig.',chip:'#69704a'},
+    blooming:{label:'BLOOMING',price:2500,desc:'Weathered overgrowth outfit with moss, grass, vines, and flowers.',chip:'#72b95f'},
+    cosmic:{label:'COSMIC',price:5000,desc:'Dark starfield accents and tiny constellations.',chip:'#6b58a7'},
+    spooky:{label:'SPOOKY / HALLOWEEN',price:800,desc:'Orange and violet haunted detailing.',chip:'#d97630'},
+    cupid:{label:'CUPID',price:500,desc:'Pink heart accents layered over the themed outfit.',chip:'#e87ba4'},
+    stpatricks:{label:"ST. PATRICK'S DAY",price:300,desc:'Green clover-inspired highlights.',chip:'#4d9b54'},
+    soldier:{label:'SOLDIER',price:200,desc:'Harness straps and field-kit accents.',chip:'#66704e'},
+    beach:{label:'BEACH',price:800,desc:'Bright tropical bands and beach details.',chip:'#55b8bd'},
+    ninja:{label:'NINJA',price:2000,desc:'Full stealth wraps, hood, face mask, sash, and arm guards.',chip:'#252936'},
+    pirate:{label:'PIRATE',price:1500,desc:'Red sash, belt, and pirate trim.',chip:'#98473f'}
   };
 
   const GEAR_SKINS = {
     base:{label:'DEFAULT',price:0,desc:'Standard equipment finish.',chip:'#5f675f'},
-    gold:{label:'GOLD',price:500,desc:'Polished gold finish.',chip:'#d7b64b'},
-    festive:{label:'FESTIVE',price:330,desc:'Red and green seasonal finish.',chip:'#b94542'},
-    camo:{label:'CAMO',price:320,desc:'Military camouflage finish.',chip:'#65704a'},
-    zebra:{label:'ZEBRA',price:360,desc:'High-contrast black and white striping.',chip:'#e6e6df'},
-    realistic:{label:'ULTRA REALISTIC',price:650,desc:'Muted steel, rubber, and worn hardware tones.',chip:'#6d7471'},
-    glowing:{label:'GLOWING',price:580,desc:'Cold luminous energy finish.',chip:'#79e8e8'},
-    toxic:{label:'TOXIC',price:430,desc:'Acid green contaminated finish.',chip:'#9bd94d'},
-    blooming:{label:'BLOOMING',price:460,desc:'Plant growth and floral accents.',chip:'#6dbb61'},
-    water:{label:'WATER',price:380,desc:'Blue flowing-water finish.',chip:'#54a7d2'},
-    grass:{label:'GRASS',price:350,desc:'Living green field finish.',chip:'#5e9c51'},
-    cosmic:{label:'COSMIC',price:600,desc:'Deep-space violet and star highlights.',chip:'#6654a0'},
-    neon:{label:'NEON',price:620,desc:'Hot neon cyan and magenta finish.',chip:'#e250d4'},
-    dots:{label:'DOTS',price:300,desc:'Contrasting polka-dot finish.',chip:'#d8cd86'}
+    gold:{label:'GOLD',price:10000,desc:'Solid gold-metal finish with a subtle polished shine.',chip:'#d7ad3e'},
+    festive:{label:'FESTIVE',price:1000,desc:'Seasonal finish with wreath detailing.',chip:'#b94542'},
+    camo:{label:'CAMO',price:100,desc:'Layered field camouflage across the whole body.',chip:'#65704a'},
+    zebra:{label:'ZEBRA',price:500,desc:'Natural black-and-white striping across the whole body.',chip:'#e6e6df'},
+    realistic:{label:'ULTRA REALISTIC',price:1000,desc:'Muted steel, rubber, glass, and worn hardware tones.',chip:'#6d7471'},
+    glowing:{label:'GLOWING',price:1500,desc:'Cold luminous energy finish.',chip:'#79e8e8'},
+    toxic:{label:'TOXIC',price:3000,desc:'Acid green contaminated finish.',chip:'#9bd94d'},
+    blooming:{label:'BLOOMING',price:2500,desc:'Old rusted equipment reclaimed by moss, grass, vines, and flowers.',chip:'#6dbb61'},
+    water:{label:'WATER',price:800,desc:'Blue flowing-water finish.',chip:'#54a7d2'},
+    grass:{label:'GRASS',price:300,desc:'Living green field finish.',chip:'#5e9c51'},
+    cosmic:{label:'COSMIC',price:5000,desc:'Deep-space violet and star highlights.',chip:'#6654a0'},
+    neon:{label:'NEON',price:8000,desc:'Detailed neon tracing that follows the equipment body lines.',chip:'#e250d4'},
+    dots:{label:'DOTS',price:800,desc:'Contrasting polka-dot finish.',chip:'#d8cd86'}
   };
 
   const STARTING_ITEMS = {
@@ -236,12 +236,9 @@
     shotgun:{label:'SHOTGUN',price:0,kind:'weapon',type:'shotgun',unlockRank:6,desc:'Earn the OUTRIDER field rank to start with the shotgun.'},
     sniper:{label:'SNIPER',price:0,kind:'weapon',type:'sniper',unlockRank:8,desc:'Earn the SHARPSHOT field rank to start with the piercing sniper.'},
     rpg:{label:'RPG',price:0,kind:'weapon',type:'rpg',unlockRank:12,desc:'Earn the RECLAIMER field rank to start with the RPG.'},
-    motorcycle:{label:'MOTORCYCLE',price:900,kind:'vehicle',type:'motorcycle',desc:'Begin the run with 8 seconds of motorcycle fuel.'},
-    car:{label:'CAR',price:1400,kind:'vehicle',type:'car',desc:'Begin the run with 12 seconds of car fuel.'},
-    truck:{label:'TRUCK',price:1900,kind:'vehicle',type:'truck',desc:'Begin the run with 20 seconds of truck fuel.'},
-    upgradedMotorcycle:{label:'UPGRADED MOTORCYCLE',price:0,kind:'vehicle',type:'motorcycle',upgraded:true,unlockRank:16,desc:'Rank reward: 12 seconds of motorcycle fuel.'},
-    upgradedCar:{label:'UPGRADED CAR',price:0,kind:'vehicle',type:'car',upgraded:true,unlockRank:20,desc:'Rank reward: 18 seconds of car fuel.'},
-    upgradedTruck:{label:'UPGRADED TRUCK',price:0,kind:'vehicle',type:'truck',upgraded:true,unlockRank:24,desc:'Rank reward: 30 seconds of truck fuel.'}
+    upgradedMotorcycle:{label:'UPGRADED MOTORCYCLE',price:0,kind:'vehicle',type:'motorcycle',upgraded:true,unlockRank:16,desc:'Rank reward: upgraded motorcycle with 12 seconds of fuel.'},
+    upgradedCar:{label:'UPGRADED CAR',price:0,kind:'vehicle',type:'car',upgraded:true,unlockRank:20,desc:'Rank reward: upgraded car with 18 seconds of fuel.'},
+    upgradedTruck:{label:'UPGRADED TRUCK',price:0,kind:'vehicle',type:'truck',upgraded:true,unlockRank:24,desc:'Rank reward: upgraded truck with 30 seconds of fuel.'}
   };
 
   const SHOP_UPGRADES = {
@@ -501,7 +498,7 @@
     return {index:rankIndex,name:RANK_NAMES[rankIndex-1],earned:Math.max(0,stars-before),needed,maxed:false};
   }
 
-  function rankStartingMultiplier() {
+  function rankMaxMultiplier() {
     const r = rankProgressFromStars(getProgressionState().completedIds.length).index;
     if (r >= 12) return 12;
     if (r >= 8) return 9;
@@ -705,7 +702,8 @@
         if (!merged.owned[list].includes(key)) merged.owned[list].push(key);
       }
       if (merged.equipped.startingItem === 'pistol') merged.equipped.startingItem = 'none';
-      merged.owned.startingItems = merged.owned.startingItems.filter(k => k !== 'pistol');
+      merged.owned.startingItems = merged.owned.startingItems.filter(k => k !== 'pistol' && STARTING_ITEMS[k]);
+      if (!STARTING_ITEMS[merged.equipped.startingItem] || ['motorcycle','car','truck','pistol'].includes(merged.equipped.startingItem)) merged.equipped.startingItem = 'none';
       return (shopStateCache = merged);
     } catch { return (shopStateCache = defaults); }
   }
@@ -1406,7 +1404,7 @@
   function cosmeticOutfitPalette(style) {
     const skin = style.cosmeticSkin || 'base';
     const themes = {
-      gold:['#17140e','#242016'], festive:['#a43131','#235d36'], camo:['#46513a','#2d3528'],
+      gold:['#c69a31','#a97820'], festive:['#a43131','#235d36'], camo:['#46513a','#2d3528'],
       blooming:['#355c39','#263f2b'], cosmic:['#252145','#17172d'], spooky:['#211c2b','#141319'],
       cupid:['#d86f96','#f0b4c8'], stpatricks:['#2c7b43','#183d28'], soldier:['#4c563d','#30372d'],
       beach:['#3aa9af','#d5b36f'], ninja:['#171b22','#0f1218'], pirate:['#efe1bd','#4d3026']
@@ -1424,7 +1422,7 @@
     if (skin === 'base') return;
     c.save(); c.lineCap='round'; c.lineJoin='round';
     if (skin === 'gold') {
-      c.strokeStyle='#e8c85f'; c.lineWidth=2; c.beginPath(); c.moveTo(-10,5); c.lineTo(-6,0); c.lineTo(0,3); c.lineTo(6,-1); c.lineTo(10,5); c.stroke();
+      c.strokeStyle='#f7df82'; c.lineWidth=2; c.beginPath(); c.moveTo(-10,5); c.lineTo(-6,0); c.lineTo(0,3); c.lineTo(6,-1); c.lineTo(10,5); c.stroke();
     } else if (skin === 'festive') {
       c.fillStyle='#a83432'; c.beginPath(); c.moveTo(-11,5); c.quadraticCurveTo(-2,-7,10,1); c.lineTo(7,6); c.closePath(); c.fill();
       c.fillStyle='#eee3c8'; c.fillRect(-11,4,20,3); c.beginPath(); c.arc(10,1,3,0,Math.PI*2); c.fill();
@@ -1458,7 +1456,7 @@
     c.save(); c.lineCap='round'; c.lineJoin='round';
     const dot=(x,y,r,color)=>{c.fillStyle=color;c.beginPath();c.arc(x,y,r,0,Math.PI*2);c.fill();};
     if (skin === 'gold') {
-      c.strokeStyle='#e3bf56';c.lineWidth=2.4;c.strokeRect(-13,19,26,27);c.fillStyle='#d0a83f';c.fillRect(-14,32,28,4);c.fillStyle='#f0d677';c.fillRect(-2,32,4,4);
+      c.strokeStyle='#f6df86';c.lineWidth=1.6;c.strokeRect(-13,19,26,27);c.fillStyle='rgba(255,244,174,.48)';c.fillRect(-10,21,4,22);c.fillStyle='#916616';c.fillRect(-14,32,28,3);c.fillStyle='#ffe99a';c.fillRect(-2,32,4,3);
       c.beginPath();c.moveTo(-14,20);c.lineTo(-9,17);c.lineTo(-4,20);c.closePath();c.fill();c.beginPath();c.moveTo(14,20);c.lineTo(9,17);c.lineTo(4,20);c.closePath();c.fill();
     } else if (skin === 'festive') {
       c.fillStyle='#eee6cf';c.fillRect(-14,18,28,4);c.fillRect(-14,41,28,4);c.fillStyle='#315f3d';c.fillRect(-13,29,26,4);dot(-9,25,1.6,'#e7cf71');dot(8,35,1.6,'#e7cf71');
@@ -1737,17 +1735,18 @@
 
   function gainMultiplier(reason, showMessage=true) {
     if (!player) return;
+    const cap = player.maxMultiplier || rankMaxMultiplier();
     const before = player.multiplier;
-    player.multiplier = Math.min(12, player.multiplier + 1);
-    if (showMessage) showMultiplierEvent(player.multiplier > before ? `${reason} · X${player.multiplier}` : `${reason} · MAX X12`);
+    player.multiplier = Math.min(cap, player.multiplier + 1);
+    if (showMessage) showMultiplierEvent(player.multiplier > before ? `${reason} · X${player.multiplier}` : `${reason} · MAX X${cap}`);
     else if (multiplierHud) { multiplierHud.classList.remove('hot'); void multiplierHud.offsetWidth; multiplierHud.classList.add('hot'); }
     playSfx('pickup');
   }
 
   function breakMultiplier() {
-    if (!player || player.multiplier <= 1) return;
-    player.multiplier = 1;
-    showMultiplierEvent('MULTIPLIER BROKEN · X1', true);
+    if (!player || player.multiplier <= 0) return;
+    player.multiplier = 0;
+    showMultiplierEvent('MULTIPLIER BROKEN · X0', true);
     playSfx('multiplierBreak');
   }
 
@@ -1794,13 +1793,13 @@
       x: 82, y: 100, w: 34, h: 58,
       vx: 0, vy: 0, grounded: true, crouching: false, coyote: .08,
       bloom: 8, kills: 0, score: 0, killScore: 0, distanceScore: 0, bonusScore: 0, furthestMeter: 0, runCoins: 0,
-      multiplier: rankStartingMultiplier(), boostTime: 0, goldRushTime: 0,
+      multiplier: 0, maxMultiplier: rankMaxMultiplier(), boostTime: 0, goldRushTime: 0,
       shotCooldown: 0, muzzle: 0, invuln: 0,
       weapon: 'pistol', ammo: Infinity, weaponInventory: { pistol:true, ar:false, shotgun:false, rpg:false, sniper:false, smg:false }, plantZombie: false,
       lives: 3,
       vehicle: null, vehicleTime: 0, vehicleMaxTime: 0, vehicleUpgraded:false,
       coinGroupsCompleted:0, bloomsFixed:0,
-      trapped:false, trapProgress:0, trapObstacleId:null, trapLaunchTime:0, trapLaunchTargetX:0, obstacleSlowTime:0
+      trapped:false, trapProgress:0, trapObstacleId:null, trapLaunchTime:0, trapLaunchTargetX:0, trapLaunchDir:1, trapEntryDir:1, obstacleSlowTime:0
     };
 
     bullets = [];
@@ -1969,13 +1968,15 @@
     if (player.trapProgress >= 8) {
       const trap = obstacles.find(o => o.id === player.trapObstacleId);
       const wasVehicle = !!player.vehicle;
-      if (trap) player.x = trap.x + trap.w + 16;
+      const launchDir = player.trapEntryDir || facing || 1;
+      if (trap) player.x = launchDir > 0 ? trap.x + trap.w + 16 : trap.x - player.w - 16;
       player.trapped = false; player.trapProgress = 0; player.trapObstacleId = null;
       player.trapLaunchTime = 0;
+      player.trapLaunchDir = launchDir;
       // Five meters in game distance = 50 world pixels. Control returns exactly after clearing that distance.
-      player.trapLaunchTargetX = player.x + 50;
-      player.vx = RUN_SPEED * (wasVehicle ? 2.7 : 1.85);
-      facing = 1;
+      player.trapLaunchTargetX = player.x + launchDir * 50;
+      player.vx = launchDir * RUN_SPEED * (wasVehicle ? 2.7 : 1.85);
+      facing = launchDir;
       player.invuln = Math.max(player.invuln,.18);
     }
     return true;
@@ -1999,8 +2000,9 @@
           const dir = Math.sign(player.vx) || 1;
           if (!loseLife(ob,dir)) return;
         }
-      } else if (ob.type === 'plantTrap' && !player.trapped && !(player.trapLaunchTargetX > player.x)) {
+      } else if (ob.type === 'plantTrap' && !player.trapped && !player.trapLaunchTargetX) {
         breakMultiplier();
+        player.trapEntryDir = Math.sign(player.vx) || facing || 1;
         player.trapped = true; player.trapProgress = 0; player.trapObstacleId = ob.id; player.vx = 0;
         player.x = ob.x + ob.w/2 - player.w/2;
         showMultiplierEvent('TRAPPED · SPAM SPACE');
@@ -2615,12 +2617,13 @@
 
     if (player.trapped) {
       player.vx = 0;
-    } else if ((player.trapLaunchTargetX || 0) > player.x) {
-      // Escape launch is briefly automatic so the player cannot steer back into the trap.
-      facing = 1;
-      player.vx = movementBase * 1.55; // Stage 16 burst speed, with Stage 17 distance-based control return.
-    } else if ((player.trapLaunchTargetX || 0) > 0) {
+    } else if ((player.trapLaunchTargetX || 0) && ((player.trapLaunchDir || 1) > 0 ? player.x < player.trapLaunchTargetX : player.x > player.trapLaunchTargetX)) {
+      // Escape launch is briefly automatic in the direction the player entered the trap.
+      facing = player.trapLaunchDir || 1;
+      player.vx = facing * movementBase * 1.55; // Stage 16 burst speed, with Stage 17 distance-based control return.
+    } else if ((player.trapLaunchTargetX || 0) !== 0) {
       player.trapLaunchTargetX = 0;
+      player.trapLaunchDir = facing || 1;
       // Normal control resumes on this frame once the player is 5m beyond the trap.
     } else if (spawnWalkActive) {
       facing = 1;
@@ -3095,7 +3098,12 @@
 
   function gearSkinPalette(skin, kind='weapon') {
     const palettes = {
-      base:['#5f675f', kind==='vehicle'?'#8ec9da':'#e1d89c'], gold:['#b7922f','#f4dd72'], festive:['#8e302e','#65a962'], camo:['#4f5d3d','#9a9764'], zebra:['#ecece7','#171a18'], realistic:['#555d5c','#9aa29f'], glowing:['#56c9d1','#b5ffff'], toxic:['#658f38','#c4f35f'], blooming:['#467746','#e0cf67'], water:['#3d7fa6','#8ed8ee'], grass:['#4f7d43','#9bca72'], cosmic:['#282451','#b39aff'], neon:['#a52e99','#58f5ed'], dots:['#d4d0c1','#d54a61']
+      base:['#5f675f', kind==='vehicle'?'#8ec9da':'#e1d89c'],
+      gold:['#c49327','#f6dd79'], festive:['#8e302e','#65a962'], camo:['#4f5d3d','#9a9764'],
+      zebra:['#ecece7','#171a18'], realistic:['#555d5c','#9aa29f'], glowing:['#56c9d1','#b5ffff'],
+      toxic:['#658f38','#c4f35f'], blooming:['#6a4d31','#7fa85e'], water:['#3d7fa6','#8ed8ee'],
+      grass:['#4f7d43','#9bca72'], cosmic:['#282451','#b39aff'], neon:['#151922','#58f5ed'],
+      dots:['#d4d0c1','#d54a61']
     };
     const p = palettes[skin] || palettes.base;
     return {fill:p[0], stroke:p[1], accent:p[1]};
@@ -3109,26 +3117,38 @@
   function prepareGearSkinContext(c, skin) {
     c.shadowBlur=0; c.shadowColor='transparent';
     if (skin==='glowing') { c.shadowColor='#8dffff'; c.shadowBlur=10; }
-    else if (skin==='neon') { c.shadowColor='#ff58ef'; c.shadowBlur=9; }
+    else if (skin==='neon') { c.shadowColor='#36f7f1'; c.shadowBlur=8; }
     else if (skin==='toxic') { c.shadowColor='#a8ed55'; c.shadowBlur=5; }
+    else if (skin==='gold') { c.shadowColor='rgba(255,226,126,.34)'; c.shadowBlur=3; }
   }
 
   function svgGearPattern(skin, id, fill, stroke) {
-    if (skin==='camo') return `<pattern id="${id}" width="18" height="14" patternUnits="userSpaceOnUse"><rect width="18" height="14" fill="#566344"/><path d="M0 3 C4 -1 7 1 9 4 C12 8 16 6 18 5 V12 C14 13 11 10 8 11 C4 13 2 10 0 9Z" fill="#303d2e"/><path d="M4 5 C7 2 11 3 13 6 C11 9 7 9 4 7Z" fill="#84734f"/></pattern>`;
-    if (skin==='zebra') return `<pattern id="${id}" width="18" height="18" patternUnits="userSpaceOnUse" patternTransform="rotate(-18)"><rect width="18" height="18" fill="#ecece7"/><path d="M2 -4 L7 -4 L2 22 L-3 22ZM13 -4 L18 -4 L13 22 L8 22Z" fill="#111514"/></pattern>`;
-    if (skin==='dots') return `<pattern id="${id}" width="14" height="14" patternUnits="userSpaceOnUse"><rect width="14" height="14" fill="#e6dfcf"/><circle cx="4" cy="4" r="2.3" fill="#d74b62"/><circle cx="11" cy="10" r="2.3" fill="#315f82"/></pattern>`;
+    if (skin==='gold') return `<linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8c6117"/><stop offset=".26" stop-color="#e2b844"/><stop offset=".48" stop-color="#fff0a0"/><stop offset=".58" stop-color="#c99427"/><stop offset="1" stop-color="#7e5512"/></linearGradient>`;
+    if (skin==='camo') return `<pattern id="${id}" width="20" height="16" patternUnits="userSpaceOnUse"><rect width="20" height="16" fill="#596344"/><path d="M-2 4 C3 -1 8 0 11 4 C14 7 18 5 22 3 V10 C17 14 13 10 9 12 C4 15 1 12 -2 10Z" fill="#2f3b2d"/><path d="M4 5 C7 2 12 2 15 6 C13 10 8 10 4 8Z" fill="#8a7650"/><path d="M-1 14 C4 10 8 11 11 15" fill="none" stroke="#1f2c22" stroke-width="3"/></pattern>`;
+    if (skin==='zebra') return `<pattern id="${id}" width="16" height="20" patternUnits="userSpaceOnUse" patternTransform="rotate(-16)"><rect width="16" height="20" fill="#f1f0ea"/><path d="M1 -5 C7 2 3 9 0 25 H5 C9 11 13 3 8 -5ZM12 -5 C17 4 12 11 10 25 H15 C19 12 20 2 18 -5Z" fill="#111514"/></pattern>`;
+    if (skin==='dots') return `<pattern id="${id}" width="14" height="14" patternUnits="userSpaceOnUse"><rect width="14" height="14" fill="#e6dfcf"/><circle cx="4" cy="4" r="2.5" fill="#d74b62"/><circle cx="11" cy="10" r="2.5" fill="#315f82"/></pattern>`;
     if (skin==='cosmic') return `<pattern id="${id}" width="20" height="16" patternUnits="userSpaceOnUse"><rect width="20" height="16" fill="#282451"/><circle cx="4" cy="5" r="1" fill="#d8f5ff"/><circle cx="14" cy="4" r="1.2" fill="#d795ff"/><circle cx="10" cy="12" r=".9" fill="#ffe58c"/></pattern>`;
     if (skin==='water') return `<pattern id="${id}" width="22" height="12" patternUnits="userSpaceOnUse"><rect width="22" height="12" fill="#3d7fa6"/><path d="M0 6 Q5 1 11 6 T22 6" fill="none" stroke="#9fe1f2" stroke-width="2"/></pattern>`;
     if (skin==='grass') return `<pattern id="${id}" width="14" height="14" patternUnits="userSpaceOnUse"><rect width="14" height="14" fill="#4f7d43"/><path d="M2 14 L5 5 M7 14 L8 3 M11 14 L13 7" stroke="#9bca72" stroke-width="2"/></pattern>`;
     if (skin==='festive') return `<pattern id="${id}" width="18" height="18" patternUnits="userSpaceOnUse"><rect width="18" height="18" fill="#8e302e"/><path d="M0 9 H18 M9 0 V18" stroke="#65a962" stroke-width="4"/><path d="M0 0 L18 18 M18 0 L0 18" stroke="#e6d8a2" stroke-width="1.2" opacity=".7"/></pattern>`;
+    if (skin==='blooming') return `<pattern id="${id}" width="22" height="18" patternUnits="userSpaceOnUse"><rect width="22" height="18" fill="#70513a"/><path d="M0 2 L8 0 L12 6 L6 10 L0 8ZM13 10 L22 7 V18 H11Z" fill="#8b5637"/><path d="M2 15 C7 9 13 16 20 9" fill="none" stroke="#557d45" stroke-width="3"/><circle cx="17" cy="5" r="1.5" fill="#9fcb72"/></pattern>`;
     return '';
   }
 
-  function svgGearExtras(skin, kind) {
+  function svgGearExtras(skin, kind, type) {
     if (skin==='festive') return `<g transform="translate(${kind==='vehicle'?34:35} ${kind==='vehicle'?20:18})"><circle r="7" fill="none" stroke="#3f8d4b" stroke-width="3"/><circle cx="-4" cy="-3" r="1.4" fill="#d94d45"/><circle cx="4" cy="2" r="1.4" fill="#d94d45"/><path d="M-2 6 L0 10 L2 6" fill="#d94d45"/></g>`;
-    if (skin==='blooming') return `<g stroke="#74b95d" stroke-width="2" fill="none"><path d="M18 12 Q21 3 25 1 M39 12 Q42 4 48 2"/><path d="M27 13 Q30 6 34 4"/></g><g fill="#9edc6b"><ellipse cx="24" cy="4" rx="3" ry="1.8"/><ellipse cx="47" cy="5" rx="3" ry="1.8"/></g><circle cx="34" cy="4" r="2.3" fill="#dfcf68"/>`;
+    if (skin==='gold') return `<path d="M11 11 L19 8" stroke="#fff0a0" stroke-width="1.5" opacity=".9"/><path d="M23 7 L31 5" stroke="#fff8c9" stroke-width="1" opacity=".7"/>`;
+    if (skin==='blooming') {
+      const anchor = kind==='vehicle' ? (type==='motorcycle' ? 'M22 20 Q18 9 24 3 M39 20 Q44 7 52 5' : 'M15 19 Q18 6 26 3 M42 18 Q47 5 55 4') : 'M20 16 Q21 5 28 2 M43 17 Q47 7 55 5';
+      return `<g stroke="#5f984f" stroke-width="2.2" fill="none"><path d="${anchor}"/><path d="M12 23 Q25 18 38 23 Q50 28 60 21" stroke="#4d7441" stroke-width="2.8"/></g><g fill="#91c66d"><ellipse cx="26" cy="5" rx="3.2" ry="1.7" transform="rotate(-28 26 5)"/><ellipse cx="51" cy="7" rx="3.4" ry="1.8" transform="rotate(24 51 7)"/></g><g fill="#d8ca6d"><circle cx="55" cy="4" r="2.5"/><circle cx="35" cy="20" r="2"/></g><g fill="#6f9257" opacity=".75"><circle cx="18" cy="22" r="2.5"/><circle cx="24" cy="23" r="2"/><circle cx="46" cy="22" r="2.5"/></g>`;
+    }
     if (skin==='toxic') return `<g fill="#b8f15e"><circle cx="18" cy="12" r="2"/><circle cx="42" cy="22" r="2.4"/><circle cx="52" cy="12" r="1.6"/></g>`;
-    if (skin==='neon') return `<path d="M8 28 Q30 7 56 25" fill="none" stroke="#58f5ed" stroke-width="2"/><path d="M12 31 Q32 13 52 29" fill="none" stroke="#ff58ef" stroke-width="1.5"/>`;
+    if (skin==='neon') {
+      if (kind==='vehicle' && type==='car') return `<g fill="none" stroke-linecap="round"><path d="M8 25 L14 15 H44 L54 25 V32 H8 Z" stroke="#44fff3" stroke-width="1.8"/><path d="M20 15 L26 8 H40 L45 15" stroke="#ff4ee8" stroke-width="1.5"/><path d="M12 28 H50 M18 18 H46" stroke="#8e6cff" stroke-width="1" opacity=".9"/></g>`;
+      if (kind==='vehicle' && type==='motorcycle') return `<g fill="none" stroke-linecap="round"><path d="M14 30 L25 17 L42 18 L50 30 M25 17 L34 30 L17 30 M39 18 L45 11" stroke="#44fff3" stroke-width="1.7"/><circle cx="14" cy="30" r="8" stroke="#ff4ee8" stroke-width="1.4"/><circle cx="50" cy="30" r="8" stroke="#ff4ee8" stroke-width="1.4"/><path d="M24 20 H42" stroke="#ffe85b" stroke-width="1"/></g>`;
+      if (kind==='vehicle') return `<g fill="none" stroke-linecap="round"><path d="M5 13 H34 V31 H5 Z M34 20 H51 L59 27 V31 H34" stroke="#44fff3" stroke-width="1.7"/><path d="M8 17 H30 M38 23 H51 M9 28 H55" stroke="#ff4ee8" stroke-width="1.2"/><circle cx="17" cy="32" r="6" stroke="#8e6cff" stroke-width="1.2"/><circle cx="48" cy="32" r="6" stroke="#8e6cff" stroke-width="1.2"/></g>`;
+      return `<g fill="none" stroke-linecap="round"><path d="M7 14 H55" stroke="#44fff3" stroke-width="1.5"/><path d="M13 21 H47" stroke="#ff4ee8" stroke-width="1.2"/><path d="M22 10 L31 6 M39 11 L48 7" stroke="#8e6cff" stroke-width="1"/></g>`;
+    }
     return '';
   }
 
@@ -3141,12 +3161,12 @@
     const defs = svgGearPattern(skin, uid, baseFill, stroke);
     const patterned = !!defs;
     const fill = patterned ? `url(#${uid})` : baseFill;
-    const extras = svgGearExtras(skin, kind);
+    const extras = svgGearExtras(skin, kind, type);
     const pre = defs ? `<defs>${defs}</defs>` : '';
     if (kind === 'vehicle') {
-      if (type === 'motorcycle') return `<svg viewBox="0 0 64 40" aria-hidden="true">${pre}<circle cx="14" cy="30" r="8" fill="none" stroke="${stroke}" stroke-width="4"/><circle cx="50" cy="30" r="8" fill="none" stroke="${stroke}" stroke-width="4"/><path d="M14 30 L25 17 L42 18 L50 30 M25 17 L34 30 L17 30 M39 18 L45 11" fill="none" stroke="${stroke}" stroke-width="4"/><path d="M23 18 L42 18 L35 27 L17 27Z" fill="${fill}" stroke="${stroke}" stroke-width="2"/>${extras}</svg>`;
-      if (type === 'car') return `<svg viewBox="0 0 64 40" aria-hidden="true">${pre}<path d="M8 25 L14 15 H44 L54 25 V32 H8 Z" fill="${fill}" stroke="${stroke}" stroke-width="3"/><path d="M20 15 L26 8 H40 L45 15" fill="${fill}" stroke="${stroke}" stroke-width="3"/><path d="M24 10 H39 L42 15 H19Z" fill="#17201e" opacity=".8"/><circle cx="19" cy="32" r="6" fill="#101614" stroke="${stroke}" stroke-width="2"/><circle cx="46" cy="32" r="6" fill="#101614" stroke="${stroke}" stroke-width="2"/>${extras}</svg>`;
-      return `<svg viewBox="0 0 64 40" aria-hidden="true">${pre}<path d="M5 13 H34 V31 H5 Z M34 20 H51 L59 27 V31 H34 Z" fill="${fill}" stroke="${stroke}" stroke-width="3"/><path d="M10 17 H29 V22 H10Z" fill="#17201e" opacity=".75"/><circle cx="17" cy="32" r="6" fill="#101614" stroke="${stroke}" stroke-width="2"/><circle cx="48" cy="32" r="6" fill="#101614" stroke="${stroke}" stroke-width="2"/>${extras}</svg>`;
+      if (type === 'motorcycle') return `<svg viewBox="0 0 64 40" aria-hidden="true">${pre}<circle cx="14" cy="30" r="8" fill="#101614" stroke="#6f7470" stroke-width="2.5"/><circle cx="50" cy="30" r="8" fill="#101614" stroke="#6f7470" stroke-width="2.5"/><path d="M14 30 L25 18 L40 19 L50 30 M25 18 L33 30 L17 30 M40 19 L46 11" fill="none" stroke="#4b504d" stroke-width="3"/><path d="M22 18 Q28 13 37 15 L43 19 L36 25 H20 Z" fill="${fill}" stroke="${stroke}" stroke-width="2"/><rect x="28" y="24" width="10" height="6" rx="2" fill="#303532"/><path d="M39 15 H47" stroke="#242a27" stroke-width="4"/>${extras}</svg>`;
+      if (type === 'car') return `<svg viewBox="0 0 64 40" aria-hidden="true">${pre}<path d="M8 25 L14 15 H44 L54 25 V32 H8 Z" fill="${fill}" stroke="${stroke}" stroke-width="3"/><path d="M20 15 L26 8 H40 L45 15" fill="${fill}" stroke="${stroke}" stroke-width="3"/><path d="M24 10 H39 L42 15 H19Z" fill="#17201e" opacity=".82"/><path d="M11 25 H52" stroke="rgba(255,255,255,.18)" stroke-width="1"/><circle cx="19" cy="32" r="6" fill="#101614" stroke="#737875" stroke-width="2"/><circle cx="46" cy="32" r="6" fill="#101614" stroke="#737875" stroke-width="2"/>${extras}</svg>`;
+      return `<svg viewBox="0 0 64 40" aria-hidden="true">${pre}<path d="M4 16 H34 V31 H4 Z" fill="${fill}" stroke="${stroke}" stroke-width="3"/><path d="M34 20 H49 L59 27 V31 H34 Z" fill="${fill}" stroke="${stroke}" stroke-width="3"/><path d="M38 21 H48 L54 26 H38Z" fill="#17201e" opacity=".8"/><path d="M7 19 H31 M7 27 H31" stroke="rgba(255,255,255,.15)" stroke-width="1"/><circle cx="16" cy="32" r="6" fill="#101614" stroke="#737875" stroke-width="2"/><circle cx="49" cy="32" r="6" fill="#101614" stroke="#737875" stroke-width="2"/>${extras}</svg>`;
     }
     let body='';
     if (type === 'ar') body=`<path d="M5 15 H50 L62 11 V18 H52 L45 22 H28 L24 31 H18 L20 22 H5 Z" fill="${fill}" stroke="${stroke}" stroke-width="3"/><path d="M33 22 L38 31" stroke="${stroke}" stroke-width="4"/>`;
@@ -3210,7 +3230,7 @@
 
     updateRunChallengeStatus();
     if (multiplierLabel) multiplierLabel.textContent = `X${player.multiplier}`;
-    if (multiplierFill) multiplierFill.style.width = `${Math.max(0,Math.min(100,((player.multiplier - 1) / 11) * 100))}%`;
+    if (multiplierFill) multiplierFill.style.width = `${Math.max(0,Math.min(100,(player.multiplier / Math.max(1, player.maxMultiplier || rankMaxMultiplier())) * 100))}%`;
     if (multiplierHud && multiplierMessageTimer <= 0) multiplierHud.classList.remove('hot','broken');
 
     const wallMeters = getWallDistanceMeters();
@@ -3543,24 +3563,68 @@
     ctx.restore();
   }
 
-  function drawCanvasGearSkinDetails(c, skin, kind, box) {
+  function drawCanvasGearSkinDetails(c, skin, kind, box, type='') {
     const {x,y,w,h}=box;
+    const mask=()=>{
+      c.beginPath();
+      if(kind==='vehicle'){
+        if(type==='motorcycle'){
+          c.moveTo(x+w*.05,y+h*.55);c.quadraticCurveTo(x+w*.32,y+h*.02,x+w*.72,y+h*.18);c.lineTo(x+w*.98,y+h*.55);c.lineTo(x+w*.72,y+h*.9);c.lineTo(x+w*.12,y+h*.88);c.closePath();
+        }else if(type==='truck'){
+          c.rect(x,y+h*.28,w*.54,h*.68);c.moveTo(x+w*.54,y+h*.96);c.lineTo(x+w*.54,y+h*.38);c.lineTo(x+w*.7,y+h*.08);c.lineTo(x+w*.9,y+h*.08);c.lineTo(x+w,y+h*.48);c.lineTo(x+w,y+h*.96);c.closePath();
+        }else{
+          c.moveTo(x,y+h*.96);c.lineTo(x,y+h*.48);c.lineTo(x+w*.18,y+h*.42);c.lineTo(x+w*.31,y+h*.06);c.lineTo(x+w*.7,y+h*.06);c.lineTo(x+w*.84,y+h*.42);c.lineTo(x+w,y+h*.5);c.lineTo(x+w,y+h*.96);c.closePath();
+        }
+      }else{
+        // Compact approximation of the weapon body, stock/barrel and grip for pattern clipping.
+        c.roundRect(x,y+h*.18,w,h*.42,Math.max(1,w*.025));
+        if(type!=='shotgun' && type!=='sniper') c.rect(x+w*.22,y+h*.5,w*.18,h*.44);
+        if(type==='rpg') { c.rect(x+w*.02,y+h*.06,w*.96,h*.62); }
+        if(type==='sniper') { c.rect(x+w*.2,y,w*.42,h*.24); }
+      }
+    };
+
     c.save(); c.shadowBlur=0; c.lineCap='round'; c.lineJoin='round';
-    if (skin==='camo') {
-      const patches=[['#2e3b2c',.03,.1,.28,.38],['#7d704d',.28,.02,.26,.32],['#405039',.56,.12,.38,.34],['#8d8257',.08,.55,.34,.32],['#263526',.47,.52,.26,.38],['#667044',.73,.5,.24,.34]];
-      patches.forEach(([co,px,py,pw,ph])=>{c.fillStyle=co;c.beginPath();c.roundRect(x+w*px,y+h*py,w*pw,h*ph,3);c.fill();});
-    } else if (skin==='zebra') {
-      c.strokeStyle='#111514';c.lineWidth=Math.max(2,w*.045);for(let i=-1;i<7;i++){const sx=x+i*w*.18;c.beginPath();c.moveTo(sx,y-2);c.lineTo(sx+w*.16,y+h+2);c.stroke();}
-    } else if (skin==='dots') {
-      const colors=['#d74b62','#315f82','#f0c95d'];for(let i=0;i<10;i++){c.fillStyle=colors[i%colors.length];c.beginPath();c.arc(x+w*(.08+(i%5)*.21),y+h*(.23+Math.floor(i/5)*.48),Math.max(1.8,w*.035),0,Math.PI*2);c.fill();}
+    if (['gold','camo','zebra','dots','blooming'].includes(skin)) {
+      c.save(); mask(); c.clip();
+      if (skin==='gold') {
+        const g=c.createLinearGradient(x,y,x+w,y+h);g.addColorStop(0,'#78500f');g.addColorStop(.27,'#d8aa35');g.addColorStop(.46,'#fff0a0');g.addColorStop(.6,'#c48e1f');g.addColorStop(1,'#78500f');c.fillStyle=g;c.fillRect(x,y,w,h);
+      } else if (skin==='camo') {
+        c.fillStyle='#596344';c.fillRect(x,y,w,h);
+        const patches=[['#2e3b2c',.00,.08,.3,.34],['#8a7650',.25,.02,.3,.31],['#405039',.54,.08,.42,.34],['#8d8257',.06,.52,.36,.34],['#263526',.42,.48,.3,.42],['#667044',.72,.5,.29,.34]];
+        patches.forEach(([co,px,py,pw,ph])=>{c.fillStyle=co;c.beginPath();c.roundRect(x+w*px,y+h*py,w*pw,h*ph,Math.max(2,w*.025));c.fill();});
+      } else if (skin==='zebra') {
+        c.fillStyle='#f0efe9';c.fillRect(x,y,w,h);c.strokeStyle='#111514';c.lineWidth=Math.max(2,w*.045);for(let i=-2;i<8;i++){const sx=x+i*w*.17;c.beginPath();c.moveTo(sx,y-3);c.bezierCurveTo(sx+w*.13,y+h*.25,sx-w*.05,y+h*.65,sx+w*.19,y+h+3);c.stroke();}
+      } else if (skin==='dots') {
+        c.fillStyle='#e7dfcf';c.fillRect(x,y,w,h);const colors=['#d74b62','#315f82','#f0c95d'];for(let i=0;i<12;i++){c.fillStyle=colors[i%colors.length];c.beginPath();c.arc(x+w*(.07+(i%6)*.18),y+h*(.24+Math.floor(i/6)*.5),Math.max(1.8,w*.035),0,Math.PI*2);c.fill();}
+      } else if (skin==='blooming') {
+        c.fillStyle='#725039';c.fillRect(x,y,w,h);c.fillStyle='rgba(132,77,45,.78)';for(let i=0;i<7;i++){c.beginPath();c.arc(x+w*(.08+(i*17%82)/100),y+h*(.18+(i*31%68)/100),Math.max(2,w*.035),0,Math.PI*2);c.fill();}
+        c.fillStyle='rgba(72,112,56,.82)';for(let i=0;i<7;i++){c.beginPath();c.ellipse(x+w*(.05+i*.15),y+h*(.72-(i%2)*.14),w*.1,h*.14,(i%2?.45:-.35),0,Math.PI*2);c.fill();}
+      }
+      c.restore();
+    }
+
+    if (skin==='gold') {
+      c.strokeStyle='rgba(255,245,190,.9)';c.lineWidth=Math.max(1,w*.018);c.beginPath();c.moveTo(x+w*.13,y+h*.22);c.lineTo(x+w*.46,y+h*.08);c.stroke();
     } else if (skin==='festive') {
-      c.strokeStyle='#3f8d4b';c.lineWidth=Math.max(2,w*.035);c.beginPath();c.arc(x+w*.53,y+h*.48,Math.min(w,h)*.22,0,Math.PI*2);c.stroke();
-      c.fillStyle='#d94d45';[[.43,.36],[.62,.42],[.49,.62]].forEach(([px,py])=>{c.beginPath();c.arc(x+w*px,y+h*py,Math.max(1.6,w*.028),0,Math.PI*2);c.fill();});
-      c.fillStyle='#d94d45';c.beginPath();c.moveTo(x+w*.49,y+h*.66);c.lineTo(x+w*.45,y+h*.86);c.lineTo(x+w*.54,y+h*.72);c.lineTo(x+w*.61,y+h*.86);c.lineTo(x+w*.57,y+h*.66);c.closePath();c.fill();
+      c.strokeStyle='#3f8d4b';c.lineWidth=Math.max(2,w*.035);c.beginPath();c.arc(x+w*.53,y+h*.48,Math.min(w,h)*.22,0,Math.PI*2);c.stroke();c.fillStyle='#d94d45';[[.43,.36],[.62,.42],[.49,.62]].forEach(([px,py])=>{c.beginPath();c.arc(x+w*px,y+h*py,Math.max(1.6,w*.028),0,Math.PI*2);c.fill();});
     } else if (skin==='blooming') {
-      c.strokeStyle='#78bb61';c.lineWidth=Math.max(1.5,w*.025);c.beginPath();c.moveTo(x+w*.08,y+h*.75);c.quadraticCurveTo(x+w*.28,y-h*.1,x+w*.42,y+h*.2);c.moveTo(x+w*.6,y+h*.7);c.quadraticCurveTo(x+w*.72,y-h*.18,x+w*.9,y+h*.18);c.stroke();
-      c.fillStyle='#8dd06f';[[.31,.08],[.78,.03],[.46,.24]].forEach(([px,py])=>{c.beginPath();c.ellipse(x+w*px,y+h*py,Math.max(2,w*.05),Math.max(1.2,w*.025),-.4,0,Math.PI*2);c.fill();});
-      c.fillStyle='#dfcf68';c.beginPath();c.arc(x+w*.78,y+h*.02,Math.max(1.8,w*.03),0,Math.PI*2);c.fill();
+      // Living overgrowth grows off the rusted body.
+      c.strokeStyle='#5f984f';c.lineWidth=Math.max(1.6,w*.022);c.beginPath();c.moveTo(x+w*.08,y+h*.78);c.quadraticCurveTo(x+w*.28,y-h*.18,x+w*.42,y+h*.18);c.moveTo(x+w*.58,y+h*.78);c.quadraticCurveTo(x+w*.75,y-h*.18,x+w*.94,y+h*.14);c.stroke();
+      c.fillStyle='#8dd06f';[[.31,.05],[.78,.02],[.46,.2]].forEach(([px,py])=>{c.beginPath();c.ellipse(x+w*px,y+h*py,Math.max(2,w*.05),Math.max(1.2,w*.025),-.4,0,Math.PI*2);c.fill();});c.fillStyle='#dfcf68';c.beginPath();c.arc(x+w*.78,y+h*.02,Math.max(1.8,w*.03),0,Math.PI*2);c.fill();
+    } else if (skin==='neon') {
+      // Detailed tracing hugs body seams; nothing shoots randomly away from the equipment.
+      c.save();c.shadowBlur=8;c.lineCap='round';
+      if(kind==='vehicle' && type==='motorcycle'){
+        c.shadowColor='#41fff2';c.strokeStyle='#41fff2';c.lineWidth=1.8;c.beginPath();c.moveTo(x+w*.05,y+h*.65);c.lineTo(x+w*.34,y+h*.18);c.lineTo(x+w*.7,y+h*.24);c.lineTo(x+w*.96,y+h*.66);c.stroke();c.shadowColor='#ff4ee8';c.strokeStyle='#ff4ee8';c.beginPath();c.moveTo(x+w*.22,y+h*.72);c.lineTo(x+w*.72,y+h*.72);c.stroke();
+      }else if(kind==='vehicle' && type==='truck'){
+        c.shadowColor='#41fff2';c.strokeStyle='#41fff2';c.lineWidth=1.7;c.strokeRect(x+w*.02,y+h*.3,w*.5,h*.6);c.beginPath();c.moveTo(x+w*.55,y+h*.88);c.lineTo(x+w*.55,y+h*.4);c.lineTo(x+w*.7,y+h*.1);c.lineTo(x+w*.88,y+h*.1);c.lineTo(x+w*.98,y+h*.48);c.lineTo(x+w*.98,y+h*.88);c.stroke();c.shadowColor='#ff4ee8';c.strokeStyle='#ff4ee8';c.beginPath();c.moveTo(x+w*.08,y+h*.5);c.lineTo(x+w*.48,y+h*.5);c.moveTo(x+w*.62,y+h*.55);c.lineTo(x+w*.9,y+h*.55);c.stroke();
+      }else if(kind==='vehicle'){
+        c.shadowColor='#41fff2';c.strokeStyle='#41fff2';c.lineWidth=1.7;c.beginPath();c.moveTo(x+w*.02,y+h*.9);c.lineTo(x+w*.02,y+h*.48);c.lineTo(x+w*.2,y+h*.42);c.lineTo(x+w*.33,y+h*.08);c.lineTo(x+w*.68,y+h*.08);c.lineTo(x+w*.84,y+h*.42);c.lineTo(x+w*.98,y+h*.5);c.lineTo(x+w*.98,y+h*.9);c.stroke();c.shadowColor='#ff4ee8';c.strokeStyle='#ff4ee8';c.beginPath();c.moveTo(x+w*.14,y+h*.6);c.lineTo(x+w*.88,y+h*.6);c.moveTo(x+w*.31,y+h*.22);c.lineTo(x+w*.7,y+h*.22);c.stroke();
+      }else{
+        c.shadowColor='#41fff2';c.strokeStyle='#41fff2';c.lineWidth=1.5;c.beginPath();c.moveTo(x+w*.02,y+h*.2);c.lineTo(x+w*.98,y+h*.2);c.moveTo(x+w*.08,y+h*.56);c.lineTo(x+w*.88,y+h*.56);c.stroke();c.shadowColor='#ff4ee8';c.strokeStyle='#ff4ee8';c.lineWidth=1.1;c.beginPath();c.moveTo(x+w*.2,y+h*.34);c.lineTo(x+w*.7,y+h*.34);c.stroke();
+      }
+      c.restore();
     } else if (skin==='cosmic') {
       c.fillStyle='#d8f5ff';for(let i=0;i<8;i++){c.beginPath();c.arc(x+w*(.1+(i*37%80)/100),y+h*(.15+(i*53%70)/100),1+(i%2)*.6,0,Math.PI*2);c.fill();}
     } else if (skin==='water') {
@@ -3575,22 +3639,29 @@
     const skin=activeGearSkin('vehicle');
     const pal=gearSkinPalette(skin,'vehicle');
     ctx.save(); prepareGearSkinContext(ctx,skin);
-    ctx.fillStyle=pal.fill; ctx.strokeStyle=pal.stroke; ctx.lineWidth=4;
+    ctx.fillStyle=pal.fill; ctx.strokeStyle=pal.stroke; ctx.lineWidth=3;
     let detailBox={x:-30,y:25,w:62,h:28};
     if(type==='motorcycle'){
-      ctx.beginPath();ctx.arc(-15,52,9,0,Math.PI*2);ctx.arc(18,52,9,0,Math.PI*2);ctx.stroke();
-      ctx.fillRect(-13,42,29,6);ctx.fillRect(0,35,16,7);detailBox={x:-13,y:34,w:30,h:15};
+      // More natural motorcycle: tires, rims, frame, engine, tank and seat.
+      ctx.fillStyle='#0e1211';ctx.beginPath();ctx.arc(-16,52,10,0,Math.PI*2);ctx.arc(20,52,10,0,Math.PI*2);ctx.fill();
+      ctx.strokeStyle='#707873';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(-16,52,7.5,0,Math.PI*2);ctx.arc(20,52,7.5,0,Math.PI*2);ctx.stroke();
+      ctx.strokeStyle='#3d4541';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(-16,52);ctx.lineTo(-5,35);ctx.lineTo(11,38);ctx.lineTo(20,52);ctx.moveTo(-5,35);ctx.lineTo(3,52);ctx.lineTo(-16,52);ctx.moveTo(11,38);ctx.lineTo(17,26);ctx.stroke();
+      ctx.fillStyle=pal.fill;ctx.strokeStyle=pal.stroke;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-8,34);ctx.quadraticCurveTo(1,25,13,31);ctx.lineTo(9,40);ctx.lineTo(-8,40);ctx.closePath();ctx.fill();ctx.stroke();
+      ctx.fillStyle='#303633';ctx.fillRect(-1,41,10,7);ctx.fillStyle='#191e1c';ctx.fillRect(6,27,13,5);
+      detailBox={x:-9,y:27,w:29,h:21};
     }else if(type==='car'){
-      // Patternable full-body silhouette -- no flat single-color center panel.
-      ctx.beginPath();ctx.moveTo(-29,52);ctx.lineTo(-29,37);ctx.lineTo(-18,35);ctx.lineTo(-10,25);ctx.lineTo(14,25);ctx.lineTo(23,35);ctx.lineTo(33,38);ctx.lineTo(33,52);ctx.closePath();ctx.fill();
-      ctx.stroke();
+      ctx.beginPath();ctx.moveTo(-29,52);ctx.lineTo(-29,37);ctx.lineTo(-18,35);ctx.lineTo(-10,25);ctx.lineTo(14,25);ctx.lineTo(23,35);ctx.lineTo(33,38);ctx.lineTo(33,52);ctx.closePath();ctx.fill();ctx.stroke();
       ctx.fillStyle='#14201d';ctx.beginPath();ctx.moveTo(-7,27);ctx.lineTo(11,27);ctx.lineTo(18,35);ctx.lineTo(-14,35);ctx.closePath();ctx.fill();
-      ctx.beginPath();ctx.arc(-18,54,8,0,Math.PI*2);ctx.arc(21,54,8,0,Math.PI*2);ctx.fillStyle='#101614';ctx.fill();detailBox={x:-28,y:25,w:60,h:28};
+      ctx.fillStyle='#0e1211';ctx.beginPath();ctx.arc(-18,54,8,0,Math.PI*2);ctx.arc(21,54,8,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#737875';ctx.lineWidth=2;ctx.beginPath();ctx.arc(-18,54,5.5,0,Math.PI*2);ctx.arc(21,54,5.5,0,Math.PI*2);ctx.stroke();detailBox={x:-28,y:25,w:60,h:28};
     }else{
-      ctx.fillRect(-38,30,78,23);ctx.fillRect(-31,18,34,14);ctx.fillRect(4,22,29,8);ctx.fillStyle='#14201d';ctx.fillRect(-26,21,22,7);
-      ctx.beginPath();ctx.arc(-25,55,9,0,Math.PI*2);ctx.arc(26,55,9,0,Math.PI*2);ctx.fillStyle='#101614';ctx.fill();detailBox={x:-37,y:18,w:76,h:35};
+      // Natural truck proportions: bed, cab, hood, windows, bumper and separated wheels.
+      ctx.fillStyle=pal.fill;ctx.strokeStyle=pal.stroke;ctx.lineWidth=3;ctx.fillRect(-40,30,42,22);ctx.strokeRect(-40,30,42,22);
+      ctx.beginPath();ctx.moveTo(2,27);ctx.lineTo(12,20);ctx.lineTo(28,20);ctx.lineTo(38,31);ctx.lineTo(40,52);ctx.lineTo(2,52);ctx.closePath();ctx.fill();ctx.stroke();
+      ctx.fillStyle='#14201d';ctx.beginPath();ctx.moveTo(13,22);ctx.lineTo(27,22);ctx.lineTo(34,31);ctx.lineTo(9,31);ctx.closePath();ctx.fill();
+      ctx.fillStyle='#0e1211';ctx.beginPath();ctx.arc(-26,54,9,0,Math.PI*2);ctx.arc(27,54,9,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#737875';ctx.lineWidth=2;ctx.beginPath();ctx.arc(-26,54,6,0,Math.PI*2);ctx.arc(27,54,6,0,Math.PI*2);ctx.stroke();
+      ctx.fillStyle='#555d58';ctx.fillRect(38,47,7,4);detailBox={x:-39,y:20,w:79,h:32};
     }
-    drawCanvasGearSkinDetails(ctx,skin,'vehicle',detailBox);
+    drawCanvasGearSkinDetails(ctx,skin,'vehicle',detailBox,type);
     ctx.restore();
   }
 
@@ -3625,7 +3696,7 @@
     // Full-body skin detailing so camo/zebra/dots read across the weapon instead of a single flat center color.
     ctx.shadowBlur=0;
     const weaponBoxes={pistol:{x:16,y:19,w:22,h:16},ar:{x:16,y:16,w:43,h:22},shotgun:{x:16,y:18,w:48,h:16},rpg:{x:14,y:16,w:52,h:23},sniper:{x:15,y:14,w:56,h:22},smg:{x:16,y:15,w:37,h:23}};
-    drawCanvasGearSkinDetails(ctx,skin,'weapon',weaponBoxes[type]||weaponBoxes.pistol);
+    drawCanvasGearSkinDetails(ctx,skin,'weapon',weaponBoxes[type]||weaponBoxes.pistol,type);
 
     if (player.muzzle > 0) {
       const mx = { pistol: 37, ar: 59, shotgun: 64, rpg: 65, sniper: 71, smg: 52 }[type] || 40;

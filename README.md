@@ -237,3 +237,15 @@ Extract the ZIP and open `index.html` in a modern browser.
 ## Stage 18.2
 - Achievements menu now displays the active challenge system, including current rank, star progress, and the five active challenges.
 - Removed the separate Challenges menu entry.
+
+
+## Stage 19
+- Plant-trap escape launches the player in the same direction they were facing/approaching when caught, while preserving the Stage 16 burst and Stage 17 five-meter control return.
+- Every run now begins at X0 multiplier. Rank milestones increase the maximum multiplier instead: X3 initially, X6 at SCAVENGER, X9 at SHARPSHOT, and X12 at RECLAIMER. A broken multiplier returns to X0.
+- Starting Item no longer contains normal motorcycle/car/truck entries; only the upgraded rank-reward vehicle versions can be selected.
+- Gold cosmetic/weapon/vehicle skins are now solid polished gold-metal with restrained highlights instead of mixed black/gold.
+- Vehicle skin rendering was refined for more natural motorcycle, car, and truck silhouettes. Camo and zebra cover the body more consistently.
+- Blooming equipment is now rusted/aged underneath moss, grass, vines, leaves, and flowers.
+- Neon equipment now uses detailed body-following neon tracing rather than stray lines extending from the vehicle.
+- Cosmetic prices: Gold 10000, Festive 1000, Camo 100, Blooming 2500, Cosmic 5000, Spooky/Halloween 800, Cupid 500, St. Patrick's Day 300, Soldier 200, Beach 800, Ninja 2000, Pirate 1500.
+- Weapon/vehicle skin prices: Gold 10000, Festive 1000, Camo 100, Zebra 500, Ultra Realistic 1000, Glowing 1500, Toxic 3000, Blooming 2500, Water 800, Grass 300, Cosmic 5000, Neon 8000, Dots 800.
