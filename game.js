@@ -2144,7 +2144,7 @@
       terrainSectionIndex++;
       scheduleBloomCleansers();
     }
-  }
+  } // changes
 
   function getGroundPlatformAt(x, margin = 0) {
     for (const p of platforms) {
